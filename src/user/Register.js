@@ -68,12 +68,39 @@ function Register() {
     }
     setErrorMessage('');
   };
+// thanh tien trinh
+const renderStepIndicator = () => {
+  const steps = ['Step 1', 'Step 2'];
+  return (
+    <div className="flex justify-around items-center mb-2">
+      {steps.map((step, index) => {
+        const stepNumber = index + 1;
+        const isCurrent = currentStep === stepNumber;
+        const isCompleted = currentStep > stepNumber;
 
+        return (
+          <div key={index} className="flex flex-col items-center">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${isCurrent ? 'bg-blue-600' : isCompleted ? 'bg-green-500' : 'bg-gray-300'}`}>
+              {stepNumber}
+            </div>
+            <span className={`mt-2 text-sm ${isCurrent ? 'text-blue-600' : isCompleted ? 'text-green-500' : 'text-gray-500'}`}>
+              {step}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 to-blue-400">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-semibold mb-4 text-center text-gray-800">Đăng ký</h2>
         {errorMessage && <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>}
+
+            {/* Thanh tiến trình */}
+            {renderStepIndicator()}
+
 
         {currentStep === 1 && (
           <div>
@@ -135,7 +162,7 @@ function Register() {
               />
             </div>
             <div className="mb-6">
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">Mật khẩu</label>
+              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">Password</label>
               <input
                 type="password"
                 id="password"
@@ -148,11 +175,11 @@ function Register() {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="confirmpassword" className="block mb-2 text-sm font-medium text-gray-700">Xác nhận Mật khẩu</label>
+              <label htmlFor="confirmpassword" className="block mb-2 text-sm font-medium text-gray-700">Confirm password</label>
               <input
                 type="password"
                 id="password"
-                placeholder='Nhập lại mật khẩu'
+                placeholder='Xác nhận mật khẩu'
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 transition duration-300 ease-in-out"
                 value={confirmpassword}
                 onChange={(e) => setConfirmpassword(e.target.value)}
