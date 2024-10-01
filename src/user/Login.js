@@ -51,7 +51,7 @@ function Login() {
         Cookies.set('token', token, { expires: 7 }); // Lưu token vào cookies trong 7 ngày
         console.log('Đăng nhập thành công, token:', token.access_token);
         // Thực hiện chuyển hướng hoặc logic tiếp theo sau khi đăng nhập thành công
-        navigate("/home")
+        navigate("/admin"); // Chuyển hướng đến trang dashboard
       }
     } catch (error) {
       // Xử lý lỗi đăng nhập
