@@ -21,6 +21,9 @@ import Decentralization from '../component/Decentralization';
 import Search from '../component/Search';
 import EditInformation from '../component/EditInformation';
 import ApproveLoginForm from '../component/ApproveLoginForm';
+// quản lý hoạt động
+import AddActivity from '../component/AddActivity';
+import DeleteActivity from '../component/DeleteActivity';
 
 
 const drawerWidth = 240;
@@ -31,6 +34,7 @@ const Dashboard = () => {
   // tạo trang thái riêng để kiểm soát menu
   const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
+  const [isActivityManagementOpen, setIsActivityManagementOpen] = useState(false);
 
   const toggleGroupManagementMenu = () => {
     setIsGroupManagementOpen(!isGroupManagementOpen);
@@ -39,6 +43,11 @@ const Dashboard = () => {
 
   const toggleUserManagementMenu = () => {
     setIsUserManagementOpen(!isUserManagementOpen);
+   // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
+  };
+
+  const toggleActivityManagementMenu = () => {
+    setIsActivityManagementOpen(!isActivityManagementOpen);
    // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
   };
 
@@ -66,7 +75,13 @@ const Dashboard = () => {
       case 'EditInformation':
         return <EditInformation />;
       case 'ApproveLoginForm':
-        return <ApproveLoginForm />;        
+        return <ApproveLoginForm />;     
+       // quản lý hoạt động
+       case 'AddActivity':
+        return <AddActivity />;
+      case 'DeleteActivity':
+        return <DeleteActivity />;
+
       default:
         return <HomePage />; // Trang mặc định khi không có component được chọn
     }
@@ -117,6 +132,7 @@ const Dashboard = () => {
           <Divider />
           <ListItem button onClick={toggleUserManagementMenu}>
             <ListItemText primary="Quản lý người dùng" />
+           
           </ListItem>
           {isUserManagementOpen && (
             <List component="div" disablePadding>
@@ -162,7 +178,30 @@ const Dashboard = () => {
 
           )}
           <Divider />
-          
+          {/* // quản lý hoạt động
+           */}
+          <ListItem tutton onClick={toggleActivityManagementMenu}>
+            <ListItemText primary="Quản lý hoạt động" />
+          </ListItem>
+          {isActivityManagementOpen && (
+            <List component="div" disablePadding>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AddActivity')}
+              >
+                <ListItemText primary="Thêm hoạt động" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('DeleteActivity')}
+              >
+                <ListItemText primary="Xóa hoạt động" />
+              </ListItemButton>
+            </List>
+          )}
+
+          <Divider /> 
+
 
         </List>
       </Drawer>
