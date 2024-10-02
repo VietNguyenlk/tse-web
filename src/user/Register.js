@@ -9,7 +9,7 @@ function Register() {
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  // const [successMessage, setSuccessMessage] = useState('');
   const [currentStep, setCurrentStep] = useState(1); // Theo dõi bước hiện tại
   const [confirmpassword, setConfirmpassword] = useState('');
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function Register() {
         });
 
         if (response.status === 201) {
-          setSuccessMessage('Đăng ký thành công!');
+          alert('Đăng ký thành công!, vui lòng chờ phê duyệt tài khoản.');
           setErrorMessage('');
           navigate('/');
         }
