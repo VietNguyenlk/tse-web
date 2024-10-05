@@ -35,6 +35,13 @@ import EditPoints from '../component/EditPoints';
 import AddPoints from '../component/AddPoints';
 import ScoreReportAnalysis from '../component/ScoreReportAnalysis';
 import AssignCumulativePoints from '../component/AssignCumulativePoints';
+// quản lý điểm danh
+import ViewAttendanceList from '../component/ViewAttendanceList';
+import FilterAttendanceList from '../component/FilterAttendanceList';
+import TakeAttendance from '../component/TakeAttendance';
+import EditAttendance from '../component/EditAttendance';
+import AttendanceLock from '../component/AttendanceLock';
+import AttendanceReportStatistics from '../component/AttendanceReportStatistics';
 
 
 
@@ -48,6 +55,7 @@ const Dashboard = () => {
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const [isActivityManagementOpen, setIsActivityManagementOpen] = useState(false);
   const [isPointManagementOpen, setIsPointManagementOpen] = useState(false);
+  const [isAttendanceManagementOpen, setIsAttendanceManagementOpen] = useState(false);
  
 
   const toggleGroupManagementMenu = () => {
@@ -69,6 +77,12 @@ const Dashboard = () => {
     setIsPointManagementOpen(!isPointManagementOpen);
    // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
   }
+
+  const toggleAttendanceManagementMenu = () => {
+    setIsAttendanceManagementOpen(!isAttendanceManagementOpen);
+   // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
+  }
+
 
   // Hàm để render component dựa trên trạng thái
   const renderSelectedComponent = () => {
@@ -121,6 +135,20 @@ const Dashboard = () => {
         return <ScoreReportAnalysis />;
       case 'AssignCumulativePoints':
         return <AssignCumulativePoints />;
+      // quản lý điểm danh
+      case 'ViewAttendanceList':
+        return <ViewAttendanceList />;
+      case 'FilterAttendanceList':
+        return <FilterAttendanceList />;
+      case 'TakeAttendance':
+        return <TakeAttendance />;
+      case 'EditAttendance':
+        return <EditAttendance />;
+      case 'AttendanceLock':
+        return <AttendanceLock />;
+      case 'AttendanceReportStatistics':
+        return <AttendanceReportStatistics />;
+
 
 
       default:
@@ -273,7 +301,7 @@ const Dashboard = () => {
               </ListItemButton>
               <ListItemButton
                 sx={{ pl: 4 }}
-                onClick={() => setSelectedComponent('StatisticalAnalysis')}
+                onClick={() => setSelectedComponent('AttendanceReportStatistics')}
               >
                 <ListItemText primary="Phân tích thống kê" />
               </ListItemButton>
@@ -318,9 +346,51 @@ const Dashboard = () => {
           )}
             <Divider />
             {/* quản lý điểm danh */}
-            <ListItem button >
+            <ListItem button onClick={toggleAttendanceManagementMenu} >
             <ListItemText primary="Quản lý điểm danh" />
           </ListItem>
+          {isAttendanceManagementOpen && (
+            <List component="div" disablePadding>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('ViewAttendanceList')}
+              >
+                <ListItemText primary="Xem danh sách điểm danh" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('FilterAttendanceList')}
+              >
+                <ListItemText primary="Lọc danh sách điểm danh" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('TakeAttendance')}
+              >
+                <ListItemText primary="Điểm danh" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('EditAttendance')}
+              >
+                <ListItemText primary="Chỉnh sửa điểm danh" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AttendanceLock')}
+              >
+                <ListItemText primary="Khóa điểm danh" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AttendaceReportAnalysis')}
+              >
+                <ListItemText primary="Phân tích báo cáo điểm danh" />
+              </ListItemButton>
+            </List>
+          )}
+
+
         </List>
       </Drawer>
 
