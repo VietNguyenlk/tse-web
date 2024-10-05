@@ -42,6 +42,14 @@ import TakeAttendance from '../component/TakeAttendance';
 import EditAttendance from '../component/EditAttendance';
 import AttendanceLock from '../component/AttendanceLock';
 import AttendanceReportStatistics from '../component/AttendanceReportStatistics';
+// cấu hình nhóm
+import AddTeamMember from '../component/configGroup/AddTeamMember';
+import RemoveMember from '../component/configGroup/RemoveMember';
+import RemovePermissions from '../component/configGroup/RemovePermissions';
+import SelectTeamLeader from '../component/configGroup/SelectTeamLeader';
+import GrantPermissions from '../component/configGroup/GrantPermissions';
+import EditMember from '../component/configGroup/EditMember';
+import ViewMember from '../component/configGroup/ViewMember';
 
 
 
@@ -56,7 +64,8 @@ const Dashboard = () => {
   const [isActivityManagementOpen, setIsActivityManagementOpen] = useState(false);
   const [isPointManagementOpen, setIsPointManagementOpen] = useState(false);
   const [isAttendanceManagementOpen, setIsAttendanceManagementOpen] = useState(false);
- 
+  const [isConfigGroupOpen, setIsConfigGroupOpen] = useState(false);
+  
 
   const toggleGroupManagementMenu = () => {
     setIsGroupManagementOpen(!isGroupManagementOpen);
@@ -80,6 +89,11 @@ const Dashboard = () => {
 
   const toggleAttendanceManagementMenu = () => {
     setIsAttendanceManagementOpen(!isAttendanceManagementOpen);
+   // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
+  }
+
+  const toggleConfigGroupMenu = () => {
+    setIsConfigGroupOpen(!isConfigGroupOpen);
    // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
   }
 
@@ -148,6 +162,22 @@ const Dashboard = () => {
         return <AttendanceLock />;
       case 'AttendanceReportStatistics':
         return <AttendanceReportStatistics />;
+      // cấu hình nhóm
+      case 'AddTeamMember':
+        return <AddTeamMember />;
+      case 'RemoveMember':
+        return <RemoveMember />;
+      case 'RemovePermissions':
+        return <RemovePermissions />;
+      case 'SelectTeamLeader':
+        return <SelectTeamLeader />;
+      case 'GrantPermissions':
+        return <GrantPermissions />;
+      case 'EditMember':
+        return <EditMember />;
+      case 'ViewMember':
+        return <ViewMember />;
+
 
 
 
@@ -389,7 +419,60 @@ const Dashboard = () => {
               </ListItemButton>
             </List>
           )}
+          <Divider />
+            {/* cấu hình nhóm */}
+          <ListItem button onClick={toggleConfigGroupMenu}>
+            <ListItemText primary="Cấu hình nhóm" />
+          </ListItem>
+          {isConfigGroupOpen && (
+            <List component="div" disablePadding>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AddTeamMember')}
+              >
+                <ListItemText primary="Thêm thành viên" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('RemoveMember')}
+              >
+                <ListItemText primary="Xóa thành viên" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('RemovePermissions')}
+              >
+                <ListItemText primary="Xóa quyền" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('SelectTeamLeader')}
+              >
+                <ListItemText primary="Chọn trưởng nhóm" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('GrantPermissions')}
+              >
+                <ListItemText primary="Cấp quyền" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('EditMember')}
+              >
+                <ListItemText primary="Chỉnh sửa thành viên" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('ViewMember')}
+              >
+                <ListItemText primary="Xem thành viên" />
+              </ListItemButton>
+            </List>
+          )}
 
+
+          <Divider />
 
         </List>
       </Drawer>
