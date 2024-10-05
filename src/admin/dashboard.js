@@ -30,6 +30,11 @@ import AssignActivity from '../component/AssignActivity';
 import EndOfOperation from '../component/EndOfOperation';
 import Invite from '../component/Invite';
 import StatisticalAnalysis from '../component/StatisticalAnalysis';
+// quản lý điểm tích lũy
+import EditPoints from '../component/EditPoints';
+import AddPoints from '../component/AddPoints';
+import ScoreReportAnalysis from '../component/ScoreReportAnalysis';
+import AssignCumulativePoints from '../component/AssignCumulativePoints';
 
 
 
@@ -42,6 +47,7 @@ const Dashboard = () => {
   const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const [isActivityManagementOpen, setIsActivityManagementOpen] = useState(false);
+  const [isPointManagementOpen, setIsPointManagementOpen] = useState(false);
  
 
   const toggleGroupManagementMenu = () => {
@@ -58,6 +64,11 @@ const Dashboard = () => {
     setIsActivityManagementOpen(!isActivityManagementOpen);
    // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
   };
+
+  const togglePointManagementMenu = () => {
+    setIsPointManagementOpen(!isPointManagementOpen);
+   // setIsGroupManagementOpen(false); // Đóng menu nhóm khi mở menu người dùng
+  }
 
   // Hàm để render component dựa trên trạng thái
   const renderSelectedComponent = () => {
@@ -101,6 +112,16 @@ const Dashboard = () => {
         return <Invite />;
       case 'StatisticalAnalysis':
         return <StatisticalAnalysis />;  
+        // quản lý điểm tích lũy
+      case 'EditPoints':
+        return <EditPoints />;
+      case 'AddPoints':
+        return <AddPoints />;
+      case 'ScoreReportAnalysis':
+        return <ScoreReportAnalysis />;
+      case 'AssignCumulativePoints':
+        return <AssignCumulativePoints />;
+
 
       default:
         return <HomePage />; // Trang mặc định khi không có component được chọn
@@ -118,12 +139,13 @@ const Dashboard = () => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: '#2c3e50',
           },
         }}
         variant="permanent"
         anchor="left"
       >
-        <List className= 'bg-emerald-500 text-white rounded-lg shadow-lg '  >
+        <List className= ' text-white rounded-lg shadow-lg '  >
           <ListItem button onClick={toggleGroupManagementMenu}>
             <ListItemText primary="Quản lý nhóm" />
           </ListItem>
@@ -255,15 +277,50 @@ const Dashboard = () => {
               >
                 <ListItemText primary="Phân tích thống kê" />
               </ListItemButton>
-              
+
 
 
             </List>
           )}
 
           <Divider /> 
-
-
+          {/* quản lý điểm tích lũy */}
+          <ListItem button onClick={togglePointManagementMenu} >
+            <ListItemText primary="Quản lý điểm tích lũy" />
+          </ListItem>
+          {isPointManagementOpen && (
+            <List component="div" disablePadding>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('EditPoints')}
+              >
+                <ListItemText primary="Chỉnh sửa điểm" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AddPoints')}
+              >
+                <ListItemText primary="Thêm điểm" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('ScoreReportAnalysis')}
+              >
+                <ListItemText primary="Phân tích báo cáo điểm" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AssignCumulativePoints')}
+              >
+                <ListItemText primary="Gán điểm tích lũy" />
+              </ListItemButton>
+            </List>
+          )}
+            <Divider />
+            {/* quản lý điểm danh */}
+            <ListItem button >
+            <ListItemText primary="Quản lý điểm danh" />
+          </ListItem>
         </List>
       </Drawer>
 
