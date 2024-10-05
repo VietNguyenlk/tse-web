@@ -24,6 +24,13 @@ import ApproveLoginForm from '../component/ApproveLoginForm';
 // quản lý hoạt động
 import AddActivity from '../component/AddActivity';
 import DeleteActivity from '../component/DeleteActivity';
+import EditActivityInformation from '../component/EditActivityInformation';
+import ViewActivityInformation from '../component/ViewActivityInformation';
+import AssignActivity from '../component/AssignActivity';
+import EndOfOperation from '../component/EndOfOperation';
+import Invite from '../component/Invite';
+import StatisticalAnalysis from '../component/StatisticalAnalysis';
+
 
 
 const drawerWidth = 240;
@@ -35,6 +42,7 @@ const Dashboard = () => {
   const [isGroupManagementOpen, setIsGroupManagementOpen] = useState(false);
   const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
   const [isActivityManagementOpen, setIsActivityManagementOpen] = useState(false);
+ 
 
   const toggleGroupManagementMenu = () => {
     setIsGroupManagementOpen(!isGroupManagementOpen);
@@ -81,6 +89,18 @@ const Dashboard = () => {
         return <AddActivity />;
       case 'DeleteActivity':
         return <DeleteActivity />;
+      case 'EditActivityInformation':
+        return <EditActivityInformation />;
+      case 'ViewActivityInformation':
+        return <ViewActivityInformation />;
+      case 'AssignActivity':
+        return <AssignActivity />;
+      case 'EndOfOperation':
+        return <EndOfOperation />;
+      case 'Invite':
+        return <Invite />;
+      case 'StatisticalAnalysis':
+        return <StatisticalAnalysis />;  
 
       default:
         return <HomePage />; // Trang mặc định khi không có component được chọn
@@ -197,6 +217,47 @@ const Dashboard = () => {
               >
                 <ListItemText primary="Xóa hoạt động" />
               </ListItemButton>
+
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('EditActivityInformation')}
+              >
+                <ListItemText primary="Sửa thông tin hoạt động" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('ViewActivityInformation')}
+              >
+                <ListItemText primary="Xem thông tin hoạt động" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('AssignActivity')}
+
+              >
+                <ListItemText primary="Gán hoạt động" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('EndOfOperation')}
+              >
+                <ListItemText primary="Kết thúc hoạt động" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('Invite')}
+              >
+                <ListItemText primary="Mời tham gia" />
+              </ListItemButton>
+              <ListItemButton
+                sx={{ pl: 4 }}
+                onClick={() => setSelectedComponent('StatisticalAnalysis')}
+              >
+                <ListItemText primary="Phân tích thống kê" />
+              </ListItemButton>
+              
+
+
             </List>
           )}
 
