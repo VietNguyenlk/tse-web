@@ -10,6 +10,7 @@ import Dashboard from './admin/dashboard';
 // import TextFieldPage from './component/TextFieldPage';
 // import AboutPage from './component/AboutPage';
 // import HomePage from './component/HomePage';
+import HomeMembers from './members/HomeMembers';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/textfield" element={<TextFieldPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/homeAdmin" element={<HomePage />} /> */}
+          <Route path="/membersPage" element={<HomeMembers/>} />
         </Routes>
       </div>
     </Router>

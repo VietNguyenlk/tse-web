@@ -6,6 +6,8 @@ import * as yup from 'yup';
 import { postApi } from '../api/CallApi';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+// jwt
+import {jwtDecode} from 'jwt-decode';
 // Định nghĩa schema validate cho Yup
 const schema = yup.object().shape({
   mssv: yup
@@ -41,17 +43,26 @@ function Login() {
         userId: data.mssv,
         password: data.password,
       });
-      console.log('res:', res);
-// chổ này chưa xử lý xong
+      // console.log('res:', res);
+
       if (res.status === 200) {
         // Nếu đăng nhập thành công, lưu token vào cookies
-        // console.log('Đăng nhập thành công:', res.data);
-        const token = res.data; // Giả sử token nhận từ API là res.data.token
+        // console.log('Đăng nhập:', res.data);
+        const token = res.data.token; // Giả sử token nhận từ API là res.data.token
         // console.log('Token:', token);
         Cookies.set('token', token, { expires: 7 }); // Lưu token vào cookies trong 7 ngày
-        console.log('Đăng nhập thành công, token:', token.access_token);
+        const decoded = jwtDecode(token)
+        console.log('token:', token);
+        console.log('decoded:', decoded);
+        console.log('roles:', decoded.roles);
         // Thực hiện chuyển hướng hoặc logic tiếp theo sau khi đăng nhập thành công
-        navigate("/admin"); // Chuyển hướng đến trang dashboard
+        if(decoded.roles.includes("admin")){
+          navigate("/admin");// chuyển hướng đến trang admin
+        }
+        else if(decoded.roles.includes("member")){
+          navigate("/membersPage");// chuyển hướng đến trang thành viên
+        }
+       
       }
     } catch (error) {
       // Xử lý lỗi đăng nhập
