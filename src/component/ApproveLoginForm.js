@@ -7,38 +7,6 @@ import { useState } from "react";
 // duyệt đơn đăng nhập
 const ApproveLoginForm = () => {
  
-  // Hàm gọi API để lấy danh sách người dùng
-  // const fetchUsers = async () => {
-  //   try {
-  //     const token = Cookies.get("token"); // Lấy token từ cookies
-
-  //     // Gọi API với các query params cụ thể
-  //     const res = await axios.get("http://localhost:3008/api/v1/users", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`, // Gửi token trong header
-  //       },
-  //       params: {
-  //         "query[page]": 1,
-  //         "query[size]": 3,
-  //         "query[sortDirection]": "descs",
-  //         "query[sortBy]": "registerDate",
-  //       },
-  //     });
-  //     console.log("Danh sách người dùng:", res.data);
-
-     
-
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy danh sách người dùng:", error);
-     
-  //   }
-  // };
-
-  // Gọi API ngay khi component được render
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
   const [ListRegister, setListRegister] = useState([]);
 
 
