@@ -41,6 +41,7 @@ const ApproveLoginForm = () => {
 
   const [ListRegister, setListRegister] = useState([]);
 
+
   // get danh sach người đăng ký
   const fetchUsers = async () => {
     try {
@@ -66,7 +67,27 @@ const ApproveLoginForm = () => {
   }, []);
         
 
-  // tạo list người dùng gồm tên, mssv
+  // xử lý nut duyệt
+  const handleApprove = async (userId) => {
+    try {
+      const token = Cookies.get("token"); // Lấy token từ cookies
+      // console.log("Token từ cookie:", token);
+      console.log("userId:", userId);
+      const res = await axios.post("http://localhost:3008/api/v1/users/registers/approve", {
+        // thêm vao mảng userIds
+        userIds: [userId],
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token trong header
+        }, 
+      });
+      console.log("Duyệt thành công:", res);
+      // Reload lại trang sau khi duyệt thành công
+      window.location.reload();
+    } catch (error) {
+      console.error("Lỗi duyệt:", error);
+    }
+  }
  
   return (
     <div className="align-middle text-center ">
@@ -87,9 +108,15 @@ const ApproveLoginForm = () => {
               <td className="border border-gray-300 px-4 py-2 text-center">{user.firstName}</td>
               <td className="border border-gray-300 px-4 py-2 text-center" >{user.lastName}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{user.userId}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{user.registerDate}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{new Date(user.registerDate).toLocaleString("vi-VN", {
+         
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+
+  })}</td>
               <td className="border border-gray-300 px-1 py-2 text-center" >
-                <button className="bg-green-400 rounded px-4 py-2 hover:bg-red-800">Đồng ý</button>
+                <button onClick={()=>handleApprove(user.userId)} className="bg-green-400 rounded px-4 py-2 hover:bg-red-800" >Đồng ý</button>
                 <button className="bg-green-400 rounded px-4 py-2 mx-2 hover:bg-red-800">Từ chối</button>
               </td>
             </tr>
