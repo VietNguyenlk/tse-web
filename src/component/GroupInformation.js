@@ -6,9 +6,11 @@ const GroupInformation = () => {
   const [ListGroup, setListGroup] = useState([]);
   const [ListMember, setListMember] = useState([]);
   const [showModal, setShowModal] = useState(false); // Quản lý việc hiển thị modal
+  const [showModalDetail, setShowModalDetail] = useState(false); // Quản lý việc hiển thị modal chi tiết nhóm
   const [selectMember, setSelectMember] = useState([]); // Danh sách thành viên được chọn
   const [groupName, setGroupName] = useState(''); // Tên nhóm
   const [error, setError] = useState(''); // Lưu thông báo lỗi
+  const [selectGroup, setSelectGroup] = useState(null); // Lưu thông tin nhóm được chọn
 
   // Lấy thông tin nhóm từ API
   const fetchGroup = async () => {
@@ -94,6 +96,18 @@ const GroupInformation = () => {
             console.error('Lỗi khi tạo nhóm:', error);
         }
     };
+    // Hiển thị modal khi nhấn vào "Xem chi tiết" của một nhóm
+  const handleShowDetail = (group) => {
+    setSelectGroup(group) // Lưu nhóm được chọn
+    setShowModalDetail(true); // Hiển thị modal
+  };
+
+  // Đóng modal
+  const handleCloseModal = () => {
+    setShowModalDetail(false); // Đóng modal
+    setSelectGroup(null); // Xóa nhóm được chọn khi đóng modal
+  };
+  
     
 
   // Gọi API ngay khi component được render
@@ -151,7 +165,7 @@ const GroupInformation = () => {
                 >
                   Xóa nhóm
                 </button>
-                <button className="rounded-lg bg-blue-300 hover:bg-red-900 hover:text-white p-4">Xem chi tiết</button>
+                <button className="rounded-lg bg-blue-300 hover:bg-red-900 hover:text-white p-4"   onClick={() => handleShowDetail(group)}>Xem chi tiết</button>
               </td>
               
             </tr>
@@ -214,6 +228,50 @@ const GroupInformation = () => {
           </div>
         </div>
       )}
+        
+        {/* Modal chi tiết nhóm */}
+           {/* Modal */}
+           {showModalDetail && selectGroup && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="bg-white p-8 rounded-lg w-1/2">
+      <h2 className="text-xl mb-4 text-center">Chi tiết nhóm</h2>
+      <p><strong>Tên nhóm:</strong> {selectGroup.groupName}</p>
+      <p><strong>Mô tả:</strong> {selectGroup.description}</p>
+      <p><strong>Trưởng nhóm:</strong> {selectGroup.leaderName}</p>
+      <p><strong>Số lượng thành viên:</strong> {selectGroup.memberNum}</p>
+
+      {/* Các nút hành động */}
+      <div className="flex justify-around mt-4">
+        <button 
+          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          // onClick={() => handleAddMember(selectGroup.groupId)}
+        >
+          Thêm thành viên
+        </button>
+
+        <button 
+          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          // onClick={() => handleRemoveMember(selectGroup.groupId)}
+        >
+          Xóa thành viên
+        </button>
+
+        <button 
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          // onClick={() => handleViewMembers(selectGroup.groupId)}
+        >
+          Xem thành viên
+        </button>
+      </div>
+
+      <div className="mt-4 flex justify-end">
+        <button className="bg-gray-500 text-white px-4 py-2 rounded-lg" onClick={handleCloseModal}>
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
