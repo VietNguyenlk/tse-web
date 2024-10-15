@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { PlusIcon, TrashIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 const GroupInformation = () => {
   const [ListGroup, setListGroup] = useState([]);
@@ -232,45 +233,71 @@ const GroupInformation = () => {
         {/* Modal chi tiết nhóm */}
            {/* Modal */}
            {showModalDetail && selectGroup && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div className="bg-white p-8 rounded-lg w-1/2">
-      <h2 className="text-xl mb-4 text-center">Chi tiết nhóm</h2>
-      <p><strong>Tên nhóm:</strong> {selectGroup.groupName}</p>
-      <p><strong>Mô tả:</strong> {selectGroup.description}</p>
-      <p><strong>Trưởng nhóm:</strong> {selectGroup.leaderName}</p>
-      <p><strong>Số lượng thành viên:</strong> {selectGroup.memberNum}</p>
+   <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+      <div className="bg-white p-8 rounded-lg w-1/2">
+        {/* <h1 className="text-xl mb-4 text-center">Chi tiết nhóm</h1> */}
+        <h1 className='text-center'><strong>Tên nhóm:</strong> {selectGroup.groupName}</h1>
+        <p className='text-center'><strong>Mô tả:</strong> {selectGroup.description}</p>
+        
+         {/* Đường phân cách */}
+         <hr className="my-4 border-t-2 border-gray-200" />
 
-      {/* Các nút hành động */}
-      <div className="flex justify-around mt-4">
-        <button 
-          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-          // onClick={() => handleAddMember(selectGroup.groupId)}
-        >
-          Thêm thành viên
-        </button>
+        {/* Các nút hành động */}
+        <div className="flex justify-around mt-4">
+          <button 
+            className="bg-green-500 text-white p-4 rounded-full hover:bg-green-700 flex items-center"
+            // onClick={() => handleAddMember(selectGroup.groupId)}
+          >
+            <PlusIcon className="h-5 w-5 " />
+            {/* Thêm thành viên */}
+          </button>
 
-        <button 
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700"
-          // onClick={() => handleRemoveMember(selectGroup.groupId)}
-        >
-          Xóa thành viên
-        </button>
+          <button 
+            className="bg-red-500 text-white p-4 rounded-full hover:bg-red-700 flex items-center"
+            // onClick={() => handleRemoveMember(selectGroup.groupId)}
+          >
+            <TrashIcon className="h-5 w-5 " />
+            {/* Xóa thành viên */}
+          </button>
 
-        <button 
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          // onClick={() => handleViewMembers(selectGroup.groupId)}
-        >
-          Xem thành viên
-        </button>
-      </div>
+          <button 
+            className="bg-blue-500 text-white p-4 rounded-full hover:bg-blue-700 flex flex-col items-center"
+            // onClick={() => handleViewMembers(selectGroup.groupId)}
+          >
+            <EyeIcon className="h-5 w-5 " />
+            {/* Xem thành viên */}
+          
+          </button>
+         
+        </div>
+   
+        <div className="flex justify-around mt-4">
+            <p>Thêm thành viên</p>
+            <p>Xóa thành viên</p>
+            <p>Xem thành viên</p>
 
-      <div className="mt-4 flex justify-end">
-        <button className="bg-gray-500 text-white px-4 py-2 rounded-lg" onClick={handleCloseModal}>
-          Đóng
-        </button>
+        </div>
+              {/* Đường phân cách */}
+              <hr className="my-4 border-t-2 border-gray-200" />
+
+
+        <div> 
+        <p className='items-start mb-2'><strong>Trưởng nhóm:</strong> {selectGroup.leaderName}</p>
+        <p className="items-start"><strong>Số lượng thành viên:</strong> {selectGroup.memberNum}</p>
+        </div>
+           {/* Đường phân cách */}
+           <hr className="my-4 border-t-2 border-gray-200" />
+
+
+
+        <div className="mt-4 flex justify-end">
+          <button className="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center" onClick={handleCloseModal}>
+            <XMarkIcon className="h-5 w-5 mr-2" />
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 )}
     </div>
   );
