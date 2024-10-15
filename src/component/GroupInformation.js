@@ -12,7 +12,9 @@ const GroupInformation = () => {
   const [groupName, setGroupName] = useState(''); // Tên nhóm
   const [error, setError] = useState(''); // Lưu thông báo lỗi
   const [selectGroup, setSelectGroup] = useState(null); // Lưu thông tin nhóm được chọn
-
+  const [showModalMember, setShowModalMember] = useState(false); // Quản lý việc hiển thị modal thành viên nhóm
+  const [addMemberModal, setAddMemberModal] = useState(false); // Quản lý việc hiển thị modal thêm thành viên
+  const [removeMemberModal, setRemoveMemberModal] = useState(false); // Quản lý việc hiển thị modal xóa thành viên
   // Lấy thông tin nhóm từ API
   const fetchGroup = async () => {
     try {
@@ -108,6 +110,30 @@ const GroupInformation = () => {
     setShowModalDetail(false); // Đóng modal
     setSelectGroup(null); // Xóa nhóm được chọn khi đóng modal
   };
+  // hiển thị modal thành viên nhóm
+  const handleViewMembers = (groupId) => {
+    setShowModalMember(true); // Hiển thị modal
+  };
+  // đóng modal thành viên nhóm
+  const handleCloseModalMember = () => {
+    setShowModalMember(false); // Đóng modal
+  };
+  // Thêm thành viên vào nhóm
+  const handleAddMember = (groupId) => {
+    setAddMemberModal(true); // Hiển thị modal
+  };
+  // Xóa thành viên khỏi nhóm
+  const handleRemoveMember = (groupId) => {
+    setRemoveMemberModal(true); // Hiển thị modal
+  };
+  // đóng modal thêm thành viên
+  const handleCloseAddMember = () => {
+    setAddMemberModal(false); // Đóng modal
+  };
+  // đóng modal xóa thành viên
+  const handleCloseRemoveMember = () => {
+    setRemoveMemberModal(false); // Đóng modal
+  };
   
     
 
@@ -131,6 +157,8 @@ const GroupInformation = () => {
       console.error('Lỗi khi xóa nhóm:', error);
     }
   };
+ 
+
 
   return (
     <div className="min-w-full items-center">
@@ -246,7 +274,7 @@ const GroupInformation = () => {
         <div className="flex justify-around mt-4">
           <button 
             className="bg-green-500 text-white p-4 rounded-full hover:bg-green-700 flex items-center"
-            // onClick={() => handleAddMember(selectGroup.groupId)}
+            onClick={() => handleAddMember(selectGroup.groupId)}
           >
             <PlusIcon className="h-5 w-5 " />
             {/* Thêm thành viên */}
@@ -254,7 +282,7 @@ const GroupInformation = () => {
 
           <button 
             className="bg-red-500 text-white p-4 rounded-full hover:bg-red-700 flex items-center"
-            // onClick={() => handleRemoveMember(selectGroup.groupId)}
+            onClick={() => handleRemoveMember(selectGroup.groupId)}
           >
             <TrashIcon className="h-5 w-5 " />
             {/* Xóa thành viên */}
@@ -262,7 +290,7 @@ const GroupInformation = () => {
 
           <button 
             className="bg-blue-500 text-white p-4 rounded-full hover:bg-blue-700 flex flex-col items-center"
-            // onClick={() => handleViewMembers(selectGroup.groupId)}
+            onClick={() => handleViewMembers(selectGroup.groupId)}
           >
             <EyeIcon className="h-5 w-5 " />
             {/* Xem thành viên */}
@@ -299,6 +327,81 @@ const GroupInformation = () => {
       </div>
     </div>
 )}
+{/* Modal thành viên nhóm */}
+        {showModalMember && (
+          <div className="  fixed inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg w-1/2">
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th className="border px-4 py-2 text-center">STT</th>
+                <th className="border px-4 py-2 text-center">Họ</th>
+                <th className="border px-4 py-2 text-center">Tên</th>
+                <th className="border px-4 py-2 text-center">MSSV</th>
+              </tr>
+            </thead>
+          </table>
+          <div className="mt-4 flex justify-end">
+          <button className="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center" onClick={handleCloseModalMember}>
+            <XMarkIcon className="h-5 w-5 mr-2" />
+            Đóng
+          </button>
+        </div>
+            
+          </div>
+          </div>
+        )}
+        {/* Modal thêm thành viên nhóm */}
+        {addMemberModal && (
+          <div className="  fixed inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg w-1/2">
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th className="border px-4 py-2 text-center">STT</th>
+                <th className="border px-4 py-2 text-center">Họ</th>
+                <th className="border px-4 py-2 text-center">Tên</th>
+                <th className="border px-4 py-2 text-center">MSSV</th>
+                <th className="border px-4 py-2 text-center">Chọn để thêm</th>
+              </tr>
+            </thead>
+          </table>
+          <div className="mt-4 flex justify-end">
+          <button className="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center" onClick={handleCloseAddMember}>
+            <XMarkIcon className="h-5 w-5 mr-2" />
+            Đóng
+          </button>
+        </div>
+            
+          </div>
+          </div>
+        )}
+        {/* Modal xóa thành viên nhóm */}
+        {removeMemberModal && (
+          <div className="  fixed inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg w-1/2">
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th className="border px-4 py-2 text-center">STT</th>
+                <th className="border px-4 py-2 text-center">Họ</th>
+                <th className="border px-4 py-2 text-center">Tên</th>
+                <th className="border px-4 py-2 text-center">MSSV</th>
+                <th className="border px-4 py-2 text-center">Chọn để xóa</th>
+              </tr>
+            </thead>
+          </table>
+          <div className="mt-4 flex justify-end">
+          <button className="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center" onClick={handleCloseRemoveMember}>
+            <XMarkIcon className="h-5 w-5 mr-2" />
+            Đóng
+          </button>
+        </div>
+            
+          </div>
+          </div>
+        )}
+          {/* ----------------------------------------------------- */}
     </div>
   );
 };
