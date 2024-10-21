@@ -8,13 +8,14 @@ const GroupInformation = () => {
   const [ListMember, setListMember] = useState([]);
   const [showModal, setShowModal] = useState(false); // Quản lý việc hiển thị modal
   const [showModalDetail, setShowModalDetail] = useState(false); // Quản lý việc hiển thị modal chi tiết nhóm
-  const [selectMember, setSelectMember] = useState([]); // Danh sách thành viên được chọn
+  const [selectMember, setSelectMember] = useState([]); // Danh sách thành viên được chọn để tạo nhóm
   const [groupName, setGroupName] = useState(''); // Tên nhóm
   const [error, setError] = useState(''); // Lưu thông báo lỗi
   const [selectGroup, setSelectGroup] = useState(null); // Lưu thông tin nhóm được chọn
   const [showModalMember, setShowModalMember] = useState(false); // Quản lý việc hiển thị modal thành viên nhóm
   const [addMemberModal, setAddMemberModal] = useState(false); // Quản lý việc hiển thị modal thêm thành viên
   const [removeMemberModal, setRemoveMemberModal] = useState(false); // Quản lý việc hiển thị modal xóa thành viên
+  const [selectMemberGroup, setSelectMemberGroup] = useState([]); // Danh sách thành viên nhóm được chọn
   // Lấy thông tin nhóm từ API
   const fetchGroup = async () => {
     try {
@@ -103,6 +104,7 @@ const GroupInformation = () => {
   const handleShowDetail = (group) => {
     setSelectGroup(group) // Lưu nhóm được chọn
     setShowModalDetail(true); // Hiển thị modal
+   
   };
 
   // Đóng modal
@@ -111,8 +113,25 @@ const GroupInformation = () => {
     setSelectGroup(null); // Xóa nhóm được chọn khi đóng modal
   };
   // hiển thị modal thành viên nhóm
-  const handleViewMembers = (groupId) => {
+  const handleViewMembers = async (groupId) => {
     setShowModalMember(true); // Hiển thị modal
+    console.log('id nhóm:',groupId);
+    const token = Cookies.get('token'); // Lấy token từ cookies
+    const res = await axios.get(`http://localhost:3008/api/v1/groups/${groupId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token trong header
+      },
+    });
+    console.log('Danh sách thành viên:', res.data.data);
+    // Duyệt qua từng thành viên và lấy thông tin chi tiết
+    const memberDetails = await Promise.all(
+      res.data.data.groupMembers.map(async (member) => {
+        const detail = await fetchMemberDetail(member.user_id); // Gọi API lấy thông tin chi tiết
+        return detail; // Trả về thông tin chi tiết của thành viên
+      })
+    );
+    setSelectMemberGroup(memberDetails); // Cập nhật danh sách thành viên vào state
+    console.log('Danh sách thành viên chi tiết:', memberDetails);
   };
   // đóng modal thành viên nhóm
   const handleCloseModalMember = () => {
@@ -134,6 +153,24 @@ const GroupInformation = () => {
   const handleCloseRemoveMember = () => {
     setRemoveMemberModal(false); // Đóng modal
   };
+
+  // /api/v1/users/:userId/info danh sách chi tiết thành viên nhóm chỉ có mỗi mssv , không có họ tên
+  // cần lấy thông tin chi tiết của thành viên vào modal
+  const fetchMemberDetail = async (userId) => {  
+    try {
+      const token = Cookies.get('token'); // Lấy token từ cookies
+      const res = await axios.get(`http://localhost:3008/api/v1/users/${userId}/info`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Gửi token trong header
+        },
+      });
+      console.log('Thông tin thành viên:', res.data.data);
+      return res.data.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin thành viên:', error);
+    }
+  };
+
   
     
 
@@ -157,6 +194,8 @@ const GroupInformation = () => {
       console.error('Lỗi khi xóa nhóm:', error);
     }
   };
+
+
  
 
 
@@ -327,8 +366,8 @@ const GroupInformation = () => {
       </div>
     </div>
 )}
-{/* Modal thành viên nhóm */}
-        {showModalMember && (
+{/* Modal thành viên chi tiết của 1 nhóm */}
+  {showModalMember && (
           <div className="  fixed inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg w-1/2">
           <table className="min-w-full bg-white">
@@ -338,10 +377,27 @@ const GroupInformation = () => {
                 <th className="border px-4 py-2 text-center">Họ</th>
                 <th className="border px-4 py-2 text-center">Tên</th>
                 <th className="border px-4 py-2 text-center">MSSV</th>
+                <th className="border px-4 py-2 text-center">Email</th>
               </tr>
             </thead>
+            <tbody>
+          {selectMemberGroup.map((member, index) => (
+            <tr key={index} className="w-full h-16 text-sm leading-none text-gray-800 border hover:bg-slate-500">
+              <td className="px-4 py-2 border text-center text-black">{index + 1}</td>
+              <td className="px-4 py-2 border text-center text-black">{member.userInfo.firstName}</td>
+              <td className="px-4 py-2 border text-center text-black">{member.userInfo.lastName}</td>
+              <td className="px-4 py-2 border text-center text-black">{member.userInfo.userId}</td>
+              <td className="px-4 py-2 border text-center text-black">{member.userInfo.email}</td>
+            </tr>
+          ))}
+        </tbody>
           </table>
+         
+            
           <div className="mt-4 flex justify-end">
+
+
+
           <button className="bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center" onClick={handleCloseModalMember}>
             <XMarkIcon className="h-5 w-5 mr-2" />
             Đóng
