@@ -46,9 +46,10 @@ function Login() {
       // console.log('res:', res);
 
       if (res.status === 200) {
+        console.log('Đăng nhập thành công:', res.data.data);
         // Nếu đăng nhập thành công, lưu token vào cookies
         // console.log('Đăng nhập:', res.data);
-        const token = res.data.token; // Giả sử token nhận từ API là res.data.token
+        const token = res.data.data.token; // Giả sử token nhận từ API là res.data.token
         // console.log('Token:', token);
         Cookies.set('token', token, { expires: 7 }); // Lưu token vào cookies trong 7 ngày
         const decoded = jwtDecode(token)

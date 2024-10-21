@@ -204,7 +204,7 @@ const Dashboard = () => {
         anchor="left"
       >
         <List className= ' text-white rounded-lg shadow-lg '  >
-          <ListItem button onClick={toggleGroupManagementMenu}>
+          <ListItem  onClick={toggleGroupManagementMenu}>
             <ListItemText primary="Quản lý nhóm" />
           </ListItem>
           {isGroupManagementOpen && (
@@ -230,7 +230,7 @@ const Dashboard = () => {
             </List>
           )}
           <Divider />
-          <ListItem button onClick={toggleUserManagementMenu}>
+          <ListItem  onClick={toggleUserManagementMenu}>
             <ListItemText primary="Quản lý người dùng" />
            
           </ListItem>
@@ -280,7 +280,7 @@ const Dashboard = () => {
           <Divider />
           {/* // quản lý hoạt động
            */}
-          <ListItem tutton onClick={toggleActivityManagementMenu}>
+          <ListItem  onClick={toggleActivityManagementMenu}>
             <ListItemText primary="Quản lý hoạt động" />
           </ListItem>
           {isActivityManagementOpen && (
@@ -343,7 +343,7 @@ const Dashboard = () => {
 
           <Divider /> 
           {/* quản lý điểm tích lũy */}
-          <ListItem button onClick={togglePointManagementMenu} >
+          <ListItem  onClick={togglePointManagementMenu} >
             <ListItemText primary="Quản lý điểm tích lũy" />
           </ListItem>
           {isPointManagementOpen && (
@@ -376,7 +376,7 @@ const Dashboard = () => {
           )}
             <Divider />
             {/* quản lý điểm danh */}
-            <ListItem button onClick={toggleAttendanceManagementMenu} >
+            <ListItem  onClick={toggleAttendanceManagementMenu} >
             <ListItemText primary="Quản lý điểm danh" />
           </ListItem>
           {isAttendanceManagementOpen && (
@@ -421,7 +421,7 @@ const Dashboard = () => {
           )}
           <Divider />
             {/* cấu hình nhóm */}
-          <ListItem button onClick={toggleConfigGroupMenu}>
+          <ListItem  onClick={toggleConfigGroupMenu}>
             <ListItemText primary="Cấu hình nhóm" />
           </ListItem>
           {isConfigGroupOpen && (

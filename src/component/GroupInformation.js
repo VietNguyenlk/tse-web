@@ -24,8 +24,8 @@ const GroupInformation = () => {
           Authorization: `Bearer ${token}`, // Gửi token trong header
         },
       });
-      console.log('Danh sách nhóm:', res.data.data.groups);
-      setListGroup(res.data.data.groups);
+      console.log('Danh sách nhóm:', res.data.data.items);
+      setListGroup(res.data.data.items);
     } catch (error) {
       console.error('Lỗi khi lấy danh sách nhóm:', error);
     }
@@ -46,8 +46,8 @@ const GroupInformation = () => {
           'query[sortBy]': 'registerDate',
         },
       });
-      console.log('Danh sách người dùng:', res.data.data.users);
-      setListMember(res.data.data.users);
+      console.log('Danh sách người dùng:', res.data.data.items);
+      setListMember(res.data.data.items);
     } catch (error) {
       console.error('Lỗi khi lấy danh sách người dùng:', error);
     }

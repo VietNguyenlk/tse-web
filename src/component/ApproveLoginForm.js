@@ -22,7 +22,7 @@ const ApproveLoginForm = () => {
         },
       });
       console.log("Danh sách người đky:", res.data.data);
-      setListRegister(res.data.data);
+      setListRegister(res.data.data.users);
 
     } catch (error) {
       console.error("Lỗi khi lấy danh sách người đky:", error);
