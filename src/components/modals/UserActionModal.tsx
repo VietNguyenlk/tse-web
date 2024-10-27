@@ -1,12 +1,20 @@
 import { Person } from "@mui/icons-material";
 import { useState } from "react";
+import { UserEntity } from "../../types/entities/user.entity";
 
 interface UserActionModalProps {
+  selectedUser: UserEntity | null;
+  setSelectedUser: (user: UserEntity | null) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const UserActionModal: React.FC<UserActionModalProps> = ({ isOpen, onClose }) => {
+const UserActionModal: React.FC<UserActionModalProps> = ({
+  isOpen,
+  onClose,
+  selectedUser,
+  setSelectedUser,
+}) => {
   const tabs = [
     { id: "information", label: "Basic Information" },
     { id: "personal", label: "Personal Information" },
@@ -16,8 +24,7 @@ const UserActionModal: React.FC<UserActionModalProps> = ({ isOpen, onClose }) =>
   ];
 
   const [activeTab, setActiveTab] = useState<string>("information");
-
-  if (!isOpen) return null;
+  if (!isOpen || selectedUser === null) return null;
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
@@ -39,9 +46,18 @@ const UserActionModal: React.FC<UserActionModalProps> = ({ isOpen, onClose }) =>
                     <Person className="h-12 w-12 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold">John Doe</h4>
-                    <p className="text-blue-100 text-sm">Senior Developer</p>
-                    <p className="text-blue-100 text-sm">Employee ID: EMP-001</p>
+                    <h3 className="text-xl font-bold">
+                      {selectedUser.firstName + selectedUser.lastName}
+                    </h3>
+                    <div className="text-sm flex items-end">
+                      Member ID: &nbsp;
+                      <p className="text-blue-500 font-medium text-sm bg-white border rounded px-2">
+                        {selectedUser.userId}
+                      </p>
+                    </div>
+                    <p className="text-blue-100 text-sm">
+                      Email: {selectedUser.email}
+                    </p>
                   </div>
                 </div>
                 <div className="border rounded h-full p-1 font-bold text-base">

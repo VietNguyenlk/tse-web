@@ -3,7 +3,6 @@ import { ApiResponse, axiosInstance } from "../configs/api.config";
 import {
   GetUserPaginatedParams,
   GetUsersPaginatedResponse,
-  User,
 } from "../types/user.types";
 
 class UserService {
@@ -26,7 +25,6 @@ class UserService {
         await axiosInstance.get(`${this.BASE_PATH}`, {
           params: paginatedParams,
         });
-      // console.log(response.data.data);
       return response.data.data;
     } catch (error) {
       throw this.handleError(error);

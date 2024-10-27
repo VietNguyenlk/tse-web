@@ -1,21 +1,21 @@
 import { Add } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { userService } from "../../services/user.service";
-import { GetUserPaginatedParams, User } from "../../types/user.types";
+import { GetUserPaginatedParams } from "../../types/user.types";
 import CustomSearch from "../CustomSearch";
 import PaginationBar from "../PaginationBar";
 import SelectOption from "../SelectOption";
 import AdminHeader from "./AdminHeader";
 import UserTable from "../UserTable";
+import { UserEntity } from "../../types/entities/user.entity";
 
 const AdminMemberBoard: React.FC = () => {
   const [activeHeader, setActiveHeader] = useState<string>("members");
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserEntity[]>([]);
 
   const entryOptions = [10, 25, 50, 100];
 
-  // need to enhance
-  const headers = ["ID", "NAME", "TYPE", "FACULTY", "Cumulative Score"];
+  const headers = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
 
   useEffect(() => {
     // fetch data

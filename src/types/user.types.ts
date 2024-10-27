@@ -1,21 +1,9 @@
-export type User = {
-  userId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  status: string;
-  registerDate: string;
-  phoneNumber: string | null;
-  userType: string;
-  faculty: string;
-  className: string | null;
-  cumulativeScore: number;
-};
+import { UserEntity } from "./entities/user.entity";
 
 export interface GetUsersPaginatedResponse {
   totalPages: number;
   totalItems: number;
-  items: User[];
+  items: UserEntity[];
 }
 
 export interface GetUserPaginatedParams {
