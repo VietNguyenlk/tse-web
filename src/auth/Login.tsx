@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import { LoginData } from "../types/auth.types";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "../types/jwt.types";
+import { useState } from "react";
 
 const loginSchema = yup.object().shape({
   userId: yup
@@ -27,6 +28,7 @@ const loginSchema = yup.object().shape({
 
 export const Login: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
+  const [errorLogin, setErrorLogin] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -40,9 +42,18 @@ export const Login: React.FC = () => {
   const { isLoading, error, login } = useAuth();
 
   const onSubmit = async (data: LoginData) => {
+    // event.preventDefault(); // Ngăn việc reload trang
+  
     await login(data);
     const token = localStorage.getItem("token");
-    if (!token) return;
+
+    if (!token) {
+      setErrorLogin("Đăng nhập thất bại, vui lòng thử lại");
+     // Thiết lập timeout để xóa thông báo lỗi sau 3 giây
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setErrorLogin(null);
+      return;
+    };
 
     const decode = jwtDecode<JwtPayload>(token);
 
@@ -57,8 +68,10 @@ export const Login: React.FC = () => {
     } else {
       navigate("/membersPage");
     }
-    reset();
+    reset(); 
+   
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-500">
@@ -69,8 +82,10 @@ export const Login: React.FC = () => {
         <h2 className="text-sm text-center text-gray-800 mb-4 font-bold">
           Welcome back, please login into an account
         </h2>
+        <p className="text-red-500 text-xl mt-1">{errorLogin}</p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-5">
+         
             <label
               htmlFor="mssv"
               className="block text-sm font-medium text-gray-700"
