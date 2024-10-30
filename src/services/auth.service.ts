@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
-import { LoginData, LoginResponse } from "../types/auth.types";
 import { ApiResponse, axiosInstance } from "../configs/api.config";
+import { LoginData, LoginResponse } from "../configs/auth.config";
 
 class AuthService {
   private static instance: AuthService;

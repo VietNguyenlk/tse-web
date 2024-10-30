@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { authService } from "../services/auth.service";
-import { AuthError, LoginData } from "../types/auth.types";
+import { AuthError, LoginData } from "../configs/auth.config";
 
 interface UseAuth {
   isLoading: boolean;

@@ -1,9 +1,11 @@
 import { AxiosResponse } from "axios";
-import { ApiResponse, axiosInstance } from "../configs/api.config";
 import {
-  GetUserPaginatedParams,
-  GetUsersPaginatedResponse,
-} from "../types/user.types";
+  ApiResponse,
+  axiosInstance,
+  PaginationRequestParams,
+  PaginatedResponse,
+} from "../configs/api.config";
+import { User } from "../store/features/user/userSlice";
 
 class UserService {
   private static instance: UserService;
@@ -18,10 +20,10 @@ class UserService {
   }
 
   public async getAllUsersPaginated(
-    paginatedParams: GetUserPaginatedParams,
-  ): Promise<GetUsersPaginatedResponse> {
+    paginatedParams: PaginationRequestParams,
+  ): Promise<PaginatedResponse<User>> {
     try {
-      const response: AxiosResponse<ApiResponse<GetUsersPaginatedResponse>> =
+      const response: AxiosResponse<ApiResponse<PaginatedResponse<User>>> =
         await axiosInstance.get(`${this.BASE_PATH}`, {
           params: paginatedParams,
         });

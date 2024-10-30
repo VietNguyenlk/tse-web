@@ -1,4 +1,4 @@
-import { Home, Person } from "@mui/icons-material";
+import { Groups, Home, Hub, Person } from "@mui/icons-material";
 
 export type MenuItem = {
   id: string;
@@ -20,10 +20,21 @@ export const menuItems: MenuItem[] = [
     id: "members",
     title: "Members",
     icon: <Person />,
+
     // submenu: [
     //   { id: "all-members", title: "All Members" },
     //   { id: "roles", title: "Roles" },
     //   { id: "profile", title: "Profile" },
     // ],
+  },
+  {
+    id: "activities",
+    title: "Activities",
+    icon: <Hub />,
+  },
+  {
+    id: "groups",
+    title: "Groups",
+    icon: <Groups />,
   },
 ];

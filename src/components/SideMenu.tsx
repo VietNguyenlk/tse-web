@@ -1,6 +1,6 @@
 import { IconButton } from "@mui/material";
 import { useState } from "react";
-import { menuItems } from "../configs/menuItems.constant";
+import { menuItems } from "../configs/components/menuItems.config";
 import { Close, Menu } from "@mui/icons-material";
 interface MenuSideProps {
   sidebarOpen: boolean;

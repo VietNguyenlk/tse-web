@@ -1,23 +1,25 @@
-import { Home } from "@mui/icons-material";
+import { Home, PowerSettingsNewOutlined } from "@mui/icons-material";
 import React from "react";
 import AdminDashboard from "./admin/AdminDashboard";
 import AdminMemberBoard from "./admin/AdminMemberBoard";
+import AdminActivityDashboard from "./admin/AdminActivityDashboard";
+import AdminGroupDashboard from "./admin/AdminGroupDashboard";
 
 interface ContentContainerProps {
-  sidebarOpen: boolean;
   activeContent: string;
 }
 
-const ContentContainer: React.FC<ContentContainerProps> = ({
-  sidebarOpen,
-  activeContent,
-}) => {
+const ContentContainer: React.FC<ContentContainerProps> = ({ activeContent }) => {
   const renderContent = () => {
     switch (activeContent) {
       case "dashboard":
         return <AdminDashboard />;
       case "members":
         return <AdminMemberBoard />;
+      case "activities":
+        return <AdminActivityDashboard />;
+      case "groups":
+        return <AdminGroupDashboard />;
       default:
         return <AdminDashboard />;
     }
@@ -30,8 +32,9 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
           <Home />
           <span className="text-sm ml-2">Dashboard</span>
         </div>
-        <button className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-2 border border-blue-500 hover:border-transparent rounded-full text-sm">
-          Đăng xuất
+        <button className="flex space-x-1.5 items-center bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-2 border border-blue-500 hover:border-transparent rounded-full text-sm">
+          <PowerSettingsNewOutlined />
+          <p>Đăng xuất</p>
         </button>
       </div>
 

@@ -1,10 +1,10 @@
 import { Person } from "@mui/icons-material";
 import { useState } from "react";
-import { UserEntity } from "../../types/entities/user.entity";
+import { User } from "../../store/features/user/userSlice";
 
 interface UserActionModalProps {
-  selectedUser: UserEntity | null;
-  setSelectedUser: (user: UserEntity | null) => void;
+  selectedUser: User | null;
+  setSelectedUser: () => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -23,6 +23,11 @@ const UserActionModal: React.FC<UserActionModalProps> = ({
     { id: "education", label: "Education" },
   ];
 
+  const handleClose = () => {
+    setSelectedUser();
+    onClose();
+  };
+
   const [activeTab, setActiveTab] = useState<string>("information");
   if (!isOpen || selectedUser === null) return null;
   return (
@@ -32,7 +37,6 @@ const UserActionModal: React.FC<UserActionModalProps> = ({
       <div className="flex min-h-full items-start justify-center p-4">
         <div className="relative w-full max-w-4xl rounded-lg bg-white shadow-xl">
           {/* Header */}
-
           <>
             <div className="bg-blue-600 text-white rounded-t-lg">
               <div className="flex items-center justify-between px-6 py-4">
@@ -61,7 +65,16 @@ const UserActionModal: React.FC<UserActionModalProps> = ({
                   </div>
                 </div>
                 <div className="border rounded h-full p-1 font-bold text-base">
-                  Active
+                  {
+                    {
+                      null: "",
+                      ACTIVE: "ACTIVE",
+                      IN_ACTIVE: "INACTIVE",
+                      LEFT_REQUEST: "LEFT REQUEST",
+                      PENDING_APPROVAL: "PENDING APPROVAL",
+                      TERMINATED: "TERMINATED",
+                    }[selectedUser.status ?? "null"]
+                  }
                 </div>
               </div>
 
@@ -98,7 +111,7 @@ const UserActionModal: React.FC<UserActionModalProps> = ({
           {/* Footer */}
           <div className="flex justify-end gap-2 border-t px-6 py-4">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               Close

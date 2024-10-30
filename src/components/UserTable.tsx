@@ -1,24 +1,23 @@
 import { useState } from "react";
 import UserIntro from "./UserIntro";
 import UserActionModal from "./modals/UserActionModal";
-import { UserEntity } from "../types/entities/user.entity";
-import { UserStatus } from "../types/enums/user.enum";
+import { User, UserStatus } from "../store/features/user/userSlice";
 
 interface UserTableProps {
   headers: string[];
-  users: UserEntity[];
+  users: User[];
 }
 
 const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const renderUserStatus = (status: keyof typeof UserStatus | null): string => {
     switch (status) {
       case "ACTIVE":
         return "bg-green-500";
       case "IN_ACTIVE":
-        return "bg-red-500";
+        return "bg-red-600";
       case "TERMINATED":
         return "bg-yellow-500";
       case "PENDING_APPROVAL":
@@ -100,7 +99,7 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
                 <div
                   className={`${renderUserStatus(
                     user.status ?? null,
-                  )} bg-blue-500 inline-block text-sm px-4 py-2 rounded text-white font-semibold`}
+                  )} inline-block text-sm px-4 py-2 rounded text-white font-semibold`}
                 >
                   {user.status}
                 </div>

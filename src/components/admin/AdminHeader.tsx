@@ -1,4 +1,4 @@
-import { adminHeaderItems } from "../../configs/adminHeaderItems";
+import { adminHeaderItems } from "../../configs/components/adminHeaderItems.config";
 
 interface AdminHeaderProps {
   activeHeader: string;

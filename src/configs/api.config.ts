@@ -1,6 +1,31 @@
 import axios, { AxiosInstance } from "axios";
+import dayjs from "dayjs";
 
 const BASE_URL = process.env.API_BASE_URL || "http://localhost:3008/api/v1";
+
+export enum SortDirection {
+  ASC = "asc",
+  DESC = "desc",
+}
+
+export interface BaseEntity {
+  createdAt: dayjs.Dayjs;
+  updatedAt: dayjs.Dayjs;
+  deletedAt: dayjs.Dayjs | null;
+}
+
+export interface PaginationRequestParams {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDirection?: SortDirection;
+}
+
+export interface PaginatedResponse<T> {
+  totalPages: number;
+  totalItems: number;
+  items: T[];
+}
 
 export interface ApiResponse<T> {
   statusCode: number;

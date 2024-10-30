@@ -26,10 +26,7 @@ const AdminPage: React.FC = () => {
           min-h-screen`}
         >
           <div className="p-10">
-            <ContentContainer
-              activeContent={activeContent}
-              sidebarOpen={sidebarOpen}
-            />
+            <ContentContainer activeContent={activeContent} />
           </div>
         </main>
       </div>
