@@ -30,6 +30,20 @@ class UserService {
       throw this.handleError(error);
     }
   }
+    // Phương thức mới để lấy danh sách người dùng đăng ký
+    public async getRegisterRequests(
+      paginatedParams: GetUserPaginatedParams,
+    ): Promise<GetUsersPaginatedResponse> {
+      try {
+        const response: AxiosResponse<ApiResponse<GetUsersPaginatedResponse>> =
+          await axiosInstance.get("/users/registers", {
+            params: paginatedParams,
+          });
+        return response.data.data;
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
 
   private handleError(error: any) {
     if (error.response) {

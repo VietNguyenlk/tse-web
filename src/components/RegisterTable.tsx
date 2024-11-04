@@ -1,37 +1,38 @@
-import { useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
+import { userService } from "../services/user.service";
+import { GetUserPaginatedParams } from "../types/user.types";
 import UserIntro from "./UserIntro";
-import UserActionModal from "./modals/UserActionModal";
-import { UserEntity } from "../types/entities/user.entity";
-import { UserStatus } from "../types/enums/user.enum";
 
-interface UserTableProps {
-  headers: string[];
-  users: UserEntity[];
-}
 
-const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
-
-  const renderUserStatus = (status: keyof typeof UserStatus | null): string => {
-    switch (status) {
-      case "ACTIVE":
-        return "bg-green-500";
-      case "IN_ACTIVE":
-        return "bg-red-500";
-      case "TERMINATED":
-        return "bg-yellow-500";
-      case "PENDING_APPROVAL":
-        return "bg-blue-500";
-      case "LEFT_REQUEST":
-        return "bg-purple-500";
-      default:
-        return "bg-black-500";
+// danh sách người đăng ký chờ duyệt
+export default function RegisterTable() { 
+    const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY","Score", "STATUS"];
+    const [registerRequests, setRegisterRequests] = useState<any[]>([]);
+    
+  useEffect(() => {
+    const paginatedParams: GetUserPaginatedParams = {
+      page: 1,
+      limit: 10,
+    };
+    const fetchData = async () => {
+      try {
+          // Gọi API lấy danh sách yêu cầu đăng ký
+          const data = await userService.getRegisterRequests(paginatedParams);
+          console.log("register",data.users);
+          setRegisterRequests(data.users);
+        }
+       catch (error) {
+        console.error("Failed to fetch data", error);
+      }
     }
-  };
+    
+    fetchData();
+  }, []);
 
-  return (
-    <>
+
+    return (
+      <>
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -44,7 +45,7 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
                 />
               </div>
             </th>
-            {headers.map((header, index) => (
+            {registerHeaders.map((header, index) => (
               <th scope="col" className=" py-3" key={index}>
                 <div className="flex items-center">
                   <button onClick={() => console.log("sort")}>
@@ -65,14 +66,11 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+          {registerRequests.map((user, index) => (
             <tr
               key={index}
               className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 hover:cursor-pointer"
-              onClick={() => {
-                setSelectedUser(user);
-                setIsModalOpen(true);
-              }}
+  
             >
               <td className="w-4 p-4">
                 <div className="flex items-center">
@@ -95,12 +93,10 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
               </td>
               <td className=" text-sm">{user.userType}</td>
               <td className=" text-sm">{user.faculty}</td>
-              <td className=" text-sm ">{user.cumulativeScore}</td>
+              <td className=" text-sm">{user.cumulativeScore}</td>
               <td>
                 <div
-                  className={`${renderUserStatus(
-                    user.status ?? null,
-                  )} bg-blue-500 inline-block text-sm px-4 py-2 rounded text-white font-semibold`}
+                  className= "bg-blue-500 inline-block text-sm px-4 py-2 rounded text-white font-semibold"
                 >
                   {user.status}
                 </div>
@@ -109,14 +105,8 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
           ))}
         </tbody>
       </table>
-      <UserActionModal
-        selectedUser={selectedUser}
-        setSelectedUser={() => setSelectedUser(null)}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      ></UserActionModal>
+  
     </>
-  );
-};
-
-export default UserTable;
+    );
+    };
+  

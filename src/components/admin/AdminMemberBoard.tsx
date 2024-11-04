@@ -7,28 +7,45 @@ import PaginationBar from "../PaginationBar";
 import SelectOption from "../SelectOption";
 import AdminHeader from "./AdminHeader";
 import UserTable from "../UserTable";
+import RegisterTable from "../RegisterTable";
 import { UserEntity } from "../../types/entities/user.entity";
 
 const AdminMemberBoard: React.FC = () => {
   const [activeHeader, setActiveHeader] = useState<string>("members");
   const [users, setUsers] = useState<UserEntity[]>([]);
+  // const [registerRequests, setRegisterRequests] = useState<UserEntity[]>([]);
 
   const entryOptions = [10, 25, 50, 100];
 
   const headers = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
+ 
 
   useEffect(() => {
-    // fetch data
     const paginatedParams: GetUserPaginatedParams = {
       page: 1,
       limit: 10,
     };
     const fetchData = async () => {
-      const data = await userService.getAllUsersPaginated(paginatedParams);
-      setUsers(data.items);
+      try {
+        if (activeHeader === "members") {
+          // Gọi API lấy danh sách thành viên
+          const data = await userService.getAllUsersPaginated(paginatedParams);
+          console.log("members",data);
+          // lọc danh sách thành viên theo status== active
+          const activeUsers = data.items.filter((user) => user.status === "ACTIVE");
+          setUsers(activeUsers);
+        // } else if (activeHeader === "register-requests") {
+        //   // Gọi API lấy danh sách yêu cầu đăng ký
+        //   const data = await userService.getRegisterRequests(paginatedParams);
+        //   console.log("register",data);
+        //   setRegisterRequests(data.items);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
     };
     fetchData();
-  }, []);
+  }, [activeHeader]);
 
   return (
     <>
@@ -51,7 +68,12 @@ const AdminMemberBoard: React.FC = () => {
             <CustomSearch />
           </div>
 
-          <UserTable headers={headers} users={users} />
+         {activeHeader === "members" ? (
+            <UserTable headers={headers} users={users} />
+          ) : (
+            <RegisterTable />
+          )
+        }
 
           <PaginationBar
             currentPage={1}
