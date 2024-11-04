@@ -1,9 +1,9 @@
 import { Person } from "@mui/icons-material";
 import { useState } from "react";
-import { User } from "../../store/features/user/userSlice";
+import { IUser } from "../../shared/models/user.model";
 
 interface UserActionModalProps {
-  selectedUser: User | null;
+  selectedUser: IUser | null;
   setSelectedUser: () => void;
   isOpen: boolean;
   onClose: () => void;

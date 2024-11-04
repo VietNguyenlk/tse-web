@@ -1,0 +1,21 @@
+export enum UserStatus {
+  ACTIVE,
+  IN_ACTIVE,
+  TERMINATED,
+  PENDING_APPROVAL,
+  LEFT_REQUEST,
+}
+
+export enum UserType {
+  STUDENT,
+  TEACHER,
+}
+
+export enum UserFaculty {
+  COMPUTER_SCIENCE,
+  SOFTWARE_ENGINEERING,
+  INFORMATION_TECHNOLOGY,
+  DATA_SCIENCE,
+  INFORMATION_SYSTEM,
+  OTHER,
+}

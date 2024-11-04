@@ -1,50 +1,39 @@
 import { Add } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { PaginationRequestParams } from "../../configs/api.config";
-import { getAllActivitiesStateSelector } from "../../store/features/activity/activitySelectors";
-import { activitySlice } from "../../store/features/activity/activitySlice";
-import { fetchAllActivities } from "../../store/features/activity/activityThunk";
-import { useAppSelector } from "../../store/hooks";
-import { AppDispatch } from "../../store/store";
-import PaginationBar from "../PaginationBar";
+import { PaginationRequestParams } from "../../configs/api";
+import PaginationBar from "../pagination/PaginationBar";
 import NewActivityModal from "../modals/NewActivityModal";
 import ActivitiesAnalytic from "./activities/ActivitiesAnalytic";
 import ActivityFilterAndSearch from "./activities/ActivityFilterAndSearch";
 import AllActivitiesDashboard from "./activities/AllActivitiesDashboard";
+import { useAppDispatch, useAppSelector } from "../../configs/store";
+import { getActivities } from "../../modules/activity/activity.reducer";
 
 const AdminActivityDashboard: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [isNewModalOpen, setNewModalOpen] = useState(false);
-  const {
-    activities,
-    currentPage,
-    error,
-    pageSize,
-    status,
-    totalItems,
-    totalPages,
-  } = useAppSelector(getAllActivitiesStateSelector);
+  const { loading, errorMessage, entities, totalPages } = useAppSelector(
+    (state) => state.activity,
+  );
 
   useEffect(() => {
     const paginationParams: PaginationRequestParams = {
       page: 1,
       size: 2,
     };
-    dispatch(fetchAllActivities(paginationParams));
+    dispatch(getActivities(paginationParams));
   }, [dispatch]);
 
-  const handlePageChange = (pageNum: number) => {
-    dispatch(activitySlice.actions.setCurrentPage(pageNum));
-  };
+  // const handlePageChange = (pageNum: number) => {
+  // };
 
-  const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(activitySlice.actions.setPageSize(Number(event.target.value)));
-  };
+  // const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   dispatch(activitySlice.actions.setPageSize(Number(event.target.value)));
+  // };
 
-  if (status === "loading") return <>Loading ....</>;
-  if (error) return <>Error: {error}</>;
-  if (activities.length === 0) return <>No activities found</>;
+  if (loading) return <>Loading ....</>;
+  if (errorMessage) return <>Error: {errorMessage}</>;
+  if (entities.length === 0) return <>No activities found</>;
 
   return (
     <>
@@ -68,8 +57,8 @@ const AdminActivityDashboard: React.FC = () => {
         <div className="mb-2">
           <select
             className="px-4 py-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10 text-sm"
-            value={pageSize}
-            onChange={handlePageSizeChange}
+            value={1}
+            // onChange={handlePageSizeChange}
           >
             <option value={10}>10 per page</option>
             <option value={25}>25 per page</option>
@@ -78,11 +67,11 @@ const AdminActivityDashboard: React.FC = () => {
           </select>
         </div>
         {/* Contents */}
-        <AllActivitiesDashboard activities={activities} />
+        <AllActivitiesDashboard activities={entities} />
         {/* Pagination Bar */}
         <PaginationBar
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
+          currentPage={1}
+          // handlePageChange={handlePageChange}
           totalPages={totalPages}
         />
 

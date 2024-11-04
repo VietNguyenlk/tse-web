@@ -1,14 +1,54 @@
 import { CheckCircle, Tag } from "@mui/icons-material";
 import { useState } from "react";
+import * as yup from "yup";
+import { ActivityType } from "../../../shared/models/enums/activity.enum";
 
-const ActivityBasicInfo: React.FC = () => {
+interface ActivityBasicInfoProps {
+  setActivityTitle: (value: string) => void;
+  setActivityDescription: (value: string) => void;
+  setActivityType: (value: keyof typeof ActivityType) => void;
+}
+
+const basicInformationSchema = yup.object().shape({
+  activityName: yup
+    .string()
+    .required("Activity name is required")
+    .min(5, "Activity name must be at least 5 characters")
+    .max(50, "Activity name must be at most 50 characters"),
+  activityDescription: yup
+    .string()
+    .max(280, "Description must be at most 280 characters"),
+});
+
+const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
+  setActivityTitle,
+  setActivityDescription,
+  setActivityType,
+}) => {
   const [selectedType, setSelectedType] = useState<string>("seminar");
   const [selectedScope, setSelectedScope] = useState<string>("internal");
   const [descriptionLength, setDescriptionLength] = useState<number>(0);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleChangeTextArea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = event.target.value;
     setDescriptionLength(value.length);
+  };
+
+  const validateInput = async (field: string, value: any) => {
+    try {
+      await basicInformationSchema.validateAt(field, { [field]: value });
+      setErrors((prevErrors) => ({ ...prevErrors, [field]: "" }));
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        setErrors((prevErrors) => ({ ...prevErrors, [field]: error.message }));
+      }
+    }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    validateInput(name, value);
   };
 
   const activityTypes = [
@@ -50,13 +90,18 @@ const ActivityBasicInfo: React.FC = () => {
       </div>
 
       <div className="relative group space-y-2">
-        <h3 className="font-medium">Activity's Name:</h3>
+        <h3 className="font-medium">
+          Activity's Name <span className="text-red-600">*</span>
+        </h3>
+        {errors.activityName && <p>{errors.activityName}</p>}
         <div className="flex gap-4">
           <div className="flex-1">
             <div className="relative">
               <input
                 type="text"
+                name="activityName"
                 placeholder="Please input your activity title..."
+                onChange={handleInputChange}
                 className="w-full border-gray-300 px-6 py-4 text-lg bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500">
@@ -68,7 +113,9 @@ const ActivityBasicInfo: React.FC = () => {
       </div>
 
       <div className="space-y-2">
-        <h3 className="font-medium">Type:</h3>
+        <h3 className="font-medium">
+          Type <span className="text-red-600">*</span>
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           {activityTypes.map((type) => (
             <div
@@ -93,7 +140,9 @@ const ActivityBasicInfo: React.FC = () => {
           ))}
         </div>
 
-        <h3 className="font-medium">Scope:</h3>
+        <h3 className="font-medium">
+          Scope <span className="text-red-600">*</span>
+        </h3>
         <div className="grid grid-cols-2 gap-4">
           {activityScopes.map((scope) => (
             <div
@@ -120,8 +169,9 @@ const ActivityBasicInfo: React.FC = () => {
       </div>
 
       <div className="relative space-y-2  ">
-        <h3 className="font-medium">Description:</h3>
+        <h3 className="font-medium">Description</h3>
         <textarea
+          name="activityDescription"
           onChange={handleChangeTextArea}
           placeholder="Describe your activity in details..."
           rows={3}

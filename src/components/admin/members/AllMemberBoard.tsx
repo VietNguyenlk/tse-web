@@ -1,19 +1,16 @@
 import { Add } from "@mui/icons-material";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { PaginationRequestParams } from "../../../configs/api.config";
-import { selectAllUsers } from "../../../store/features/user/userSelectors";
-import { fetchAllUsers } from "../../../store/features/user/userThunk";
-import { useAppSelector } from "../../../store/hooks";
-import { AppDispatch } from "../../../store/store";
-import CustomSearch from "../../CustomSearch";
-import PaginationBar from "../../PaginationBar";
-import SelectOption from "../../SelectOption";
-import UserTable from "../../UserTable";
+import { PaginationRequestParams } from "../../../configs/api";
+import { useAppDispatch, useAppSelector } from "../../../configs/store";
+import { getUsers } from "../../../modules/administration/user-management/user-management.reducer";
+import CustomSearch from "../../pagination/CustomSearch";
+import PaginationBar from "../../pagination/PaginationBar";
+import SelectOption from "../../pagination/SelectOption";
+import UserTable from "../../users/UserTable";
 
 const AllMemberBoard: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const users = useAppSelector(selectAllUsers);
+  const dispatch = useAppDispatch();
+  const users = useAppSelector((state) => state.userManagement.users);
 
   const entryOptions = [10, 25, 50, 100];
 
@@ -24,7 +21,7 @@ const AllMemberBoard: React.FC = () => {
       page: 1,
       size: 10,
     };
-    dispatch(fetchAllUsers(paginatedParams));
+    dispatch(getUsers(paginatedParams));
   }, [dispatch]);
 
   return (

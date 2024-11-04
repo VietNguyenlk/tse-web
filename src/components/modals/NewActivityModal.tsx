@@ -2,8 +2,9 @@ import { useState } from "react";
 import StepIndicator from "./atoms/StepIndicator";
 import ActivityBasicInfo from "./atoms/ActivityBasicInfo";
 import ActivityTimeLocation from "./atoms/ActivityTimeLocation";
-import ActivitySpeakerDetails from "./atoms/ActivitySpeakerDetails";
 import FinalDetails from "./atoms/FinalDetails";
+import { useAppDispatch } from "../../configs/store";
+import { ActivityType } from "../../shared/models/enums/activity.enum";
 
 interface NewActivityModalProps {
   isOpen: boolean;
@@ -11,18 +12,48 @@ interface NewActivityModalProps {
 }
 
 const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) => {
+  const dispatch = useAppDispatch();
+
+  const maxStep = 3;
   const [currentStep, setCurrentStep] = useState(1);
-  const maxStep = 4;
+  const [activityTitle, setActivityTitle] = useState<string>("");
+  const [activityDescription, setActivityDescription] = useState<string>("");
+  const [activityType, setActivityType] =
+    useState<keyof typeof ActivityType>("SEMINAR");
+
+  const updateActivityStateByStep = (step: number) => {
+    switch (step) {
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      default:
+        break;
+    }
+  };
+
+  // const handleCreateActivity = () => {
+  //   dispatch(createActivity({
+  //     title: activityTitle,
+  //     description: activityDescription,
+  //   }))
+  // }
 
   const renderStepContent = (step: number) => {
     switch (step) {
       case 1:
-        return <ActivityBasicInfo />;
+        return (
+          <ActivityBasicInfo
+            setActivityTitle={setActivityTitle}
+            setActivityDescription={setActivityDescription}
+            setActivityType={setActivityType}
+          />
+        );
       case 2:
         return <ActivityTimeLocation />;
       case 3:
-        return <ActivitySpeakerDetails />;
-      case 4:
         return <FinalDetails />;
       default:
         return null;
