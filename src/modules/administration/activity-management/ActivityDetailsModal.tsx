@@ -8,13 +8,13 @@ import {
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import React from "react";
-import { DATE_FORMAT } from "../../configs/constants";
-import { IActivity } from "../../shared/models/activity.model";
+import { DATE_FORMAT } from "../../../configs/constants";
+import { IActivity } from "../../../shared/models/activity.model";
 import {
   ActivityScope,
   ActivityStatus,
   ActivityType,
-} from "../../shared/models/enums/activity.enum";
+} from "../../../shared/models/enums/activity.enum";
 
 interface ActivityDetailsModalProps {
   isOpen: boolean;

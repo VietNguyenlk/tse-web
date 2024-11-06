@@ -68,10 +68,10 @@ export const adminSideBarItems: SideBarItem[] = [
     link: "/admin/budget",
   },
   {
-    id: "qna",
+    id: "forum",
     title: "Q&A",
     icon: <QuestionAnswerOutlined />,
-    link: "/admin/qna",
+    link: "/admin/forum",
   },
 ];
 

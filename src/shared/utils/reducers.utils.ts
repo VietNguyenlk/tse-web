@@ -47,6 +47,7 @@ export const serializeAxiosError = (value: any): AxiosError | SerializedError =>
     if (isAxiosError(value)) {
       return value;
     }
+
     const simpleError: SerializedError = {};
     for (const property of commonErrorProperties) {
       if (typeof value[property] === "string") {

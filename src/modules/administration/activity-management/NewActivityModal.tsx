@@ -1,10 +1,10 @@
 import { useState } from "react";
-import StepIndicator from "./atoms/StepIndicator";
-import ActivityBasicInfo from "./atoms/ActivityBasicInfo";
-import ActivityTimeLocation from "./atoms/ActivityTimeLocation";
-import FinalDetails from "./atoms/FinalDetails";
-import { useAppDispatch } from "../../configs/store";
-import { ActivityType } from "../../shared/models/enums/activity.enum";
+import { useAppDispatch } from "../../../configs/store";
+import ActivityBasicInfo from "../../../components/modals/ActivityBasicInfo";
+import ActivityTimeLocation from "../../../components/modals/ActivityTimeLocation";
+import FinalDetails from "../../../components/modals/FinalDetails";
+import { ActivityType } from "../../../shared/models/enums/activity.enum";
+import StepIndicator from "../../../components/modals/StepIndicator";
 
 interface NewActivityModalProps {
   isOpen: boolean;

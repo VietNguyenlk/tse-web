@@ -1,7 +1,7 @@
 import { CheckCircle, Tag } from "@mui/icons-material";
 import { useState } from "react";
 import * as yup from "yup";
-import { ActivityType } from "../../../shared/models/enums/activity.enum";
+import { ActivityType } from "../../shared/models/enums/activity.enum";
 
 interface ActivityBasicInfoProps {
   setActivityTitle: (value: string) => void;

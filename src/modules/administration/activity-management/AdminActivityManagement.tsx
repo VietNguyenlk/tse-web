@@ -1,15 +1,15 @@
 import { Add } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
-import { PaginationRequestParams } from "../../configs/api";
-import PaginationBar from "../pagination/PaginationBar";
-import NewActivityModal from "../modals/NewActivityModal";
-import ActivitiesAnalytic from "./activities/ActivitiesAnalytic";
-import ActivityFilterAndSearch from "./activities/ActivityFilterAndSearch";
-import AllActivitiesDashboard from "./activities/AllActivitiesDashboard";
-import { useAppDispatch, useAppSelector } from "../../configs/store";
-import { getActivities } from "../../modules/activity/activity.reducer";
+import { useAppDispatch, useAppSelector } from "../../../configs/store";
+import { PaginationRequestParams } from "../../../configs/api";
+import { getActivities } from "../../activity/activity.reducer";
+import ActivitiesAnalytic from "../../../components/admin/activities/ActivitiesAnalytic";
+import ActivityFilterAndSearch from "../../../components/admin/activities/ActivityFilterAndSearch";
+import AllActivitiesDashboard from "../../../components/admin/activities/AllActivitiesDashboard";
+import PaginationBar from "../../../components/pagination/PaginationBar";
+import NewActivityModal from "./NewActivityModal";
 
-const AdminActivityDashboard: React.FC = () => {
+const AdminActivityManagement: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isNewModalOpen, setNewModalOpen] = useState(false);
   const { loading, errorMessage, entities, totalPages } = useAppSelector(
@@ -83,4 +83,4 @@ const AdminActivityDashboard: React.FC = () => {
     </>
   );
 };
-export default AdminActivityDashboard;
+export default AdminActivityManagement;

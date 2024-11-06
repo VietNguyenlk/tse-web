@@ -8,7 +8,7 @@ import {
 import { Card, CardContent, CardHeader } from "@mui/material";
 import { useState } from "react";
 
-const AdminGroupDashboard: React.FC = () => {
+const AdminGroupManagement: React.FC = () => {
   const [groups, setGroups] = useState([
     { id: 1, name: "Group A", leader: "John Doe", members: 8, color: "bg-blue-500" },
     {
@@ -176,4 +176,4 @@ const AdminGroupDashboard: React.FC = () => {
   );
 };
 
-export default AdminGroupDashboard;
+export default AdminGroupManagement;

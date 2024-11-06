@@ -1,11 +1,11 @@
 import { useState } from "react";
-import AdminHeader from "./AdminHeader";
-import AllMemberBoard from "./members/AllMemberBoard";
-import AllRolesBoard from "./members/AllRolesBoard";
-import RegisterRequestsBoard from "./members/RegisterRequestsBoard";
-import ExitRequestsBoard from "./members/ExitRequestsBoard";
+import AllMemberBoard from "../../../components/admin/members/AllMemberBoard";
+import AllRolesBoard from "../../../components/admin/members/AllRolesBoard";
+import RegisterRequestsBoard from "../../../components/admin/members/RegisterRequestsBoard";
+import ExitRequestsBoard from "../../../components/admin/members/ExitRequestsBoard";
+import AdminHeader from "../../../components/headers/AdminHeader";
 
-const AdminMemberBoard: React.FC = () => {
+const AdminUserManagement: React.FC = () => {
   const [activeHeader, setActiveHeader] = useState<string>("members");
 
   const renderBoard = () => {
@@ -31,4 +31,4 @@ const AdminMemberBoard: React.FC = () => {
   );
 };
 
-export default AdminMemberBoard;
+export default AdminUserManagement;

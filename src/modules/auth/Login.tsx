@@ -1,12 +1,16 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { Link, Navigate, NavigateFunction, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { jwtDecode } from "jwt-decode";
-import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useEffect, useState } from "react";
 import { JwtPayload } from "../../shared/utils/jwt-utils";
 import { LoginData } from "../../configs/auth-config";
+import Notification, {
+  NotificationType,
+} from "../../components/notifications/Notification";
+import { useAppDispatch, useAppSelector } from "../../configs/store";
+import { login } from "./authentication.reducer";
 
 const loginSchema = yup.object().shape({
   userId: yup
@@ -27,8 +31,31 @@ const loginSchema = yup.object().shape({
 });
 
 export const Login: React.FC = () => {
+  const [notifications, setNotifications] = useState<
+    {
+      id: number;
+      type: keyof typeof NotificationType;
+      title: string;
+      message: string;
+      show: boolean;
+      createdAt: number;
+    }[]
+  >([]);
   const navigate: NavigateFunction = useNavigate();
+  const dispatch = useAppDispatch();
+  const {
+    errorMessage,
+    sessionHasBeenFetched,
+    loading,
+    loginSuccess,
+    loginError,
+    roles,
+    isAuthenticated,
+  } = useAppSelector((state) => state.authentication);
+
+  const [notificationId, setNotificationId] = useState(0);
   const [errorLogin, setErrorLogin] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -39,29 +66,63 @@ export const Login: React.FC = () => {
     mode: "onChange",
   });
 
-  const { isLoading, error, login } = useAuth();
+  useEffect(() => {
+    if (loginError && errorMessage) {
+      addNotification(
+        "ERROR",
+        "Đăng nhập thất bại",
+        "MSSV hoặc mật khẩu không đúng",
+      );
+    }
+  }, [loginError]);
+
+  const addNotification = (
+    type: keyof typeof NotificationType,
+    title: string,
+    message: string,
+  ) => {
+    const currentId = notificationId;
+    setNotificationId((notificationId) => notificationId + 1);
+    setNotifications((prev) =>
+      [
+        {
+          id: currentId,
+          type,
+          title: title,
+          message: message,
+          show: true,
+          createdAt: Date.now(),
+        },
+        ...prev,
+      ].slice(0, 2),
+    ); // Keep only the latest 2 notifications
+  };
+
+  const removeNotification = (id: number) => {
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id),
+    );
+  };
 
   const onSubmit = async (data: LoginData) => {
-    await login(data);
-    const token = localStorage.getItem("token");
+    dispatch(login(data.userId, data.password, data.rememberMe));
+    const token = localStorage.getItem("authToken");
     if (!token) return;
-
     const decode = jwtDecode<JwtPayload>(token);
-    console.log(decode);
-
     const currentTime = Date.now() / 1000;
     if (currentTime > decode.exp) {
-      alert("Token hết hạn, vui lòng đăng nhập lại");
+      addNotification("ERROR", "Token hết hạn", "Vui lòng đăng nhập lại");
       return;
-    }
-    const roles = decode.roles;
-    if (roles.includes("admin")) {
-      navigate("/admin");
-    } else {
-      navigate("/membersPage", { state: { userInfo: decode } });
     }
     reset();
   };
+
+  if (loginSuccess && isAuthenticated) {
+    if (roles.includes("admin")) {
+      return <Navigate to="/admin" />;
+    }
+    return <Navigate to="/home" />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-500">
@@ -112,23 +173,64 @@ export const Login: React.FC = () => {
             <p className="text-red-500 text-xs mt-1">{errors.password?.message}</p>
           </div>
 
+          <div className="flex justify-between items-center pb-4">
+            <div className="flex items-center space-x-2">
+              <input
+                {...register("rememberMe")}
+                type="checkbox"
+                name="rememberMe"
+                id="cboxRememberMe"
+                className="rounded hover:cursor-pointer"
+              />
+              <label
+                htmlFor="cboxRememberMe"
+                className="text-sm hover:cursor-pointer"
+              >
+                Remember me?
+              </label>
+            </div>
+            <div>
+              <Link
+                to=""
+                className="text-sm underline italic text-purple-600 hover:text-purple-900 "
+              >
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-md shadow-lg hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105"
           >
-            {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
+            {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </button>
         </form>
 
         <div className="mt-6 text-center text-sm">
-          <a href="/register" className="text-blue-600 hover:underline">
-            Đăng Ký
-          </a>
-          <span className="mx-2 text-gray-500">|</span>
-          <a href="/forgot-password" className="text-blue-600 hover:underline">
-            Quên Mật Khẩu?
-          </a>
+          <p>
+            Bạn chưa có tài khoản?{" "}
+            <Link
+              to="/register"
+              className="text-blue-600 hover:text-blue-700 font-semibold"
+            >
+              Đăng ký ngay
+            </Link>
+          </p>
         </div>
+      </div>
+
+      <div className="fixed top-0 right-0 z-50">
+        {notifications.map((notification, index) => (
+          <Notification
+            isShow={notification.show}
+            key={notification.id}
+            {...notification}
+            index={index}
+            onClose={() => removeNotification(notification.id)}
+            duration={5000}
+            autoClose={true}
+          />
+        ))}
       </div>
     </div>
   );

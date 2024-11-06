@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { DATE_FORMAT } from "../../../configs/constants";
 import { IActivity } from "../../../shared/models/activity.model";
-import ActivityDetailsModal from "../../modals/ActivityDetailsModal";
+import ActivityDetailsModal from "../../../modules/administration/activity-management/ActivityDetailsModal";
 
 interface ActivityCardProps {
   activity: Readonly<IActivity>;

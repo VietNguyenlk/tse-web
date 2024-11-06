@@ -1,6 +1,6 @@
 import { useState } from "react";
 import UserIntro from "./UserIntro";
-import UserActionModal from "../modals/UserActionModal";
+import UserActionModal from "../../modules/administration/user-management/UserActionModal";
 import { IUser } from "../../shared/models/user.model";
 import { UserStatus } from "../../shared/models/enums/user.enum";
 

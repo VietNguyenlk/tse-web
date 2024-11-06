@@ -1,27 +1,17 @@
 import React from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Roles } from "./configs/constants";
+import AdminActivityManagement from "./modules/administration/activity-management/AdminActivityManagement";
 import AdminPage from "./modules/administration/Administration";
+import AdminBudgetManagement from "./modules/administration/budget-management/AdminBudgetManagement";
+import AdminDashboard from "./modules/administration/dashboard/AdminDashBoard";
+import AdminForumManagement from "./modules/administration/forum-management/AdminForumManagement";
+import AdminGroupManagement from "./modules/administration/group-management/AdminGroupManagement";
+import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
 import { Login } from "./modules/auth/Login";
-import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminMemberBoard from "./components/admin/AdminMemberBoard";
-import AdminActivityDashboard from "./components/admin/AdminActivityDashboard";
-import AdminGroupDashboard from "./components/admin/AdminGroupDashboard";
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  isAuthenticated,
-}) => {
-  if (!isAuthenticated) {
-    return <Navigate to="/" />;
-  }
-
-  return <>{children}</>;
-};
+import ProtectedRoute from "./modules/auth/ProtectedRoute";
+import NotFoundPage from "./NotFoundPage";
+import { Home } from "./modules/home/Home";
 
 const App: React.FC = () => {
   return (
@@ -31,19 +21,21 @@ const App: React.FC = () => {
         <Route
           path="admin"
           element={
-            <ProtectedRoute isAuthenticated={true}>
+            <ProtectedRoute hasAnyRoles={["admin"]}>
               <AdminPage />
             </ProtectedRoute>
           }
         >
           <Route path="" index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="members" element={<AdminMemberBoard />} />
-          <Route path="activities" element={<AdminActivityDashboard />} />
-          <Route path="groups" element={<AdminGroupDashboard />} />
-          {/* <Route path="qnas" element={<Admin />} /> */}
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="members" element={<AdminUserManagement />} />
+          <Route path="activities" element={<AdminActivityManagement />} />
+          <Route path="groups" element={<AdminGroupManagement />} />
+          <Route path="budget" element={<AdminBudgetManagement />} />
+          <Route path="forum" element={<AdminForumManagement />} />
         </Route>
+        <Route path="home" element={<Home />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

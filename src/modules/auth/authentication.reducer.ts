@@ -1,29 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AppThunk } from "../../configs/store";
-import { serializeAxiosError } from "../../shared/utils/reducers.utils";
 import { AxiosResponse } from "axios";
+import { jwtDecode } from "jwt-decode";
+import { ApiResponse, axiosInstance } from "../../configs/api";
+import { LoginResponse } from "../../configs/auth-config";
+import { AppThunk } from "../../configs/store";
+import { JwtPayload } from "../../shared/utils/jwt-utils";
+import { serializeAxiosError } from "../../shared/utils/reducers.utils";
+const apiUrl = "/auth";
 
 export const initState = {
   loading: false,
   isAuthenticated: false,
   loginSuccess: false,
   loginError: false, // Error returned from server side,
-  account: {} as any,
-  errorMessage: null as unknown as string,
-  redirectMessage: null as unknown as string,
+  errorMessage: null as unknown as string, // Errors returned from server side
   sessionHasBeenFetched: false,
-  logoutUrl: null as unknown as string,
+  roles: [] as string[],
 };
-
-export type AuthenticationState = Readonly<typeof initState>;
-
-// Actions
-export const getSession = (): AppThunk => (dispatch, getState) => {
-  // dispatch(getAccount());
-  console.log("hee");
-};
-
-// export const getAccount = createAsyncThunk('auth/getAccount', async () => axiso
 
 interface IAuthParams {
   userId: string;
@@ -31,9 +24,14 @@ interface IAuthParams {
   rememberMe?: boolean;
 }
 
+export type AuthenticationState = Readonly<typeof initState>;
+
+// Actions
+
 export const authenticate = createAsyncThunk(
   "auth/login",
-  async (auth: IAuthParams) => console.log("auth"),
+  async (auth: IAuthParams) =>
+    axiosInstance.post<ApiResponse<LoginResponse>>(`${apiUrl}/login`, auth),
   {
     serializeError: serializeAxiosError,
   },
@@ -46,18 +44,17 @@ export const login: (
 ) => AppThunk =
   (userId, password, rememberMe = false) =>
   async (dispatch) => {
+    clearAuthToken();
     const result = await dispatch(authenticate({ userId, password, rememberMe }));
-    const response = result.payload as AxiosResponse;
-    const bearerToken: string = response?.headers?.authorization;
-    if (bearerToken && bearerToken.startsWith("Bearer ")) {
-      const jwtToken = bearerToken.substring(7, bearerToken.length);
+    const response = result.payload as AxiosResponse<ApiResponse<LoginResponse>>;
+    const jwtToken = response?.data?.data?.token;
+    if (jwtToken) {
       if (rememberMe) {
         localStorage.setItem("authToken", jwtToken);
       } else {
         sessionStorage.setItem("authToken", jwtToken);
       }
     }
-    dispatch(getSession());
   };
 
 export const clearAuthToken = () => {
@@ -69,47 +66,51 @@ export const clearAuthToken = () => {
   }
 };
 
-export const logout: () => AppThunk = () => (dispatch) => {
+export const logout: () => AppThunk = () => async (dispatch) => {
   clearAuthToken();
   dispatch(logoutSession());
-};
-
-export const clearAuthentication = (messageKey) => (dispatch) => {
-  clearAuthToken();
-  dispatch(authError(messageKey));
   dispatch(clearAuth());
 };
 
 // Slice
 
 export const AuthSlice = createSlice({
-  name: "auth",
+  name: "authentication",
   initialState: initState as AuthenticationState,
   reducers: {
-    logoutSession: () => {},
-    authError: (state, action) => {},
-    clearAuth: (state) => {},
+    logoutSession: () => initState,
+    clearAuth: (state) => {
+      state.loading = false;
+      state.isAuthenticated = false;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(authenticate.pending, (state) => {
         state.loading = true;
       })
-      .addCase(authenticate.fulfilled, (state) => ({
-        ...state,
-        loading: false,
-        loginError: false,
-        loginSuccess: true,
-      }))
+      .addCase(authenticate.fulfilled, (state, action) => {
+        const decodeToken = jwtDecode<JwtPayload>(action.payload.data.data.token);
+        const roles = decodeToken?.roles || [];
+        return {
+          ...state,
+          loading: false,
+          loginError: false,
+          loginSuccess: true,
+          isAuthenticated: true,
+          sessionHasBeenFetched: true,
+          errorMessage: null,
+          roles: roles,
+        };
+      })
       .addCase(authenticate.rejected, (state, action) => ({
         ...initState,
         errorMessage: action.error.message,
-        showModalLogin: true,
         loginError: true,
       }));
   },
 });
 
-export const { authError, clearAuth, logoutSession } = AuthSlice.actions;
+export const { clearAuth, logoutSession } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

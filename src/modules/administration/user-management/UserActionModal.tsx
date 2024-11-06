@@ -1,6 +1,6 @@
 import { Person } from "@mui/icons-material";
 import { useState } from "react";
-import { IUser } from "../../shared/models/user.model";
+import { IUser } from "../../../shared/models/user.model";
 
 interface UserActionModalProps {
   selectedUser: IUser | null;
