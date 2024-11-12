@@ -56,6 +56,7 @@ export const Login: React.FC = () => {
     };
 
     const decode = jwtDecode<JwtPayload>(token);
+    console.log(decode);
 
     const currentTime = Date.now() / 1000;
     if (currentTime > decode.exp) {
@@ -66,7 +67,7 @@ export const Login: React.FC = () => {
     if (roles.includes("admin")) {
       navigate("/admin");
     } else {
-      navigate("/membersPage");
+      navigate("/membersPage", { state: { userInfo: decode } });
     }
     reset(); 
    

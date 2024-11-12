@@ -44,6 +44,15 @@ class UserService {
         throw this.handleError(error);
       }
     }
+   // localhost:3008/api/v1/users/:userId/info 
+    public async getUserInfo(userId: string): Promise<any> {
+      try {
+        const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(`/users/${userId}/info`);
+        return response.data.data;
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
 
   private handleError(error: any) {
     if (error.response) {

@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Login } from "./auth/Login";
 import AdminPage from "./page/AdminPage";
+import MembersPage from "./page/MembersPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -34,6 +35,7 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/membersPage" element={<MembersPage/>} />
           {/* <Route path="/button" element={<ButtonPage />} />
           <Route path="/textfield" element={<TextFieldPage />} />
           <Route path="/about" element={<AboutPage />} />
