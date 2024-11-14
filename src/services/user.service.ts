@@ -32,13 +32,11 @@ class UserService {
   }
     // Phương thức mới để lấy danh sách người dùng đăng ký
     public async getRegisterRequests(
-      paginatedParams: GetUserPaginatedParams,
-    ): Promise<GetUsersPaginatedResponse> {
+     
+    ){
       try {
-        const response: AxiosResponse<ApiResponse<GetUsersPaginatedResponse>> =
-          await axiosInstance.get("/users/registers", {
-            params: paginatedParams,
-          });
+        const response: AxiosResponse<ApiResponse<any>> =
+          await axiosInstance.get("/users/registers");
         return response.data.data;
       } catch (error) {
         throw this.handleError(error);
@@ -53,6 +51,7 @@ class UserService {
         throw this.handleError(error);
       }
     }
+    
 
   private handleError(error: any) {
     if (error.response) {

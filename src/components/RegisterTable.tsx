@@ -1,24 +1,39 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { userService } from "../services/user.service";
-import { GetUserPaginatedParams } from "../types/user.types";
+// import { GetUserPaginatedParams } from "../types/user.types";
 import UserIntro from "./UserIntro";
+import dayjs from "dayjs";
+
+interface UserProfile {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  status: string | null;
+  className: string | null;
+  cumulativeScore: number;
+  faculty: string | null;
+  phoneNumber: string | null;
+  registerDate: dayjs.Dayjs;
+  userType: string | null;
+}
 
 
 // danh sách người đăng ký chờ duyệt
 export default function RegisterTable() { 
     const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY","Score", "STATUS"];
-    const [registerRequests, setRegisterRequests] = useState<any[]>([]);
+    const [registerRequests, setRegisterRequests] = useState<UserProfile[]>([]);
     
   useEffect(() => {
-    const paginatedParams: GetUserPaginatedParams = {
-      page: 1,
-      limit: 10,
-    };
+    // const paginatedParams: GetUserPaginatedParams = {
+    //   page: 1,
+    //   limit: 10,
+    // };
     const fetchData = async () => {
       try {
           // Gọi API lấy danh sách yêu cầu đăng ký
-          const data = await userService.getRegisterRequests(paginatedParams);
+          const data = await userService.getRegisterRequests();
           console.log("register",data.users);
           setRegisterRequests(data.users);
         }

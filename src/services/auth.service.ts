@@ -28,6 +28,16 @@ class AuthService {
   private handleLoginSuccessfully(responseData: LoginResponse): void {
     localStorage.setItem("token", responseData.token);
   }
+  ///api/v1/auth/register, POST
+  public async register(data: any): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> =
+        await axiosInstance.post(`${this.BASE_PATH}/register`, data);
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
 
   private handleError(error: any) {
     if (error.response) {

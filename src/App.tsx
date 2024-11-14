@@ -3,6 +3,7 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-d
 import { Login } from "./auth/Login";
 import AdminPage from "./page/AdminPage";
 import MembersPage from "./page/MembersPage";
+import Register from "./auth/Register";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             }
           />
           <Route path="/membersPage" element={<MembersPage/>} />
+          <Route path="/register" element={<Register />} />
           {/* <Route path="/button" element={<ButtonPage />} />
           <Route path="/textfield" element={<TextFieldPage />} />
           <Route path="/about" element={<AboutPage />} />
