@@ -54,7 +54,7 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            {activity.title ?? "Untitled Activity"}
+            {activity.name ?? "UnNamed Activity"}
           </h2>
           <button
             onClick={onClose}
@@ -107,7 +107,7 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
               <h3 className="font-medium">Capacity</h3>
             </div>
             <p className="text-gray-600 dark:text-gray-400">
-              {activity.limitPeople || "Unlimited"} participants
+              {activity.capacity || "Unlimited"} participants
             </p>
           </div>
 

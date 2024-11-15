@@ -15,3 +15,8 @@ export enum ActivityScope {
   INTERNAL,
   EXTERNAL,
 }
+
+export enum VenueType {
+  OFFLINE,
+  ONLINE,
+}

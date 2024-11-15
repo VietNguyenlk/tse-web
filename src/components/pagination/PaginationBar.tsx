@@ -1,127 +1,153 @@
-import { ArrowLeft, ArrowRight, FirstPage, LastPage } from "@mui/icons-material";
+import {
+  ChevronLeft,
+  ChevronRight,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
+  MoreHoriz,
+} from "@mui/icons-material";
+import React from "react";
 
-interface PaginationBarProps {
-  currentPage: number;
+interface PaginationProps {
   totalPages: number;
-  handlePageChange?: (currentPage: number) => void;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+  totalItems?: number;
+  itemsPerPage?: number;
 }
 
-const PaginationBar: React.FC<PaginationBarProps> = ({
-  currentPage,
+const Pagination: React.FC<PaginationProps> = ({
   totalPages,
-  handlePageChange,
-}) => {
+  currentPage,
+  onPageChange,
+  totalItems = 0,
+  itemsPerPage = 10,
+}: PaginationProps) => {
+  const getPageNumbers = () => {
+    const pages = [];
+    const showEllipsis = totalPages > 6;
+
+    if (!showEllipsis) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // pages.push(1);
+
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        );
+      } else {
+        pages.push(
+          currentPage - 2,
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        );
+      }
+    }
+
+    return pages;
+  };
+
+  // Calculate the range of items being displayed
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
   return (
-    <div className="mt-4">
-      <nav className="flex items-center flex-column flex-wrap md:flex-row justify-center">
-        <ul className="inline-flex space-x-1 rtl:space-x-reverse text-sm h-8">
-          <li>
-            <button
-              className={`flex items-center justify-center px-1 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg ${
-                currentPage <= 1
-                  ? ""
-                  : "hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              }`}
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(1)}
-            >
-              <FirstPage />
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-white border border-gray-300 ${
-                currentPage <= 1
-                  ? ""
-                  : "hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              }`}
-            >
-              <ArrowLeft />
-            </button>
-          </li>
+    <div className="flex justify-center items-center space-y-4 mt-8 mb-2">
+      {/* Pagination controls */}
+      <nav
+        className="flex items-center justify-center space-x-2"
+        aria-label="Pagination"
+      >
+        {/* Previous button */}
+        <button
+          onClick={() => currentPage > 1 && onPageChange(1)}
+          disabled={currentPage === 1}
+          className={`inline-flex items-center px-1 py-1 rounded-lg text-sm ${
+            currentPage === 1
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          aria-label="Previous page"
+        >
+          <KeyboardDoubleArrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`inline-flex items-center px-1 py-1 rounded-lg text-sm ${
+            currentPage === 1
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          aria-label="Previous page"
+        >
+          <ChevronLeft />
+        </button>
 
-          {currentPage === totalPages && (
-            <li>
+        {/* Page numbers */}
+        <div className="flex items-center space-x-1">
+          {getPageNumbers().map((page, index) =>
+            page === "..." ? (
+              <span key={`ellipsis-${index}`} className="px-2 py-2">
+                <MoreHoriz className="h-5 w-5 text-gray-400" />
+              </span>
+            ) : (
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="bg-gray-50 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 border border-gray-300 hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white"
+                key={index}
+                onClick={() => typeof page === "number" && onPageChange(page)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                  currentPage === page
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+                aria-current={currentPage === page ? "page" : undefined}
               >
-                {currentPage - 2}
+                {page}
               </button>
-            </li>
+            ),
           )}
+        </div>
 
-          {(currentPage === totalPages - 1 || currentPage === totalPages) && (
-            <li>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="bg-gray-50 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 border border-gray-300 hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white"
-              >
-                {currentPage - 1}
-              </button>
-            </li>
-          )}
-
-          <li>
-            <button className="bg-blue-500 flex items-center justify-center px-3 h-8 leading-tight text-white border border-gray-300 hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white">
-              {currentPage}
-            </button>
-          </li>
-          {totalPages >= currentPage + 1 && (
-            <li>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                className="bg-gray-50 flex items-center justify-center px-3 h-8 leading-tight text-gray-500 border border-gray-300 hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-blue-600 dark:hover:text-white"
-              >
-                {currentPage + 1}
-              </button>
-            </li>
-          )}
-          {totalPages > 4 && currentPage < totalPages - 2 && (
-            <li>
-              <div className="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-gray-50 cursor-not-allowed">
-                ...
-              </div>
-            </li>
-          )}
-          {totalPages > 3 && currentPage < totalPages - 1 && (
-            <li>
-              <button className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                {totalPages}
-              </button>
-            </li>
-          )}
-          <li>
-            <button
-              className={`flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-white border border-gray-300 ${
-                currentPage >= totalPages
-                  ? ""
-                  : "hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              }`}
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <ArrowRight />
-            </button>
-          </li>
-          <li>
-            <button
-              disabled={currentPage === totalPages}
-              className={`flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg ${
-                currentPage >= totalPages
-                  ? ""
-                  : "hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-              }`}
-            >
-              <LastPage />
-            </button>
-          </li>
-        </ul>
+        {/* Next button */}
+        <button
+          onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`inline-flex items-center px-2 py-2 rounded-lg text-sm ${
+            currentPage === totalPages
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          aria-label="Next page"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+        <button
+          onClick={() => currentPage < totalPages && onPageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          className={`inline-flex items-center px-2 py-2 rounded-lg text-sm ${
+            currentPage === totalPages
+              ? "text-gray-300 cursor-not-allowed"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          aria-label="Next page"
+        >
+          <KeyboardDoubleArrowRight className="h-5 w-5" />
+        </button>
       </nav>
     </div>
   );
 };
 
-export default PaginationBar;
+export default Pagination;

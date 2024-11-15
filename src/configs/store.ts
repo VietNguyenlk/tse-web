@@ -39,9 +39,11 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [REHYDRATE, PURGE],
-      },
+      serializableCheck: false,
+      // {
+      //   ignoredActions: [REHYDRATE, PURGE],
+      //   ignoredActionPaths: ["payload.headers"],
+      // },
     }),
 });
 

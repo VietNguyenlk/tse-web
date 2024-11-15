@@ -45,11 +45,11 @@ const AllMemberBoard: React.FC = () => {
 
         <UserTable headers={tableHeaders} users={users} />
 
-        <PaginationBar
+        {/* <PaginationBar
           currentPage={1}
           totalPages={5}
           handlePageChange={(page) => console.log(page)}
-        />
+        /> */}
       </div>
     </>
   );

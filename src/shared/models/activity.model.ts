@@ -1,20 +1,30 @@
 import dayjs from "dayjs";
 import { IBaseModel } from "./base.model";
-import { ActivityScope, ActivityStatus, ActivityType } from "./enums/activity.enum";
+import {
+  ActivityScope,
+  ActivityStatus,
+  ActivityType,
+  VenueType,
+} from "./enums/activity.enum";
 
 export interface IActivity extends IBaseModel {
   activityId?: number;
-  title?: string;
+  name?: string;
   description?: string | null;
-  limitPeople?: number;
-  timeOpenRegister?: dayjs.Dayjs | null;
-  timeCloseRegister?: dayjs.Dayjs | null;
-  startTime?: dayjs.Dayjs | null;
-  // need endTime
+  capacity?: number;
+  hostName?: string;
+  registeredNumber?: number;
+  timeOpenRegister?: dayjs.Dayjs | null | string;
+  timeCloseRegister?: dayjs.Dayjs | null | string;
+  occurDate?: dayjs.Dayjs | null | string;
+  startTime?: dayjs.Dayjs | null | string;
+  endTime?: dayjs.Dayjs | null | string;
+  venueType?: keyof typeof VenueType | null;
   venue?: string;
   activityType?: keyof typeof ActivityType | null;
   activityStatus?: keyof typeof ActivityStatus | null;
   activityScope?: keyof typeof ActivityScope | null;
+  isDeleted?: boolean;
 }
 
 export const defaultValue: Readonly<IActivity> = {};

@@ -8,18 +8,30 @@ import {
 import { Badge } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { DATE_FORMAT } from "../../../configs/constants";
 import { IActivity } from "../../../shared/models/activity.model";
 import ActivityDetailsModal from "../../../modules/administration/activity-management/ActivityDetailsModal";
+import {
+  convertDateFromServer,
+  convertTimeFromServer,
+} from "../../../shared/utils/date-utils";
 
 interface ActivityCardProps {
   activity: Readonly<IActivity>;
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
-  const { title, activityType, activityStatus, startTime, venue, limitPeople } =
-    activity;
-  const registeredCount = 2;
+  const {
+    name,
+    activityType,
+    activityStatus,
+    startTime,
+    endTime,
+    venue,
+    capacity,
+    registeredNumber,
+    hostName,
+    occurDate,
+  } = activity;
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -27,7 +39,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+            <h3 className="text-xl font-semibold text-gray-900">{name}</h3>
             {/* should loop for label */}
             <Badge className="bg-blue-200 text-blue-800 px-1 py-1 rounded-lg">
               {activityType}
@@ -45,20 +57,23 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
           <div className="flex items-center gap-6 text-gray-600">
             <div className="flex items-center gap-2">
               <Person />
-              <span>Tri</span>
+              <span>{hostName}</span>
             </div>
             <div className="flex items-center gap-2">
               <CalendarMonth />
-              <span>{dayjs(startTime).format(DATE_FORMAT)}</span>
+              <span>{convertDateFromServer(occurDate)}</span>
             </div>
             <div className="flex items-center gap-2">
               <AccessTime />
-              <span>{dayjs(startTime).format(DATE_FORMAT)}</span>
+              <span>
+                {convertTimeFromServer(startTime, true)} -{" "}
+                {convertTimeFromServer(endTime, true)}
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <LocationOn />
-              <span>{venue}</span>
-            </div>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600 mt-3">
+            <LocationOn />
+            <span>{venue}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -70,10 +85,10 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
 
       {/* Registration Progress */}
       <div className="mt-4">
-        <div className="flex justify-between mb-1">
+        <div className="flex justify-between mb-1 space-y-1">
           <span className="text-sm text-gray-600">Registration Progress</span>
           <span className="text-sm font-medium text-gray-900">
-            {registeredCount}/{limitPeople}
+            {registeredNumber}/{capacity}
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -81,9 +96,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
             className="bg-blue-600 h-2 rounded-full"
             style={{
               width: `${
-                registeredCount &&
-                limitPeople &&
-                (registeredCount / limitPeople) * 100
+                registeredNumber && capacity && (registeredNumber / capacity) * 100
               }%`,
             }}
           />

@@ -1,16 +1,21 @@
 import { createAsyncThunk, isFulfilled, isPending } from "@reduxjs/toolkit";
-import { defaultValue, IActivity } from "../../shared/models/activity.model";
-import {
-  createEntitySlice,
-  EntityState,
-  serializeAxiosError,
-} from "../../shared/utils/reducers.utils";
 import {
   ApiResponse,
   axiosInstance,
   PaginatedResponse,
   PaginationRequestParams,
 } from "../../configs/api";
+import { defaultValue, IActivity } from "../../shared/models/activity.model";
+import {
+  convertDateFromServer,
+  convertDateTimeFromServer,
+  extractTimeFromDateTime,
+} from "../../shared/utils/date-utils";
+import {
+  createEntitySlice,
+  EntityState,
+  serializeAxiosError,
+} from "../../shared/utils/reducers.utils";
 
 const apiUrl = "/activities";
 
@@ -31,7 +36,7 @@ export type ActivityState = Readonly<typeof initState>;
 
 export const getActivities = createAsyncThunk(
   "activity/fetchAllActivities",
-  async (paginationParams: PaginationRequestParams) => {
+  async (paginationParams?: PaginationRequestParams) => {
     return await axiosInstance.get<ApiResponse<PaginatedResponse<IActivity>>>(
       apiUrl,
       { params: paginationParams },
@@ -42,13 +47,24 @@ export const getActivities = createAsyncThunk(
   },
 );
 
-// export const createActivity = createAsyncThunk(
-//   "activity/createActivity",
-//   async (activity: IActivity, thunkAPI) => {
-//     const createdActivity = await activityService.createNewActivity(activity);
-//     return createdActivity;
-//   },
-// );
+export const createActivity = createAsyncThunk(
+  "activity/createActivity",
+  async (activity: IActivity, thunkAPI) => {
+    const copy: Partial<IActivity> = {
+      ...activity,
+      startTime: extractTimeFromDateTime(activity.startTime),
+      endTime: extractTimeFromDateTime(activity.endTime),
+      timeOpenRegister: convertDateTimeFromServer(activity.timeOpenRegister),
+      timeCloseRegister: convertDateTimeFromServer(activity.timeCloseRegister),
+      occurDate: convertDateFromServer(activity.occurDate),
+    };
+    const createdActivity = await axiosInstance.post<IActivity>(apiUrl, copy);
+    return createdActivity;
+  },
+  {
+    serializeError: serializeAxiosError,
+  },
+);
 
 // Slice
 export const ActivitySlice = createEntitySlice({
@@ -56,6 +72,9 @@ export const ActivitySlice = createEntitySlice({
   initialState: initState,
   extraReducers: (builder) => {
     builder
+      .addCase(createActivity.rejected, (state, action) => {
+        console.log({ action });
+      })
       .addMatcher(isPending(getActivities), (state) => {
         state.loading = true;
         state.errorMessage = null;

@@ -10,30 +10,22 @@ import PaginationBar from "../../../components/pagination/PaginationBar";
 import NewActivityModal from "./NewActivityModal";
 
 const AdminActivityManagement: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const dispatch = useAppDispatch();
   const [isNewModalOpen, setNewModalOpen] = useState(false);
-  const { loading, errorMessage, entities, totalPages } = useAppSelector(
+  const { entities, totalPages, totalItems } = useAppSelector(
     (state) => state.activity,
   );
 
   useEffect(() => {
     const paginationParams: PaginationRequestParams = {
-      page: 1,
-      size: 2,
+      page: currentPage,
+      size: pageSize,
     };
     dispatch(getActivities(paginationParams));
-  }, [dispatch]);
-
-  // const handlePageChange = (pageNum: number) => {
-  // };
-
-  // const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   dispatch(activitySlice.actions.setPageSize(Number(event.target.value)));
-  // };
-
-  if (loading) return <>Loading ....</>;
-  if (errorMessage) return <>Error: {errorMessage}</>;
-  if (entities.length === 0) return <>No activities found</>;
+  }, [pageSize, currentPage]);
 
   return (
     <>
@@ -52,28 +44,19 @@ const AdminActivityManagement: React.FC = () => {
         {/* Analytic */}
         <ActivitiesAnalytic />
         {/* Filter and search */}
-        <ActivityFilterAndSearch />
-
-        <div className="mb-2">
-          <select
-            className="px-4 py-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10 text-sm"
-            value={1}
-            // onChange={handlePageSizeChange}
-          >
-            <option value={10}>10 per page</option>
-            <option value={25}>25 per page</option>
-            <option value={50}>50 per page</option>
-            <option value={100}>100 per page</option>
-          </select>
-        </div>
+        <ActivityFilterAndSearch onChangePageSize={setPageSize} />
         {/* Contents */}
         <AllActivitiesDashboard activities={entities} />
         {/* Pagination Bar */}
-        <PaginationBar
-          currentPage={1}
-          // handlePageChange={handlePageChange}
-          totalPages={totalPages}
-        />
+        {entities.length > 0 && (
+          <PaginationBar
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            totalItems={totalItems}
+            itemsPerPage={pageSize}
+          />
+        )}
 
         <NewActivityModal
           isOpen={isNewModalOpen}
