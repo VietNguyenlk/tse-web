@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { userService } from "../services/user.service";
-// import { GetUserPaginatedParams } from "../types/user.types";
 import UserIntro from "./UserIntro";
 import dayjs from "dayjs";
 
@@ -19,35 +18,75 @@ interface UserProfile {
   userType: string | null;
 }
 
+export default function RegisterTable() {
+  const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
+  const [registerRequests, setRegisterRequests] = useState<UserProfile[]>([]);
+  const [showOptions, setShowOptions] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-// danh sách người đăng ký chờ duyệt
-export default function RegisterTable() { 
-    const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY","Score", "STATUS"];
-    const [registerRequests, setRegisterRequests] = useState<UserProfile[]>([]);
-    
   useEffect(() => {
-    // const paginatedParams: GetUserPaginatedParams = {
-    //   page: 1,
-    //   limit: 10,
-    // };
     const fetchData = async () => {
       try {
-          // Gọi API lấy danh sách yêu cầu đăng ký
-          const data = await userService.getRegisterRequests();
-          console.log("register",data.users);
-          setRegisterRequests(data.users);
-        }
-       catch (error) {
+        const data = await userService.getRegisterRequests();
+        console.log("register", data.users);
+        setRegisterRequests(data.users);
+      } catch (error) {
         console.error("Failed to fetch data", error);
       }
-    }
-    
+    };
     fetchData();
   }, []);
 
+  const handleApprove = async (ids: string[]) => {
+    try {
+      if (ids.length === 0) {
+        throw new Error("No user IDs selected for approval.");
+      }
+      await userService.approveRegisterRequest(ids); // Truyền đúng mảng ID
+      const data = await userService.getRegisterRequests(); // Làm mới dữ liệu
+      setRegisterRequests(data.users);
+      setShowOptions(null);
+      setSelectedIds([]); // Reset selection
+    } catch (error) {
+      console.error("Failed to approve request", error);
+    }
+  };
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedIds(registerRequests.map(user => user.userId));
+    } else {
+      setSelectedIds([]);
+    }
+  };
 
-    return (
-      <>
+  const handleSelectUser = (userId: string) => {
+    setSelectedIds(prev => {
+      if (prev.includes(userId)) {
+        return prev.filter(id => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
+
+  return (
+    <div>
+      {selectedIds.length > 0 && (
+        <div className="mb-4">
+          <button
+            onClick={() => handleApprove(selectedIds)}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+          >
+            Approve Selected ({selectedIds.length})
+          </button>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
+            Clear Selection
+          </button>
+        </div>
+      )}
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -56,16 +95,18 @@ export default function RegisterTable() {
                 <input
                   id="checkbox-all-search"
                   type="checkbox"
+                  checked={selectedIds.length === registerRequests.length}
+                  onChange={handleSelectAll}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
             </th>
             {registerHeaders.map((header, index) => (
-              <th scope="col" className=" py-3" key={index}>
+              <th scope="col" className="py-3" key={index}>
                 <div className="flex items-center">
                   <button onClick={() => console.log("sort")}>
                     <svg
-                      className="w-3 h-3 "
+                      className="w-3 h-3"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -84,44 +125,61 @@ export default function RegisterTable() {
           {registerRequests.map((user, index) => (
             <tr
               key={index}
-              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 hover:cursor-pointer"
-  
+              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
               <td className="w-4 p-4">
                 <div className="flex items-center">
                   <input
-                    id="checkbox-table-search-1"
+                    id={`checkbox-${user.userId}`}
                     type="checkbox"
+                    checked={selectedIds.includes(user.userId)}
+                    onChange={() => handleSelectUser(user.userId)}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label htmlFor="checkbox-table-search-1" className="sr-only">
+                  <label htmlFor={`checkbox-${user.userId}`} className="sr-only">
                     checkbox
                   </label>
                 </div>
               </td>
-              <td className=" text-sm">{user.userId}</td>
+              <td className="text-sm">{user.userId}</td>
               <td>
                 <UserIntro
                   email={user.email}
                   name={user.firstName + user.lastName}
                 />
               </td>
-              <td className=" text-sm">{user.userType}</td>
-              <td className=" text-sm">{user.faculty}</td>
-              <td className=" text-sm">{user.cumulativeScore}</td>
-              <td>
-                <div
-                  className= "bg-blue-500 inline-block text-sm px-4 py-2 rounded text-white font-semibold"
-                >
-                  {user.status}
-                </div>
+              <td className="text-sm">{user.userType}</td>
+              <td className="text-sm">{user.faculty}</td>
+              <td className="text-sm">{user.cumulativeScore}</td>
+              <td className="relative">
+                {showOptions === user.userId ? (
+                  <div className="absolute z-10 bg-white shadow-lg rounded-lg p-2 border">
+                    <button
+                      onClick={() => handleApprove([user.userId])}
+                      className="block w-full text-left px-4 py-2 text-green-600 hover:bg-gray-100 rounded"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => setShowOptions(null)}
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 rounded"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowOptions(user.userId)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    {user.status || "Pending"}
+                  </button>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-  
-    </>
-    );
-    };
-  
+    </div>
+  );
+}

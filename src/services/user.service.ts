@@ -51,6 +51,16 @@ class UserService {
         throw this.handleError(error);
       }
     }
+    ///api/v1/users/registers/approve, POST truyền vào id
+    //each value in userIds must be a string', 'userIds should not be empty', 'userIds must be an array'
+    public async approveRegisterRequest(userIds: string[]): Promise<any> {
+      try {
+        const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(`/users/registers/approve`, { userIds });
+        return response.data.data;
+      } catch (error) {
+        throw this.handleError(error);
+      }
+    }
     
 
   private handleError(error: any) {
