@@ -19,7 +19,7 @@ const UserIntro: React.FC<UserIntroProps> = ({ email, name, imgUrl }) => {
         </div>
       )}
       <div className="ps-3">
-        <div className="text-base font-semibold text-sm">{name}</div>
+        <div className="font-semibold text-sm">{name}</div>
         <div className="font-normal text-gray-500 text-xs">{email}</div>
       </div>
     </div>

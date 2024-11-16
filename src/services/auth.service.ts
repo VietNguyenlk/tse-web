@@ -38,6 +38,16 @@ class AuthService {
       throw this.handleError(error);
     }
   }
+  // localhost:3008/api/v1/auth/roles
+  public async getRoles(): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> =
+        await axiosInstance.get(`${this.BASE_PATH}/roles`);
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
 
   private handleError(error: any) {
     if (error.response) {

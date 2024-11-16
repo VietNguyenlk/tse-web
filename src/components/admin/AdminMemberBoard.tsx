@@ -9,6 +9,7 @@ import AdminHeader from "./AdminHeader";
 import UserTable from "../UserTable";
 import RegisterTable from "../RegisterTable";
 import { UserEntity } from "../../types/entities/user.entity";
+import RoleTable from "../RoleTable";
 
 const AdminMemberBoard: React.FC = () => {
   const [activeHeader, setActiveHeader] = useState<string>("members");
@@ -70,9 +71,12 @@ const AdminMemberBoard: React.FC = () => {
 
          {activeHeader === "members" ? (
             <UserTable headers={headers} users={users} />
+          ) : activeHeader === "roles" ? (
+            <RoleTable />
           ) : (
             <RegisterTable />
           )
+          
         }
 
           <PaginationBar
