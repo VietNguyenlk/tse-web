@@ -1,22 +1,22 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { userService } from "../services/user.service";
-import UserIntro from "./UserIntro";
 import dayjs from "dayjs";
+import UserIntro from "./users/UserIntro";
 
-// interface UserProfile {
-//   userId: string;
-//   email: string;
-//   firstName: string;
-//   lastName: string;
-//   status: string | null;
-//   className: string | null;
-//   cumulativeScore: number;
-//   faculty: string | null;
-//   phoneNumber: string | null;
-//   registerDate: dayjs.Dayjs;
-//   userType: string | null;
-// }
+interface UserProfile {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  status: string | null;
+  className: string | null;
+  cumulativeScore: number;
+  faculty: string | null;
+  phoneNumber: string | null;
+  registerDate: dayjs.Dayjs;
+  userType: string | null;
+}
 
 export default function RegisterTable() {
   const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
