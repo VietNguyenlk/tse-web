@@ -1,38 +1,67 @@
 import { CalendarMonth, Group } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import * as yup from "yup";
 import { IActivity } from "../../shared/models/activity.model";
 import { ActivityStatus } from "../../shared/models/enums/activity.enum";
 import {
   convertDateTimeFromClient,
   convertDateTimeFromServer,
 } from "../../shared/utils/date-utils";
-import * as yup from "yup";
 
 interface FieldErrors {
   hostName?: string;
-  capability?: string;
+  capacity?: string;
   timeToOpenRegistry?: string;
   timeToCloseRegistry?: string;
 }
 
 const finalDetailsSchema = yup.object().shape({
-  host: yup
+  hostName: yup
     .string()
-    .trim()
     .required("Tên người chủ trì không được để trống")
-    .min(2)
-    .max(100),
+    .min(2, "Tên người chủ trì phải trên 2 ký tự")
+    .max(100, "Tên người chủ trì quá dài"),
   capacity: yup
     .number()
     .required("Số lượng người tham gia không được để trống")
     .min(3, "Tối thiểu là 3")
     .max(1000, "Tối đa 1000"),
-  timeToOpenRegister: yup
-    .date()
-    .required("Thời gian mở đăng ký không được để trống"),
-  timeToCloseRegister: yup
-    .date()
-    .required("Thời gian kết thúc đăng ký không được để trống"),
+  timeToOpenRegistry: yup
+    .string()
+    .required("Thời gian mở đăng ký không được để trống")
+    .test(
+      "is-future",
+      "Thời gian mở đăng ký phải sau thời gian hiện tại",
+      function (value) {
+        if (!value) return true;
+        const timeToCloseRegistry = this.parent.timeToCloseRegistry;
+        const selectedDay = new Date(value).getTime();
+        if (timeToCloseRegistry) {
+          const timeCloseRegistry = new Date(timeToCloseRegistry).getTime();
+          if (selectedDay >= timeCloseRegistry)
+            throw new yup.ValidationError(
+              "Thời gian mở đăng ký phải trước thời gian kết thúc đăng ký",
+              value,
+              "timeToOpenRegistry",
+            );
+        }
+        const now = new Date().getTime();
+        return selectedDay + 100000 >= now;
+      },
+    ),
+  timeToCloseRegistry: yup
+    .string()
+    .required("Thời gian kết thúc đăng ký không được để trống")
+    .test(
+      "is-future",
+      "Thời gian kết thúc đăng ký phải sau thời gian hiện tại",
+      function (value) {
+        if (!value) return true;
+        const selectedDay = new Date(value).getTime();
+        const now = new Date().getTime();
+        return selectedDay > now;
+      },
+    ),
 });
 
 interface FinalDetailsProps {
@@ -51,38 +80,62 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
   setCheckValid,
 }) => {
   const [hostName, setHostName] = useState<string>(activity.hostName ?? "");
-  const [capability, setCapability] = useState<number | null>(
-    activity.capacity ?? 30,
-  );
+  const [capacity, setCapacity] = useState<number | null>(activity.capacity ?? 10);
   const [activityStatus, setActivityStatus] = useState<keyof typeof ActivityStatus>(
     activity.activityStatus ?? "PLANED",
   );
+
   const [timeOpenRegister, setTimeOpenRegister] = useState<string>(
     convertDateTimeFromServer(activity.timeOpenRegister) ?? "",
   );
   const [timeCloseRegister, setTimeCloseRegister] = useState<string>(
-    convertDateTimeFromServer(activity.timeOpenRegister) ?? "",
+    convertDateTimeFromServer(activity.timeCloseRegister) ?? "",
   );
 
   const [errors, setErrors] = useState<FieldErrors>({});
+
+  const latestDateTimeRef = useRef<{
+    timeOpenRegister: string;
+    timeCloseRegister: string;
+  }>({
+    timeOpenRegister: "",
+    timeCloseRegister: "",
+  });
+
+  useEffect(() => {
+    latestDateTimeRef.current = {
+      timeOpenRegister,
+      timeCloseRegister,
+    };
+  }, [timeOpenRegister, timeCloseRegister]);
 
   useEffect(() => {
     updateActivity({
       hostName: hostName,
       activityStatus: activityStatus,
-      capacity: capability,
-      timeOpenRegister: convertDateTimeFromClient(timeOpenRegister),
-      timeCloseRegister: convertDateTimeFromClient(timeCloseRegister),
+      capacity: capacity,
+      timeOpenRegister: convertDateTimeFromClient(
+        latestDateTimeRef.current.timeOpenRegister,
+      ),
+      timeCloseRegister: convertDateTimeFromClient(
+        latestDateTimeRef.current.timeCloseRegister,
+      ),
     });
-  }, [capability, activityStatus, timeOpenRegister, timeCloseRegister, hostName]);
+  }, [capacity, activityStatus, timeOpenRegister, timeCloseRegister, hostName]);
 
   useEffect(
     () => {
       if (checkValid) {
-        validateField("capability", capability);
+        validateField("capacity", capacity);
         validateField("hostName", hostName);
-        // validateField("timeToCloseRegistry", timeOpenRegister);
-        // validateField("timeToCloseRegistry", timeCloseRegister);
+        validateField(
+          "timeToOpenRegistry",
+          latestDateTimeRef.current.timeOpenRegister,
+        );
+        validateField(
+          "timeToCloseRegistry",
+          latestDateTimeRef.current.timeCloseRegister,
+        );
         setCheckValid(false);
       }
     },
@@ -95,7 +148,20 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
     value: string | number,
   ) => {
     try {
-      const dataToValidate = { [fieldName]: value };
+      const dataToValidate =
+        fieldName === "timeToOpenRegistry" || fieldName === "timeToCloseRegistry"
+          ? {
+              timeToOpenRegistry:
+                fieldName === "timeToOpenRegistry"
+                  ? value
+                  : latestDateTimeRef.current.timeOpenRegister,
+              timeToCloseRegistry:
+                fieldName === "timeToCloseRegistry"
+                  ? value
+                  : latestDateTimeRef.current.timeCloseRegister,
+            }
+          : { [fieldName]: value };
+
       await finalDetailsSchema.validateAt(fieldName, dataToValidate);
 
       // Clear error for this field while keeping other errors
@@ -120,10 +186,11 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
     const newValue = e.target.value;
     const name = e.target.name as keyof FieldErrors;
     switch (name) {
-      case "capability":
+      case "capacity":
         const sanitizedValue = e.target.value.replace(/[^0-9]/g, ""); // Remove all non-digit characters
-        setCapability(sanitizedValue === "" ? null : Number(sanitizedValue));
-        validateField(name, newValue);
+        const newCapacity = sanitizedValue === "" ? 0 : Number(sanitizedValue);
+        setCapacity(newCapacity);
+        validateField(name, newCapacity);
         break;
       case "hostName":
         setHostName(newValue);
@@ -131,11 +198,13 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
         break;
       case "timeToOpenRegistry":
         setTimeOpenRegister(newValue);
-        // validateField(name, newValue);
+        validateField(name, newValue);
+        // validateField("timeToCloseRegistry", timeCloseRegister);
         break;
       case "timeToCloseRegistry":
         setTimeCloseRegister(newValue);
-        // validateField(name, newValue);
+        validateField(name, newValue);
+        // validateField("timeToOpenRegistry", timeOpenRegister);
         break;
       default:
         break;
@@ -152,32 +221,44 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
       <div className="bg-white p-6 rounded-xl shadow-sm space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <h3 className="font-medium">
-              Người chủ trì <span className="text-red-600">*</span>
-            </h3>
+            <div>
+              <h3 className="font-medium">
+                Người chủ trì <span className="text-red-600">*</span>
+              </h3>
+              <span className="text-red-600">{errors.hostName}</span>
+            </div>
             <input
               type="text"
               value={hostName}
               name="hostName"
               onChange={handleChange}
               placeholder="Tên người chủ trì hoạt động..."
-              className="w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.hostName
+                  ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
+              }`}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <h3 className="font-medium">
-                Số lượng tối đa <span className="text-red-600">*</span>
+                Số lượng tối đa{" "}
+                <span className="text-red-600">{errors.capacity ?? "*"}</span>
               </h3>
               <div className="flex-1 ">
                 <div className="relative">
                   <input
                     type="text"
-                    name="capability"
-                    value={capability}
+                    name="capacity"
+                    value={capacity}
                     onChange={handleChange}
                     placeholder="Số lượng người tối đa"
-                    className="w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.capacity
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
+                    }`}
                   />
                   <Group className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 </div>
@@ -219,9 +300,15 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
               <div className="relative">
                 <input
                   type="datetime-local"
-                  value={timeOpenRegister}
+                  name="timeToOpenRegistry"
+                  // value={convertDateTimeToDisplay(timeOpenRegister)}
+                  value={timeOpenRegister ?? ""}
                   onChange={handleChange}
-                  className="w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
+                  className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.timeToOpenRegistry
+                      ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
+                  }
                          [&::-webkit-calendar-picker-indicator]:opacity-0 
                         [&::-webkit-calendar-picker-indicator]:absolute 
                         [&::-webkit-calendar-picker-indicator]:right-0
@@ -229,10 +316,15 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                         [&::-webkit-calendar-picker-indicator]:h-full
                         [&::-webkit-calendar-picker-indicator]:cursor-pointer
                         [&::-webkit-inner-spin-button]:hidden
-                        [&::-webkit-clear-button]:hidden"
+                        [&::-webkit-clear-button]:hidden`}
                 />
-                <CalendarMonth className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+                <CalendarMonth
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    errors.timeToOpenRegistry ? "text-red-500" : " text-gray-400"
+                  }`}
+                />
               </div>
+              <p className="text-red-600">{errors.timeToOpenRegistry}</p>
             </div>
 
             <div className="space-y-2">
@@ -243,8 +335,13 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 <input
                   type="datetime-local"
                   value={timeCloseRegister}
+                  name="timeToCloseRegistry"
                   onChange={handleChange}
-                  className="w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
+                  className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.timeToCloseRegistry
+                      ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
+                  }
                          [&::-webkit-calendar-picker-indicator]:opacity-0 
                         [&::-webkit-calendar-picker-indicator]:absolute 
                         [&::-webkit-calendar-picker-indicator]:right-0
@@ -252,10 +349,15 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                         [&::-webkit-calendar-picker-indicator]:h-full
                         [&::-webkit-calendar-picker-indicator]:cursor-pointer
                         [&::-webkit-inner-spin-button]:hidden
-                        [&::-webkit-clear-button]:hidden"
+                        [&::-webkit-clear-button]:hidden`}
                 />
-                <CalendarMonth className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
-              </div>
+                <CalendarMonth
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    errors.timeToCloseRegistry ? "text-red-500" : " text-gray-400"
+                  }`}
+                />
+              </div>{" "}
+              <p className="text-red-600">{errors.timeToCloseRegistry}</p>
             </div>
           </div>
         </div>

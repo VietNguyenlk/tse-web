@@ -4,6 +4,7 @@ import {
   axiosInstance,
   PaginatedResponse,
   PaginationRequestParams,
+  SortDirection,
 } from "../../configs/api";
 import { defaultValue, IActivity } from "../../shared/models/activity.model";
 import {
@@ -37,9 +38,14 @@ export type ActivityState = Readonly<typeof initState>;
 export const getActivities = createAsyncThunk(
   "activity/fetchAllActivities",
   async (paginationParams?: PaginationRequestParams) => {
+    const activityPaginationParams: PaginationRequestParams = {
+      ...paginationParams,
+      sortBy: "updatedAt",
+      sortDirection: "DESC",
+    };
     return await axiosInstance.get<ApiResponse<PaginatedResponse<IActivity>>>(
       apiUrl,
-      { params: paginationParams },
+      { params: activityPaginationParams },
     );
   },
   {
@@ -58,7 +64,10 @@ export const createActivity = createAsyncThunk(
       timeCloseRegister: convertDateTimeFromServer(activity.timeCloseRegister),
       occurDate: convertDateFromServer(activity.occurDate),
     };
-    const createdActivity = await axiosInstance.post<IActivity>(apiUrl, copy);
+    const createdActivity = await axiosInstance.post<ApiResponse<IActivity>>(
+      apiUrl,
+      copy,
+    );
     return createdActivity;
   },
   {
@@ -75,12 +84,21 @@ export const ActivitySlice = createEntitySlice({
       .addCase(createActivity.rejected, (state, action) => {
         console.log({ action });
       })
-      .addMatcher(isPending(getActivities), (state) => {
+      .addCase(createActivity.fulfilled, (state, action) => {
+        state.loading = false;
+        const news = action.payload.data.data;
+        state.entities.unshift(action.payload.data.data);
+        state.updateSuccess = true;
+        state.totalItems += 1;
+        state.updateSuccess = true;
+      })
+      .addMatcher(isPending(getActivities, createActivity), (state) => {
         state.loading = true;
         state.errorMessage = null;
         state.updateSuccess = false;
       })
       .addMatcher(isFulfilled(getActivities), (state, action) => {
+        console.log(action.payload);
         state.loading = false;
         state.entities = action.payload.data.data.items;
         state.totalItems = action.payload.data.data.totalItems;

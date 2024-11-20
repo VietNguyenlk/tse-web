@@ -4,19 +4,19 @@ import { userService } from "../services/user.service";
 import UserIntro from "./UserIntro";
 import dayjs from "dayjs";
 
-interface UserProfile {
-  userId: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  status: string | null;
-  className: string | null;
-  cumulativeScore: number;
-  faculty: string | null;
-  phoneNumber: string | null;
-  registerDate: dayjs.Dayjs;
-  userType: string | null;
-}
+// interface UserProfile {
+//   userId: string;
+//   email: string;
+//   firstName: string;
+//   lastName: string;
+//   status: string | null;
+//   className: string | null;
+//   cumulativeScore: number;
+//   faculty: string | null;
+//   phoneNumber: string | null;
+//   registerDate: dayjs.Dayjs;
+//   userType: string | null;
+// }
 
 export default function RegisterTable() {
   const registerHeaders = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
@@ -53,16 +53,16 @@ export default function RegisterTable() {
   };
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedIds(registerRequests.map(user => user.userId));
+      setSelectedIds(registerRequests.map((user) => user.userId));
     } else {
       setSelectedIds([]);
     }
   };
 
   const handleSelectUser = (userId: string) => {
-    setSelectedIds(prev => {
+    setSelectedIds((prev) => {
       if (prev.includes(userId)) {
-        return prev.filter(id => id !== userId);
+        return prev.filter((id) => id !== userId);
       } else {
         return [...prev, userId];
       }

@@ -27,6 +27,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) 
 
   const handleCreateActivity = () => {
     dispatch(createActivity(activity));
+    handleClose();
   };
 
   // const handleNextStep = () => {
@@ -135,12 +136,6 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) 
                     } else {
                       setCheckValid(true);
                     }
-                    // if (!validStep) {
-                    //   setCheckValid(true);
-                    // } else {
-                    //   setCheckValid(false);
-                    //   handleNextStep();
-                    // }
                   }}
                   className={`text-blue-600 hover:text-blue-800 hover:border-blue-800 font-medium border border-blue-600 rounded-xl px-2 py-2 font-medium ${
                     currentStep === MAX_STEPS ? "invisible" : ""

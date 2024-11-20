@@ -1,7 +1,8 @@
-import dayjs from "dayjs";
-import ActivityCard from "./ActivityCard";
-import { IActivity } from "../../../shared/models/activity.model";
 import { useAppSelector } from "../../../configs/store";
+import { IActivity } from "../../../shared/models/activity.model";
+import EmptyList from "../../list/EmptyList";
+import LoadingIndicator from "../../list/LoadingIndicator";
+import ActivityCard from "./ActivityCard";
 
 interface AllActivitiesDashboardProps {
   activities: ReadonlyArray<IActivity>;
@@ -14,9 +15,14 @@ const AllActivitiesDashboard: React.FC<AllActivitiesDashboardProps> = ({
     (state) => state.activity,
   );
 
-  if (loading) return <>Loading ....</>;
+  if (loading)
+    return (
+      <div className="mt-8">
+        <LoadingIndicator size="lg" />
+      </div>
+    );
   if (errorMessage) return <>Error: {errorMessage}</>;
-  if (entities.length === 0) return <>No activities found</>;
+  if (entities.length === 0) return <EmptyList />;
 
   return (
     <div className="space-y-4">

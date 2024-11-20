@@ -28,8 +28,21 @@ export const convertTimeFromServer = (
     ? dayjs(`2000-01-01 ${timeString}`).format(is24h ? TIME_FORMAT_24H : TIME_FORMAT)
     : null;
 
-export const extractTimeFromDateTime = (dateTime: dayjs.ConfigType) =>
-  dateTime ? dayjs(dateTime).format(TIME_FORMAT) : null;
+export const extractTimeFromDateTime = (dateTime: dayjs.ConfigType) => {
+  if (!dateTime) return null;
+
+  // Check if the input is already in "HH:mm" format
+  if (typeof dateTime === "string" && dateTime.match(/^\d{2}:\d{2}$/)) {
+    return dateTime; // Return as is
+  }
+
+  // For "HH:mm:ss" or other formats, parse and convert to "HH:mm"
+  return dayjs(
+    typeof dateTime === "string" && dateTime.match(/^\d{2}:\d{2}:\d{2}$/)
+      ? `1970-01-01T${dateTime}` // Add default date for time-only input
+      : dateTime,
+  ).format(TIME_FORMAT);
+};
 
 export const convertDateTimeFromClient = (
   date?: dayjs.ConfigType,
