@@ -1,18 +1,18 @@
 import { Add } from "@mui/icons-material";
 import { useEffect } from "react";
-import { PaginationRequestParams } from "../../../configs/api";
-import { useAppDispatch, useAppSelector } from "../../../configs/store";
-import { getUsers } from "../../../modules/administration/user-management/user-management.reducer";
-import CustomSearch from "../../pagination/CustomSearch";
-import PaginationBar from "../../pagination/PaginationBar";
-import SelectOption from "../../pagination/SelectOption";
-import UserTable from "../../users/UserTable";
+import { PaginationRequestParams } from "../../../../configs/api";
+import { useAppDispatch, useAppSelector } from "../../../../configs/store";
+import { getUsers } from "./user-management.reducer";
+import CustomSearch from "../../../../components/pagination/CustomSearch";
+import PaginationBar from "../../../../components/pagination/PaginationBar";
+import SelectOption from "../../../../components/pagination/SelectOption";
+import UserTable from "./UserTable";
 
 const AllMemberBoard: React.FC = () => {
   const dispatch = useAppDispatch();
   const users = useAppSelector((state) => state.userManagement.users);
 
-  const entryOptions = [10, 25, 50, 100];
+  const entryOptions = [5, 10, 25, 50, 100];
 
   const tableHeaders = ["ID", "NAME", "TYPE", "FACULTY", "Score", "STATUS"];
 

@@ -6,11 +6,10 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { JwtPayload } from "../../shared/utils/jwt-utils";
 import { LoginData } from "../../configs/auth-config";
-import Notification, {
-  NotificationType,
-} from "../../components/notifications/Notification";
 import { useAppDispatch, useAppSelector } from "../../configs/store";
 import { login } from "./authentication.reducer";
+import { useNotifications } from "../../shared/hooks/notification.hook";
+import Notification from "../../components/notifications/Notification";
 
 const loginSchema = yup.object().shape({
   userId: yup
@@ -31,16 +30,7 @@ const loginSchema = yup.object().shape({
 });
 
 export const Login: React.FC = () => {
-  const [notifications, setNotifications] = useState<
-    {
-      id: number;
-      type: keyof typeof NotificationType;
-      title: string;
-      message: string;
-      show: boolean;
-      createdAt: number;
-    }[]
-  >([]);
+  const { addNotification, removeNotification, notifications } = useNotifications();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useAppDispatch();
   const {
@@ -53,14 +43,13 @@ export const Login: React.FC = () => {
     isAuthenticated,
   } = useAppSelector((state) => state.authentication);
 
-  const [notificationId, setNotificationId] = useState(0);
   const [errorLogin, setErrorLogin] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty, isValid },
     reset,
+    formState: { errors },
   } = useForm<LoginData>({
     resolver: yupResolver(loginSchema),
     mode: "onChange",
@@ -75,34 +64,6 @@ export const Login: React.FC = () => {
       );
     }
   }, [loginError]);
-
-  const addNotification = (
-    type: keyof typeof NotificationType,
-    title: string,
-    message: string,
-  ) => {
-    const currentId = notificationId;
-    setNotificationId((notificationId) => notificationId + 1);
-    setNotifications((prev) =>
-      [
-        {
-          id: currentId,
-          type,
-          title: title,
-          message: message,
-          show: true,
-          createdAt: Date.now(),
-        },
-        ...prev,
-      ].slice(0, 2),
-    ); // Keep only the latest 2 notifications
-  };
-
-  const removeNotification = (id: number) => {
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== id),
-    );
-  };
 
   const onSubmit = async (data: LoginData) => {
     dispatch(login(data.userId, data.password, data.rememberMe));

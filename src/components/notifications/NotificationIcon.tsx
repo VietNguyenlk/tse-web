@@ -4,10 +4,10 @@ import {
   InfoOutlined,
   WarningAmber,
 } from "@mui/icons-material";
-import { NotificationType } from "./Notification";
+import { NotificationTypes } from "../../configs/constants";
 
 interface NotificationIconProps {
-  type: keyof typeof NotificationType;
+  type: keyof typeof NotificationTypes;
 }
 
 const NotificationIcon: React.FC<NotificationIconProps> = ({ type }) => {

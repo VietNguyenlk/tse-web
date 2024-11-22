@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { userService } from "../services/user.service";
 import dayjs from "dayjs";
-import UserIntro from "./users/UserIntro";
+import UserIntro from "../modules/administration/user-management/users/UserIntro";
 
 interface UserProfile {
   userId: string;

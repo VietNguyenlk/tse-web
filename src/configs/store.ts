@@ -6,22 +6,20 @@ import {
 } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import activity from "../modules/activity/activity.reducer";
-import userManagement from "../modules/administration/user-management/user-management.reducer";
+import userManagement from "../modules/administration/user-management/users/user-management.reducer";
+import role from "../modules/administration/user-management/roles/role.reducer";
 import authentication from "../modules/auth/authentication.reducer";
+import register from "../modules/account/register/register.reducer";
 import storage from "redux-persist/lib/storage";
-import {
-  PersistConfig,
-  Persistor,
-  persistReducer,
-  PURGE,
-  REHYDRATE,
-} from "redux-persist";
+import { PersistConfig, Persistor, persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 
 const rootReducer = combineReducers({
   userManagement,
+  role,
   activity,
   authentication,
+  register,
 });
 
 type RootReducer = ReturnType<typeof rootReducer>;

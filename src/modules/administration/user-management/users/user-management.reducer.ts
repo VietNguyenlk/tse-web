@@ -4,14 +4,14 @@ import {
   createSlice,
   isRejected,
 } from "@reduxjs/toolkit";
-import { defaultValue, IUser } from "../../../shared/models/user.model";
+import { defaultValue, IUser } from "../../../../shared/models/user.model";
 import {
   ApiResponse,
   axiosInstance,
   PaginatedResponse,
   PaginationRequestParams,
-} from "../../../configs/api";
-import { serializeAxiosError } from "../../../shared/utils/reducers.utils";
+} from "../../../../configs/api";
+import { serializeAxiosError } from "../../../../shared/utils/reducers.utils";
 const apiUrl = "/users";
 
 const initState = {

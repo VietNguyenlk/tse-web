@@ -6,17 +6,19 @@ import AdminBudgetManagement from "./modules/administration/budget-management/Ad
 import AdminDashboard from "./modules/administration/dashboard/AdminDashBoard";
 import AdminForumManagement from "./modules/administration/forum-management/AdminForumManagement";
 import AdminGroupManagement from "./modules/administration/group-management/AdminGroupManagement";
-import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
 import { Login } from "./modules/auth/Login";
 import ProtectedRoute from "./modules/auth/ProtectedRoute";
 import { Home } from "./modules/home/Home";
 import NotFoundPage from "./NotFoundPage";
+import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
+import RegisterPage from "./modules/account/register/RegisterPage";
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="register" element={<RegisterPage></RegisterPage>} />
         <Route
           path="admin"
           element={

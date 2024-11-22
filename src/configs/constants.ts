@@ -9,3 +9,10 @@ export const Roles = {
   ADMIN: "ADMIN",
   MEMBER: "MEMBER",
 };
+
+export enum NotificationTypes {
+  WARNING,
+  ERROR,
+  SUCCESS,
+  INFO,
+}

@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { UserFaculty, UserStatus, UserType } from "./enums/user.enum";
 import { IBaseModel } from "./base.model";
+import { IAcessGrant } from "./access-grant.model";
 
 export interface IUser extends IBaseModel {
   userId?: any;
@@ -14,6 +15,7 @@ export interface IUser extends IBaseModel {
   faculty?: keyof typeof UserFaculty | null;
   className?: string | null;
   cumulativeScore?: number;
+  accessGrants?: IAcessGrant[];
 }
 
 export const defaultValue: Readonly<IUser> = {

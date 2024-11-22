@@ -1,39 +1,39 @@
 import { SubmitHandler, useForm } from "react-hook-form";
+import { RegisterData } from "../../account/register/register.reducer";
 
-type FormValues = {
-  datetime: string; // The value from datetime-local input will be a string
-};
+// type FormValues = {
+//   datetime: string; // The value from datetime-local input will be a string
+// };
+interface FormValues {
+  datetime: string;
+}
 
 const AdminDashboard: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      datetime: "",
-    },
+  } = useForm<RegisterData>({
+    defaultValues: {},
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<RegisterData> = (data) => {
     console.log("Form Data:", data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="datetime">Select Date & Time:</label>
-      <span className="text-red-600">{errors.datetime?.message}</span>
+      <span className="text-red-600">{errors.userId?.message}</span>
       <input
-        type="datetime-local"
+        type="text"
         id="datetime"
-        {...register("datetime", {
+        {...register("userId", {
           required: "Date & time is required",
           validate: {
             isAfter: (value) => {
-              const today = new Date();
-              const inputDate = new Date(value);
-              if (inputDate.getTime() <= today.getTime()) {
-                return "Phải lớn hơn ngày hiện tại";
+              if (value.length < 8) {
+                return "ko hop le";
               }
               return true;
             },

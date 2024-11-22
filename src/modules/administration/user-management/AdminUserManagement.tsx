@@ -1,9 +1,9 @@
 import { useState } from "react";
-import AllMemberBoard from "../../../components/admin/members/AllMemberBoard";
-import AllRolesBoard from "../../../components/admin/members/AllRolesBoard";
-import RegisterRequestsBoard from "../../../components/admin/members/RegisterRequestsBoard";
-import ExitRequestsBoard from "../../../components/admin/members/ExitRequestsBoard";
+import AllMemberBoard from "./users/AllMemberBoard";
+import AllRolesBoard from "./roles/AllRolesBoard";
+import RegisterRequestsBoard from "./register-requests/RegisterRequestsBoard";
 import AdminHeader from "../../../components/headers/AdminHeader";
+import ExitRequestsBoard from "./exit-requests/ExitRequestsBoard";
 
 const AdminUserManagement: React.FC = () => {
   const [activeHeader, setActiveHeader] = useState<string>("members");

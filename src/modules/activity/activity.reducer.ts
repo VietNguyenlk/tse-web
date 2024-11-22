@@ -86,7 +86,6 @@ export const ActivitySlice = createEntitySlice({
       })
       .addCase(createActivity.fulfilled, (state, action) => {
         state.loading = false;
-        const news = action.payload.data.data;
         state.entities.unshift(action.payload.data.data);
         state.updateSuccess = true;
         state.totalItems += 1;
@@ -98,7 +97,6 @@ export const ActivitySlice = createEntitySlice({
         state.updateSuccess = false;
       })
       .addMatcher(isFulfilled(getActivities), (state, action) => {
-        console.log(action.payload);
         state.loading = false;
         state.entities = action.payload.data.data.items;
         state.totalItems = action.payload.data.data.totalItems;

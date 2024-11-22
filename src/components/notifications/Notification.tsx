@@ -1,16 +1,10 @@
 import { Close } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import NotificationIcon from "./NotificationIcon";
-
-export enum NotificationType {
-  WARNING,
-  ERROR,
-  SUCCESS,
-  INFO,
-}
+import { NotificationTypes } from "../../configs/constants";
 
 interface NotificationProps {
-  type: keyof typeof NotificationType;
+  type: keyof typeof NotificationTypes;
   title?: string;
   message?: string;
   onClose?: () => void;

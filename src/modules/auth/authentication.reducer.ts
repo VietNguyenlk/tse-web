@@ -26,7 +26,7 @@ interface IAuthParams {
 
 export type AuthenticationState = Readonly<typeof initState>;
 
-// Actions
+// Async Actions
 
 export const authenticate = createAsyncThunk(
   "auth/login",
