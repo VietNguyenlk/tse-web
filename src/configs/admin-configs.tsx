@@ -34,13 +34,13 @@ export type SideBarItem = {
 export const adminSideBarItems: SideBarItem[] = [
   {
     id: "dashboard",
-    title: "Dashboard",
+    title: "Trang chủ",
     icon: <Home />,
     link: "/admin/dashboard",
   },
   {
     id: "members",
-    title: "Members",
+    title: "Thành viên",
     icon: <Person />,
     link: "/admin/members",
     // submenu: [
@@ -51,19 +51,19 @@ export const adminSideBarItems: SideBarItem[] = [
   },
   {
     id: "activities",
-    title: "Activities",
+    title: "Hoạt động",
     icon: <Hub />,
     link: "/admin/activities",
   },
   {
     id: "groups",
-    title: "Groups",
+    title: "Nhóm",
     icon: <Groups />,
     link: "/admin/groups",
   },
   {
     id: "budget",
-    title: "Budget",
+    title: "Ngân sách",
     icon: <CurrencyExchange />,
     link: "/admin/budget",
   },
@@ -78,25 +78,25 @@ export const adminSideBarItems: SideBarItem[] = [
 export const adminHeaderItems: AdminHeaderItem[] = [
   {
     id: "members",
-    title: "Members",
+    title: "Thành viên",
     des: "Setup members",
     icon: <Person />,
   },
   {
     id: "roles",
-    title: "Roles",
+    title: "Vai trò & Quyền",
     des: "Roles & Privileges",
     icon: <LockPerson />,
   },
   {
     id: "register-requests",
-    title: "Register Requests",
+    title: "Duyệt đăng ký",
     des: "Approve register requests",
     icon: <PersonAdd />,
   },
   {
     id: "exit-requests",
-    title: "Exit Requests",
+    title: "Yêu cầu rời nhóm",
     des: "Exit requests",
     icon: <DirectionsWalk />,
   },

@@ -32,7 +32,7 @@ const AdminPage: React.FC = () => {
             <div className="text-2xl font-bold mb-4 flex justify-between items-end">
               <div className="flex items-end">
                 <Home />
-                <span className="text-sm ml-2">Dashboard</span>
+                <span className="text-sm ml-2">Trang chủ</span>
               </div>
               <button
                 onClick={handleLogout}

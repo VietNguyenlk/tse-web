@@ -304,7 +304,7 @@ const RegisterPage: React.FC = () => {
                 htmlFor="lastname"
                 className="block mb-2 text-sm font-medium text-gray-700"
               >
-                Last Name&nbsp;
+                Tên&nbsp;
                 <span className="text-red-600 ">
                   *{`${errors.lastName?.message ?? ""}`}
                 </span>
@@ -336,7 +336,7 @@ const RegisterPage: React.FC = () => {
                 htmlFor="password"
                 className="block mb-2 text-sm font-medium text-gray-700"
               >
-                Password&nbsp;
+                Mật Khẩu&nbsp;
                 <span className="text-red-600 ">
                   *{`${errors.password?.message ?? ""}`}
                 </span>
@@ -370,7 +370,7 @@ const RegisterPage: React.FC = () => {
                 htmlFor="confirmpassword"
                 className="block mb-2 text-sm font-medium text-gray-700"
               >
-                Confirm password&nbsp;
+                Xác nhận mật khẩu&nbsp;
                 <span className="text-red-600 ">
                   *{`${errors.passwordConfirm?.message ?? ""}`}
                 </span>

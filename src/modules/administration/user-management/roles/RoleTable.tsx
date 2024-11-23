@@ -7,7 +7,7 @@ interface RoleTableProps {
 }
 
 const RoleTable: React.FC<RoleTableProps> = ({ roles }) => {
-  const roleTableHeaders = ["ID", "NAME", "DESCRIPTION", "STATUS"];
+  const roleTableHeaders = ["MSSV", "Tên", "Mô tả", "Trạng thái"];
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
 

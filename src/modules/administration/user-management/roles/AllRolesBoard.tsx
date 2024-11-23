@@ -23,18 +23,18 @@ const AllRolesBoard: React.FC = () => {
   return (
     <>
       <div className="h-14 border-b flex justify-between items-center p-4">
-        <h1 className="text-sm font-semibold text-gray-600">All Members</h1>
+        <h1 className="text-sm font-semibold text-gray-600">Tất cả thành viên</h1>
         <button className="border rounded bg-blue-600 text-white text-xs h-8 p-1 hover:bg-blue-700">
-          <Add /> Add new
+          <Add /> Thêm mới
         </button>
       </div>
 
       <div className="px-4 py-6 space-y-4">
         <div className="flex justify-between">
           <div className="flex items-center space-x-2 text-sm text-gray-700">
-            <span>Show</span>
+            <span>Chọn</span>
             <SelectOption values={entryOptions} />
-            <span>members</span>
+            <span>thành viên</span>
           </div>
           <CustomSearch />
         </div>
