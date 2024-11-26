@@ -2,18 +2,18 @@ import { CalendarMonth, Close, Edit, LockClock, Save } from "@mui/icons-material
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAppDispatch } from "../../../configs/store";
-import { IActivity } from "../../../shared/models/activity.model";
+import { useAppDispatch } from "../../../../configs/store";
+import { IActivity } from "../../../../shared/models/activity.model";
 import {
   ActivityScope,
   ActivityStatus,
   ActivityType,
   VenueType,
-} from "../../../shared/models/enums/activity.enum";
+} from "../../../../shared/models/enums/activity.enum";
 import {
   convertDateTimeFromServer,
   extractTimeFromDateTime,
-} from "../../../shared/utils/date-utils";
+} from "../../../../shared/utils/date-utils";
 
 interface ActivityDetailsModalProps {
   isOpen: boolean;
@@ -112,7 +112,7 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                   })}
                   readOnly={!enableEdit}
                   type="text"
-                  placeholder="Activity's name..."
+                  placeholder="Tên của hoạt động..."
                   className={`${
                     enableEdit
                       ? "focus:border-indigo-500 focus:ring-indigo-500 "

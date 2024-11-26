@@ -33,7 +33,7 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
   return (
     <>
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <thead className="text-base text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="p-4">
               <div className="flex items-center">
@@ -86,16 +86,16 @@ const UserTable: React.FC<UserTableProps> = ({ headers, users }) => {
                   </label>
                 </div>
               </td>
-              <td className=" text-sm">{user.userId}</td>
+              <td className=" text-base">{user.userId}</td>
               <td>
                 <UserIntro
                   email={user.email}
                   name={user.firstName + user.lastName}
                 />
               </td>
-              <td className=" text-sm">{user.userType}</td>
-              <td className=" text-sm">{user.faculty}</td>
-              <td className=" text-sm ">{user.cumulativeScore}</td>
+              <td className=" text-base">{user.userType}</td>
+              <td className=" text-base">{user.faculty}</td>
+              <td className=" text-base ">{user.cumulativeScore}</td>
               <td>
                 <div
                   className={`${renderUserStatus(

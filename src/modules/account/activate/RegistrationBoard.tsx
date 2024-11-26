@@ -1,35 +1,42 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../../configs/store";
-import { Add, Search } from "@mui/icons-material";
-import SelectOption from "../../../../components/pagination/SelectOption";
+import { Search } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { PaginationRequestParams } from "../../../configs/api";
+import { useAppDispatch, useAppSelector } from "../../../configs/store";
+import RegistrationTable from "./RegistrationTable";
+import { getRegistrationRequests } from "./account-activate.reducer";
 
-import RoleTable from "./RoleTable";
-import { PaginationRequestParams } from "../../../../configs/api";
-import { getAllRolesPaginated } from "./role.reducer";
-
-const AllRolesBoard: React.FC = () => {
+const RegistrationBoard: React.FC = () => {
   const dispatch = useAppDispatch();
-  const roles = useAppSelector((state) => state.role.entities);
+  const activateUser = useAppSelector((state) => state.activateUser);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+  const [isReload, setReload] = useState(false);
 
-  const [paginatedParams, setPaginatedParams] = useState<PaginationRequestParams>({
-    page: 1,
-    size: 10,
-  });
+  const tableHeaders = [
+    "MSSV",
+    "Thông tin",
+    "Nghề nghiệp",
+    "Khoa",
+    "Trạng thái",
+    "Hành động",
+  ];
+
+  const handleLoadData = () => {
+    const paginatedParams: PaginationRequestParams = {
+      page: currentPage,
+      size: pageSize,
+    };
+    dispatch(getRegistrationRequests(paginatedParams));
+  };
 
   useEffect(() => {
-    dispatch(getAllRolesPaginated(paginatedParams));
-  }, [dispatch]);
-
+    handleLoadData();
+  }, [pageSize, currentPage]);
   return (
     <>
       <div className="h-20 border-b flex justify-between items-center px-4 py-2">
-        <h1 className="text-lg font-bold">Tất cả vai trò</h1>
-        <button className="border rounded bg-blue-600 text-white text-base font-semibold h-10 p-1 hover:bg-blue-700">
-          <Add /> Thêm mới
-        </button>
+        <h1 className="text-lg font-bold">Tất cả người đăng kí</h1>
       </div>
 
       <div className="px-4 pt-3 pb-6 space-y-4">
@@ -57,7 +64,12 @@ const AllRolesBoard: React.FC = () => {
           </div>
         </div>
 
-        <RoleTable roles={roles} />
+        <RegistrationTable
+          headers={tableHeaders}
+          users={activateUser.requestActivates}
+          isLoading={activateUser.loading}
+          setReload={handleLoadData}
+        />
 
         {/* <PaginationBar
           currentPage={1}
@@ -69,4 +81,4 @@ const AllRolesBoard: React.FC = () => {
   );
 };
 
-export default AllRolesBoard;
+export default RegistrationBoard;

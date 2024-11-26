@@ -1,0 +1,200 @@
+import { Check, Close, KeyboardArrowDown } from "@mui/icons-material";
+import React, { useState, useRef, useEffect } from "react";
+
+type FieldSize = "sm" | "md" | "lg";
+
+export interface MultiSelectOption {
+  value: string;
+  label: string;
+}
+
+interface MultiSelectProps {
+  size?: FieldSize;
+  options?: MultiSelectOption[];
+  onChange?: (selected: MultiSelectOption[]) => void;
+  showSelectedCount?: boolean;
+}
+
+const getSizeClasses = (size: FieldSize) => {
+  switch (size) {
+    case "sm":
+      return "max-w-60";
+    case "lg":
+      return "max-w-100";
+    default:
+      return "max-w-80";
+  }
+};
+const MultiSelect = ({
+  options = [],
+  onChange = () => {},
+  size = "md",
+}: MultiSelectProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<MultiSelectOption[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const isSelected = (option: MultiSelectOption) =>
+    selected.some((item) => item.value === option.value);
+
+  const toggleSelect = (option: MultiSelectOption) => {
+    let newSelected;
+    if (isSelected(option)) {
+      newSelected = selected.filter((item) => item.value !== option.value);
+    } else {
+      newSelected = [...selected, option];
+    }
+    setSelected(newSelected);
+    onChange(newSelected);
+  };
+
+  const handleRemove = (optionToRemove: MultiSelectOption) => {
+    const newSelected = selected.filter(
+      (option) => option.value !== optionToRemove.value,
+    );
+    setSelected(newSelected);
+    onChange(newSelected);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && search === "" && selected.length > 0) {
+      handleRemove(selected[selected.length - 1]);
+    }
+  };
+
+  return (
+    <div className={`relative ${getSizeClasses(size)} `} ref={containerRef}>
+      <div
+        className="min-h-10 w-full border rounded-lg bg-white px-2  cursor-text flex items-center gap-1"
+        onClick={() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }}
+      >
+        {selected.length === 0 && !search && (
+          <span className="text-base absolute left-3">All</span>
+        )}
+
+        <div className="flex gap-1 items-center">
+          {/* List selected and input*/}
+
+          {!selected || selected.length === 0 ? null : (
+            <div
+              key={`${selected[0].value}-0`}
+              className="bg-blue-100 text-blue-800 rounded px-1.5 py-0.5 text-sm flex items-center gap-1 group"
+            >
+              <span
+                className={`block ${
+                  size === "sm" ? "max-w-10" : ""
+                } text-base overflow-hidden whitespace-nowrap text-ellipsis`}
+              >
+                {selected[0].label}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove(selected[0]);
+                }}
+                className="hover:bg-blue-200 rounded-full p-0.5 opacity-60 group-hover:opacity-100"
+              >
+                <Close className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          {selected.length > 1 && (
+            <div className="bg-blue-100 text-blue-800 rounded px-1.5 py-0.5 text-base flex items-center gap-1 group">
+              +{selected.length - 1}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove(selected[selected.length - 1]);
+                }}
+                className="hover:bg-blue-200 rounded-full p-0.5 opacity-60 group-hover:opacity-100"
+              >
+                <Close className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <input
+            ref={inputRef}
+            type="text"
+            className={`border-none focus:ring-0 w-full ${
+              selected.length === 0 && !search ? "ml-3" : ""
+            }`}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setIsOpen(true);
+            }}
+            onFocus={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
+
+        {/* Toggle options */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className="self-center ml-auto"
+        >
+          <KeyboardArrowDown
+            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
+
+      {/* Options list */}
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-auto">
+          {filteredOptions.length === 0 ? (
+            <div className="p-2 text-gray-500">
+              {search ? "Không tìm thấy lựa chọn" : "Không có lựa chọn nào"}
+            </div>
+          ) : (
+            filteredOptions.map((option) => {
+              const isItemSelected = isSelected(option);
+              return (
+                <div
+                  key={option.value}
+                  className={`px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2
+                      ${isItemSelected ? "bg-blue-50" : ""}`}
+                  onClick={() => toggleSelect(option)}
+                >
+                  {option.label}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MultiSelect;

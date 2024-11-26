@@ -2,16 +2,18 @@ import {
   ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
+  isFulfilled,
+  isPending,
   isRejected,
 } from "@reduxjs/toolkit";
-import { defaultValue, IUser } from "../../../../shared/models/user.model";
+import { defaultValue, IUser } from "../../../shared/models/user.model";
 import {
   ApiResponse,
   axiosInstance,
   PaginatedResponse,
   PaginationRequestParams,
-} from "../../../../configs/api";
-import { serializeAxiosError } from "../../../../shared/utils/reducers.utils";
+} from "../../../configs/api";
+import { serializeAxiosError } from "../../../shared/utils/reducers.utils";
 const apiUrl = "/users";
 
 const initState = {
@@ -51,16 +53,16 @@ export const UserManagementSlice = createSlice({
   },
   extraReducers: (builder: ActionReducerMapBuilder<UserManagementState>) => {
     builder
-      .addCase(getUsers.pending, (state) => {
-        state.errorMessage = null;
-        state.updateSuccess = false;
-        state.loading = true;
-      })
-      .addCase(getUsers.fulfilled, (state, action) => {
+      .addMatcher(isFulfilled(getUsers), (state, action) => {
         state.loading = false;
         state.users = action.payload.data.data.items;
         state.totalItems = action.payload.data.data.totalItems;
         state.totalPages = action.payload.data.data.totalPages;
+      })
+      .addMatcher(isPending(getUsers), (state) => {
+        state.errorMessage = null;
+        state.updateSuccess = false;
+        state.loading = true;
       })
       .addMatcher(isRejected(getUsers), (state, action) => {
         state.loading = false;

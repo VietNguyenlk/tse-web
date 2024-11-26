@@ -2,21 +2,21 @@ import { Add, Search } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../configs/store";
 import { PaginationRequestParams } from "../../../configs/api";
-import { getActivities } from "../../activity/activity.reducer";
-import ActivitiesAnalytic from "../../../components/admin/activities/ActivitiesAnalytic";
-import ActivityFilterBar from "../../../components/admin/activities/ActivityFilterBar";
-import AllActivitiesDashboard from "../../../components/admin/activities/AllActivitiesDashboard";
+import { getActivities } from "./activity-management.reducer";
+import ActivitiesAnalytic from "../../../components/card/ActivitiesAnalytic";
+import ActivityFilterBar from "../../../components/search/ActivityFilterBar";
+import AllActivitiesDashboard from "./list/AllActivitiesDashboard";
 import PaginationBar from "../../../components/pagination/PaginationBar";
-import NewActivityModal from "./NewActivityModal";
+import NewActivityModal from "./update/NewActivityModal";
 
 const AdminActivityManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
 
   const dispatch = useAppDispatch();
   const [isNewModalOpen, setNewModalOpen] = useState(false);
   const { entities, totalPages, totalItems } = useAppSelector(
-    (state) => state.activity,
+    (state) => state.activityManagement,
   );
 
   useEffect(() => {
@@ -63,6 +63,7 @@ const AdminActivityManagement: React.FC = () => {
           <PaginationBar
             totalPages={totalPages}
             currentPage={currentPage}
+            onPageSizeChange={setPageSize}
             onPageChange={setCurrentPage}
             totalItems={totalItems}
             itemsPerPage={pageSize}

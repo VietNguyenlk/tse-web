@@ -9,17 +9,17 @@ import {
 import { Badge } from "@mui/material";
 import { useState } from "react";
 
-import ActivityDetailsModal from "../../../modules/administration/activity-management/ActivityDetailsModal";
-import { IActivity } from "../../../shared/models/activity.model";
+import ActivityDetailsModal from "../../modules/administration/activity-management/details/ActivityDetailsModal";
+import { IActivity } from "../../shared/models/activity.model";
 import {
   convertDateFromServer,
   convertTimeFromServer,
-} from "../../../shared/utils/date-utils";
+} from "../../shared/utils/date-utils";
 import {
   ActivityScope,
   ActivityStatus,
   ActivityType,
-} from "../../../shared/models/enums/activity.enum";
+} from "../../shared/models/enums/activity.enum";
 
 interface ActivityCardProps {
   activity: Readonly<IActivity>;

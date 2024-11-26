@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../configs/store";
 import { useNotifications } from "../../../shared/hooks/notification.hook";
 import Notification from "../../../components/notifications/Notification";
-import LoadingIndicator from "../../../components/list/LoadingIndicator";
+import LoadingIndicator from "../../../components/loading/LoadingIndicator";
 
 const RegisterPage: React.FC = () => {
   const notificationTimeOut = 3000;

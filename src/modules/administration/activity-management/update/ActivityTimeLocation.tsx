@@ -1,21 +1,23 @@
 import { AddLink, CalendarMonth, LocationOn, LockClock } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { IActivity } from "../../shared/models/activity.model";
+import { IActivity } from "../../../../shared/models/activity.model";
 import * as yup from "yup";
 import {
   convertDateFromServer,
   convertDateTimeFromClient,
   convertTimeFromClient,
   extractTimeFromDateTime,
-} from "../../shared/utils/date-utils";
-import { VenueType } from "../../shared/models/enums/activity.enum";
-
-interface FieldErrors {
-  occurDate?: string;
-  startTime?: string;
-  endTime?: string;
-  venue?: string;
-}
+} from "../../../../shared/utils/date-utils";
+import { VenueType } from "../../../../shared/models/enums/activity.enum";
+import {
+  FieldErrors,
+  UseFormClearErrors,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormSetError,
+  UseFormSetValue,
+} from "react-hook-form";
+import dayjs from "dayjs";
 
 const dateTimeValidation = yup.object().shape({
   occurDate: yup
@@ -72,115 +74,31 @@ const dateTimeValidation = yup.object().shape({
 });
 
 interface ActivityTimeLocationProps {
-  activity: IActivity;
-  updateActivity: (newData: Partial<IActivity>) => void;
-  setValidStep: (valid: boolean) => void;
-  checkValid: boolean;
-  setCheckValid: (check: boolean) => void;
+  register: UseFormRegister<IActivity>;
+  setValue: UseFormSetValue<IActivity>;
+  getValues: UseFormGetValues<IActivity>;
+  setError: UseFormSetError<IActivity>;
+  errors: FieldErrors<IActivity>;
+  clearErrors: UseFormClearErrors<IActivity>;
 }
 
 const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
-  activity,
-  updateActivity,
-  setValidStep,
-  checkValid,
-  setCheckValid,
+  errors,
+  getValues,
+  register,
+  setValue,
+  setError,
+  clearErrors,
 }) => {
   const [venueType, setSelectedVenueType] = useState<keyof typeof VenueType>(
-    activity.venueType ?? "OFFLINE",
-  );
-  const [venueValue, setVenueValue] = useState<string>(activity.venue ?? "");
-
-  const [occurDate, setOccurDate] = useState<string>(
-    convertDateFromServer(activity.occurDate ?? new Date()),
-  );
-  const [startTime, setStartTime] = useState<string>(
-    extractTimeFromDateTime(activity.startTime) ?? "",
-  );
-  const [endTime, setEndTime] = useState<string | null>(
-    extractTimeFromDateTime(activity.endTime) ?? "",
+    getValues("venueType") ?? "OFFLINE",
   );
 
-  const [errors, setErrors] = useState<FieldErrors>({});
+  useEffect(() => {
+    setValue("venueType", venueType);
+  }, []);
 
-  useEffect(
-    () => {
-      if (checkValid) {
-        validateField("occurDate", occurDate);
-        validateField("startTime", startTime);
-        validateField("endTime", endTime);
-        validateField("venue", venueValue);
-        setCheckValid(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [checkValid],
-  );
-
-  useEffect(
-    () => {
-      updateActivity({
-        occurDate: convertDateTimeFromClient(occurDate),
-        startTime: convertTimeFromClient(startTime),
-        endTime: convertTimeFromClient(endTime),
-        venue: venueValue,
-        venueType: venueType,
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [occurDate, startTime, endTime, venueValue, venueType],
-  );
-
-  const validateField = async (fieldName: keyof FieldErrors, value: string) => {
-    try {
-      const dataToValidate =
-        fieldName === "endTime"
-          ? { startTime: startTime, [fieldName]: value }
-          : { [fieldName]: value };
-      await dateTimeValidation.validateAt(fieldName, dataToValidate);
-
-      // Clear error for this field while keeping other errors
-      const newErrors = { ...errors };
-      delete newErrors[fieldName];
-      setErrors(newErrors);
-      setValidStep(Object.keys(newErrors).length === 0);
-    } catch (err) {
-      if (err instanceof yup.ValidationError) {
-        setErrors((prev) => ({
-          ...prev,
-          [fieldName]: err.message,
-        }));
-        setValidStep(false);
-      }
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const newValue = e.target.value;
-    const name = e.target.name;
-    switch (name) {
-      case "occurDate":
-        setOccurDate(newValue);
-        validateField(name, newValue);
-        break;
-      case "startTime":
-        setStartTime(newValue);
-        validateField(name, newValue);
-        break;
-      case "endTime":
-        setEndTime(newValue);
-        validateField(name, newValue);
-        break;
-      case "venue":
-        setVenueValue(newValue);
-        validateField(name, newValue);
-        break;
-      default:
-        break;
-    }
-  };
+  const compareTime = (startTime: string, endTime: string) => {};
 
   return (
     <div className="space-y-8">
@@ -193,17 +111,27 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
         <div className="flex gap-4">
           <div className="flex-1 space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Ngày tổ chức <span className="text-red-600">*</span>
+              Ngày tổ chức{" "}
+              <span className="text-red-600">
+                *{` ${errors.occurDate?.message ?? ""}`}
+              </span>
             </label>
             <div className="relative">
               <input
+                {...register("occurDate", {
+                  required: "Ngày tổ chức không được để trống",
+                  validate: (value: string) => {
+                    const selectedDate = dayjs(value);
+                    const today = dayjs(new Date());
+                    if (selectedDate.isSame(today) || selectedDate.isBefore(today))
+                      return "Ngày tổ chức phải sau hôm nay";
+                    return true;
+                  },
+                })}
                 type="date"
-                name="occurDate"
-                value={occurDate}
-                onChange={handleChange}
                 className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
                   ${
-                    errors.occurDate
+                    errors.occurDate?.message
                       ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                       : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                   }
@@ -218,28 +146,46 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
               />
               <CalendarMonth
                 className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
-                  errors.occurDate ? "text-red-500" : " text-gray-400"
+                  errors.occurDate?.message ? "text-red-500" : " text-gray-400"
                 }`}
               />
             </div>
-            <p className="text-red-500">{errors.occurDate}</p>
           </div>
         </div>
 
         <div className="flex gap-4">
           <div className="flex-1 space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Giờ bắt đầu <span className="text-red-600">*</span>
+              Giờ bắt đầu{" "}
+              <span className="text-red-600">
+                *{` ${errors.startTime?.message ?? ""}`}
+              </span>
             </label>
             <div className="relative">
               <input
+                {...register("startTime", {
+                  required: "Giờ bắt đầu không được để trống",
+                  validate: (value: string) => {
+                    const endTime = convertTimeFromClient(getValues("endTime"));
+                    if (!endTime) return true;
+                    const startDate = convertTimeFromClient(value);
+
+                    if (startDate.isAfter(endTime)) {
+                      setError("endTime", {
+                        type: "manual",
+                        message: "Ít nhất bằng giờ bắt đầu",
+                      });
+                      return "Lớn nhất bằng giờ kết thúc";
+                    }
+
+                    clearErrors("endTime");
+                    return true;
+                  },
+                })}
                 type="time"
-                name="startTime"
-                value={startTime}
-                onChange={handleChange}
                 className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
                   ${
-                    errors.startTime
+                    errors.startTime?.message
                       ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                       : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                   }
@@ -252,26 +198,44 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
               />
               <LockClock
                 className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
-                  errors.startTime ? "text-red-500" : "text-gray-400"
+                  errors.startTime?.message ? "text-red-500" : "text-gray-400"
                 }`}
               />
             </div>
-            <p className="text-red-500">{errors.startTime}</p>
           </div>
 
           <div className="flex-1 space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Giờ kết thúc <span className="text-red-600">*</span>
+              Giờ kết thúc{" "}
+              <span className="text-red-600">
+                *{` ${errors.endTime?.message ?? ""}`}
+              </span>
             </label>
             <div className="relative">
               <input
+                {...register("endTime", {
+                  required: "Không được trống",
+                  validate: (value: string) => {
+                    const startTime = convertTimeFromClient(getValues("startTime"));
+                    if (!startTime) return true;
+                    const endTime = convertTimeFromClient(value);
+
+                    if (startTime.isAfter(endTime)) {
+                      setError("startTime", {
+                        type: "manual",
+                        message: "Lớn nhất bằng giờ kết thúc",
+                      });
+                      return "Ít nhất bằng giờ bắt đầu";
+                    }
+
+                    clearErrors("startTime");
+                    return true;
+                  },
+                })}
                 type="time"
-                name="endTime"
-                value={endTime}
-                onChange={handleChange}
                 className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500
                   ${
-                    errors.endTime
+                    errors.endTime?.message
                       ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                       : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                   }
@@ -284,11 +248,10 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
               />
               <LockClock
                 className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
-                  errors.endTime ? "text-red-500" : "text-gray-400"
+                  errors.endTime?.message ? "text-red-500" : "text-gray-400"
                 }`}
               />
             </div>
-            <p className="text-red-500">{errors.endTime}</p>
           </div>
         </div>
       </div>
@@ -296,7 +259,11 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
       <div className="bg-white p-6 rounded-xl shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-medium">
-            Địa điểm <span className="text-red-600">*</span>
+            Địa điểm{" "}
+            <span className="text-red-600">
+              {" "}
+              *{` ${errors.venue?.message ?? ""}`}
+            </span>
           </h3>
           <div className="flex gap-4">
             {Object.entries(VenueType)
@@ -307,8 +274,6 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
                     key={key}
                     onClick={() => {
                       setSelectedVenueType(key as keyof typeof VenueType);
-                      setVenueValue("");
-                      validateField("venue", "");
                     }}
                     className={`px-4 py-2 rounded-lg font-medium ${
                       venueType === (key as keyof typeof VenueType)
@@ -325,17 +290,19 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
 
         <div className="relative">
           <input
+            {...register("venue", {
+              required: "Địa điểm không được để trống",
+              minLength: { value: 20, message: "Ít nhất 20 ký tự" },
+              maxLength: { value: 255, message: "Không quá 255 ký tự" },
+            })}
             type="text"
-            name="venue"
-            onChange={handleChange}
-            value={venueValue}
             placeholder={
               venueType === "OFFLINE"
                 ? "Nhập địa điểm tổ chức"
                 : "Nhập link tham gia meeting"
             }
             className={`w-full px-6 py-4 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.venue
+              errors.venue?.message
                 ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                 : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
             }`}
@@ -343,18 +310,17 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
           {venueType === "OFFLINE" ? (
             <LocationOn
               className={`absolute right-4 top-1/2 -translate-y-1/2  ${
-                errors.venue ? "text-red-500" : "text-gray-400"
+                errors.venue?.message ? "text-red-500" : "text-gray-400"
               }`}
             />
           ) : (
             <AddLink
               className={`absolute right-4 top-1/2 -translate-y-1/2 ${
-                errors.venue ? "text-red-500" : "text-gray-400 "
+                errors.venue?.message ? "text-red-500" : "text-gray-400 "
               }`}
             />
           )}
         </div>
-        <p className="text-red-500">{errors.venue}</p>
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
           </div>
           <div>
             <div
-              className={`text-sm text-black-500 font-medium leading-tight ${
+              className={`text-base text-black-500 font-medium leading-tight ${
                 activeHeader === item.id
                   ? "text-blue-900"
                   : "group-hover:text-blue-900"
@@ -36,7 +36,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({
             >
               {item.title}
             </div>
-            <div className="text-xs text-gray-500 font-normal leading-tight">
+            <div className="text-sm text-gray-500 font-normal leading-tight">
               {item.des}
             </div>
           </div>

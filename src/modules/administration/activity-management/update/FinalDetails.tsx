@@ -1,12 +1,12 @@
 import { CalendarMonth, Group } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import * as yup from "yup";
-import { IActivity } from "../../shared/models/activity.model";
-import { ActivityStatus } from "../../shared/models/enums/activity.enum";
+import { IActivity } from "../../../../shared/models/activity.model";
+import { ActivityStatus } from "../../../../shared/models/enums/activity.enum";
 import {
   convertDateTimeFromClient,
   convertDateTimeFromServer,
-} from "../../shared/utils/date-utils";
+} from "../../../../shared/utils/date-utils";
 
 interface FieldErrors {
   hostName?: string;

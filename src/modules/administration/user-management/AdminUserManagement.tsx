@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AllMemberBoard from "./users/AllMemberBoard";
 import AllRolesBoard from "./roles/AllRolesBoard";
-import RegisterRequestsBoard from "./register-requests/RegisterRequestsBoard";
+import RegisterRequestsBoard from "../../account/activate/RegistrationBoard";
 import AdminHeader from "../../../components/headers/AdminHeader";
 import ExitRequestsBoard from "./exit-requests/ExitRequestsBoard";
 

@@ -6,7 +6,7 @@ interface UserIntroProps {
 
 const UserIntro: React.FC<UserIntroProps> = ({ email, name, imgUrl }) => {
   return (
-    <div className="flex items-center py-4 text-gray-900 whitespace-nowrap dark:text-white">
+    <div className="flex items-center py-4 text-gray-900 whitespace-nowrap dark:text-white h-full w-full">
       {imgUrl ? (
         <img
           src={imgUrl}

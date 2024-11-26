@@ -27,7 +27,7 @@ const RoleTable: React.FC<RoleTableProps> = ({ roles }) => {
   return (
     <>
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <thead className="text-base text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="p-4">
               <div className="flex items-center">
@@ -80,10 +80,10 @@ const RoleTable: React.FC<RoleTableProps> = ({ roles }) => {
                   </label>
                 </div>
               </td>
-              <td className=" text-sm">{role.roleId}</td>
+              <td className=" text-base">{role.roleId}</td>
 
-              <td className=" text-sm">{role.roleName}</td>
-              <td className=" text-sm">{role.description}</td>
+              <td className=" text-base">{role.roleName}</td>
+              <td className=" text-base">{role.description}</td>
               <td>
                 <div
                   className={`${renderRoleStatus(

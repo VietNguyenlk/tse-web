@@ -5,20 +5,26 @@ import {
   PaginatedResponse,
   PaginationRequestParams,
   SortDirection,
-} from "../../configs/api";
-import { defaultValue, IActivity } from "../../shared/models/activity.model";
+} from "../../../configs/api";
+import { defaultValue, IActivity } from "../../../shared/models/activity.model";
 import {
   convertDateFromServer,
   convertDateTimeFromServer,
   extractTimeFromDateTime,
-} from "../../shared/utils/date-utils";
+} from "../../../shared/utils/date-utils";
 import {
   createEntitySlice,
   EntityState,
   serializeAxiosError,
-} from "../../shared/utils/reducers.utils";
+} from "../../../shared/utils/reducers.utils";
 
 const apiUrl = "/activities";
+
+export interface ISearchActivity {
+  searchText?: string;
+  activityTypes?: string[];
+  sortBy?: string;
+}
 
 const initState: EntityState<IActivity> = {
   entities: [],
@@ -76,7 +82,7 @@ export const createActivity = createAsyncThunk(
 );
 
 // Slice
-export const ActivitySlice = createEntitySlice({
+export const ActivityManagementSlice = createEntitySlice({
   name: "activity",
   initialState: initState,
   extraReducers: (builder) => {
@@ -104,5 +110,5 @@ export const ActivitySlice = createEntitySlice({
       });
   },
 });
-export const { reset } = ActivitySlice.actions;
-export default ActivitySlice.reducer;
+export const { reset } = ActivityManagementSlice.actions;
+export default ActivityManagementSlice.reducer;

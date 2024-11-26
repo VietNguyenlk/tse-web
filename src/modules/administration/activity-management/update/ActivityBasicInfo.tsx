@@ -1,17 +1,22 @@
 import { CheckCircle, Tag } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import * as yup from "yup";
-import { IActivity } from "../../shared/models/activity.model";
+import {
+  FieldErrors,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
+import { IActivity } from "../../../../shared/models/activity.model";
 import {
   ActivityScope,
   ActivityType,
-} from "../../shared/models/enums/activity.enum";
+} from "../../../../shared/models/enums/activity.enum";
 
 interface ActivityBasicInfoProps {
-  activity: IActivity;
-  updateActivity: (newData: Partial<IActivity>) => void;
-  setValidStep: (valid: boolean) => void;
-  checkValid: boolean;
+  register: UseFormRegister<IActivity>;
+  setValue: UseFormSetValue<IActivity>;
+  getValues: UseFormGetValues<IActivity>;
+  errors: FieldErrors<IActivity>;
 }
 
 type ActivityTypeOption = {
@@ -57,79 +62,29 @@ const activityScopes: ActivityScopeOption[] = [
   },
 ];
 
-const basicInformationSchema = yup.object().shape({
-  activityName: yup
-    .string()
-    .trim()
-    .required("Tên hoạt động không được bỏ trống!")
-    .min(5, "Tên hoạt động phải có ít nhất 5 ký tự")
-    .max(50, "Tên hoạt động không được quá 50 ký tự"),
-  activityDescription: yup
-    .string()
-    .trim()
-    .max(280, "Mô tả không được quá 280 ký tự"),
-});
-
 const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
-  activity,
-  updateActivity,
-  setValidStep,
-  checkValid,
+  register,
+  setValue,
+  errors,
+  getValues,
 }) => {
-  const [activityTitle, setActivityTitle] = useState<string>(activity.name ?? "");
   const [selectedType, setSelectedType] = useState<keyof typeof ActivityType>(
-    activity.activityType || "SEMINAR",
+    getValues("activityType") ?? "SEMINAR",
   );
   const [selectedScope, setSelectedScope] = useState<keyof typeof ActivityScope>(
-    activity.activityScope || "INTERNAL",
+    getValues("activityScope") ?? "INTERNAL",
   );
-  const [description, setDescription] = useState<string>(activity.description || "");
-  const [descriptionLength, setDescriptionLength] = useState<number>(
-    activity.description?.length || 0,
-  );
-  const [nameError, setNameError] = useState<string | null>(null);
+  const [descriptionLength, setDescriptionLength] = useState<number>(0);
 
   useEffect(() => {
-    updateActivity({
-      name: activityTitle.trim(),
-      activityType: selectedType,
-      activityScope: selectedScope,
-      description: description.trim(),
-    });
-  }, [activityTitle, selectedType, selectedScope, description]);
-
-  useEffect(() => {
-    if (checkValid) {
-      validateField("activityName", activityTitle);
-    }
-  }, [checkValid]);
-
-  const validateField = async (fieldName: string, value: string) => {
-    try {
-      const dataToValidate = { [fieldName]: value };
-      await basicInformationSchema.validateAt(fieldName, dataToValidate);
-      setNameError(null);
-      setValidStep(true);
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        setNameError(error.message);
-        setValidStep(false);
-      }
-    }
-  };
+    setValue("activityScope", selectedScope);
+    setValue("activityType", selectedType);
+  }, []);
 
   const maxDescriptionLength = 280;
   const handleChangeTextArea = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = event.target.value;
-    setDescription(value);
     setDescriptionLength(value.length);
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fieldName = event.target.name;
-    const value = event.target.value;
-    setActivityTitle(value);
-    validateField(fieldName, value);
   };
 
   return (
@@ -141,21 +96,27 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
 
       <div className="relative group space-y-2">
         <h3 className="font-medium">
-          Tên hoạt động <span className="text-red-600">*</span>
+          Tên hoạt động{" "}
+          <span className="text-red-600"> *{` ${errors.name?.message ?? ""}`}</span>
         </h3>
 
+        {/* Name */}
         <div className="flex gap-4">
           <div className="flex-1">
             <div className="relative">
               <input
+                {...register("name", {
+                  required: "Tên hoạt động không được bỏ trống!",
+                  minLength: {
+                    value: 5,
+                    message: "Tên hoạt động phải có ít nhất 5 ký tự",
+                  },
+                })}
                 type="text"
-                name="activityName"
-                value={activityTitle}
                 placeholder="Tên của hoạt động..."
-                onChange={handleInputChange}
                 className={`w-full border-gray-300 px-6 py-4 text-lg bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all
                     ${
-                      nameError && nameError.length !== 0
+                      errors.name?.message
                         ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                         : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                     }
@@ -163,7 +124,7 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
               />
               <div
                 className={`absolute right-4 top-1/2 -translate-y-1/2 ${
-                  nameError
+                  errors.name?.message
                     ? "text-red-500 group-focus-within:text-red-500"
                     : "text-gray-400 group-focus-within:text-blue-500"
                 } `}
@@ -173,12 +134,9 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
             </div>
           </div>
         </div>
-
-        {nameError && nameError.length !== 0 && (
-          <p className="text-red-500">{nameError}</p>
-        )}
       </div>
 
+      {/* Type */}
       <div className="space-y-2">
         <h3 className="font-medium">
           Loại hoạt động <span className="text-red-600">*</span>
@@ -192,7 +150,10 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
                   ? "hover:border-blue-400 border-blue-500"
                   : "border-transparent hover:border-blue-400"
               }`}
-              onClick={() => setSelectedType(type.id)}
+              onClick={() => {
+                setSelectedType(type.id);
+                setValue("activityType", type.id);
+              }}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{type.name}</span>
@@ -219,7 +180,10 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
                   ? "hover:border-blue-400 border-blue-500"
                   : "border-transparent hover:border-blue-400"
               }`}
-              onClick={() => setSelectedScope(scope.id)}
+              onClick={() => {
+                setSelectedScope(scope.id);
+                setValue("activityScope", scope.id);
+              }}
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">{scope.name}</span>
@@ -238,11 +202,10 @@ const ActivityBasicInfo: React.FC<ActivityBasicInfoProps> = ({
       <div className="relative space-y-2 ">
         <h3 className="font-medium">Mô tả</h3>
         <textarea
-          name="activityDescription"
-          onChange={handleChangeTextArea}
+          {...register("description")}
           placeholder="Mô tả chi tiết về hoạt động này..."
+          onChange={handleChangeTextArea}
           rows={3}
-          value={description}
           maxLength={maxDescriptionLength}
           className={`w-full px-6 py-4 text-lg bg-gray-50 rounded-xl focus:outline-none focus:ring-2 transition-all resize-none border-gray-300 focus:ring-blue-500 focus:border-blue-500`}
         />

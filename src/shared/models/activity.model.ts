@@ -27,4 +27,27 @@ export interface IActivity extends IBaseModel {
   isDeleted?: boolean;
 }
 
+export const activityFields: Record<keyof IActivity, string | null> = {
+  activityId: null,
+  name: "Tên hoạt động",
+  description: null,
+  capacity: null,
+  hostName: "Người chủ trì",
+  registeredNumber: null,
+  timeOpenRegister: "Thời gian mở đăng ký",
+  timeCloseRegister: "Thời gian đóng đăng ký",
+  occurDate: "Ngày tổ chức",
+  startTime: null,
+  endTime: null,
+  venueType: "Loại địa điểm",
+  venue: null,
+  activityType: "Loại hoạt động",
+  activityStatus: "Trạng thái",
+  activityScope: "Phạm vi",
+  isDeleted: null,
+  createdAt: "Thời gian tạo",
+  deletedAt: null,
+  updatedAt: "Cập nhật lần cuối",
+};
+
 export const defaultValue: Readonly<IActivity> = {};

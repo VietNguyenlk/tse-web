@@ -11,14 +11,16 @@ interface PaginationProps {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   totalItems?: number;
   itemsPerPage?: number;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const PaginationBar: React.FC<PaginationProps> = ({
   totalPages,
   currentPage,
   onPageChange,
+  onPageSizeChange,
   totalItems = 0,
   itemsPerPage = 10,
 }: PaginationProps) => {
@@ -60,11 +62,24 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   // Calculate the range of items being displayed
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  // const startItem = (currentPage - 1) * itemsPerPage + 1;
+  // const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex justify-center items-center space-y-4 mt-8 mb-2">
+    <div className="flex relative justify-center items-center space-y-4 mt-8 mb-2">
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
+        <span>Số lượng mỗi trang:&nbsp;</span>
+        <select
+          className="px-4 py-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-10 text-sm cursor-pointer"
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+        >
+          <option value={5}>5 </option>
+          <option value={10}>10 </option>
+          <option value={25}>25 </option>
+          <option value={50}>50 </option>
+          <option value={100}>100 </option>
+        </select>
+      </div>
       {/* Pagination controls */}
       <nav
         className="flex items-center justify-center space-x-2"
@@ -150,4 +165,4 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-export default Pagination;
+export default PaginationBar;

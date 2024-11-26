@@ -38,7 +38,6 @@ export const getAllRolesPaginated = createAsyncThunk(
         params: paginationParams,
       },
     );
-    console.log({ rs });
     return rs;
   },
   {
@@ -59,7 +58,6 @@ const RoleSlice = createEntitySlice({
       .addCase(getAllRolesPaginated.fulfilled, (state, action) => {
         state.loading = false;
         state.entities = action.payload.data.data.items;
-        console.log({ state });
         state.totalItems = action.payload.data.data.totalItems;
         state.totalPages = action.payload.data.data.totalPages;
       })
