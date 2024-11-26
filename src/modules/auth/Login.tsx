@@ -84,6 +84,7 @@ export const Login: React.FC = () => {
     if (roles.includes("admin")) {
       return <Navigate to="/admin" />;
     }
+    // truyền decode qua home
     return <Navigate to="/home" />;
   }
 
