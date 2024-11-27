@@ -1,14 +1,6 @@
 import { AddLink, CalendarMonth, LocationOn, LockClock } from "@mui/icons-material";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { IActivity } from "../../../../shared/models/activity.model";
-import * as yup from "yup";
-import {
-  convertDateFromServer,
-  convertDateTimeFromClient,
-  convertTimeFromClient,
-  extractTimeFromDateTime,
-} from "../../../../shared/utils/date-utils";
-import { VenueType } from "../../../../shared/models/enums/activity.enum";
 import {
   FieldErrors,
   UseFormClearErrors,
@@ -17,61 +9,9 @@ import {
   UseFormSetError,
   UseFormSetValue,
 } from "react-hook-form";
-import dayjs from "dayjs";
-
-const dateTimeValidation = yup.object().shape({
-  occurDate: yup
-    .string()
-    .required("Ngày tổ chức không được để trống")
-    .test(
-      "is-future-date",
-      "Ngày tổ chức phải lớn hơn hoặc bằng ngày hôm nay",
-      (value) => {
-        if (!value) return false;
-        const selectedDate = new Date(value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return selectedDate >= today;
-      },
-    ),
-  startTime: yup
-    .string()
-    .trim()
-    .required("Giờ bắt đầu không được để trống")
-    .test(
-      "is-after-current",
-      "Giờ bắt đầu phải sau thời gian hiện tại",
-      function (value) {
-        if (!value) return true; // Skip if empty
-
-        const currentDate = new Date();
-        const currentTime = `${String(currentDate.getHours()).padStart(
-          2,
-          "0",
-        )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
-        return value >= currentTime;
-      },
-    ),
-  endTime: yup
-    .string()
-    .trim()
-    .required("Giờ kết thúc không được để trống")
-    .test("is-after-start", "Giờ kết thúc phải sau giờ bắt đầu", function (value) {
-      if (!value) return true;
-      const { startTime } = this.parent;
-      if (!startTime) return true;
-
-      // Convert times to comparable format (assuming HH:mm format)
-      const start = startTime.split(":").map(Number);
-      const end = value.split(":").map(Number);
-
-      // Compare hours first, then minutes if hours are equal
-      if (start[0] < end[0]) return true;
-      if (start[0] === end[0]) return start[1] < end[1];
-      return false;
-    }),
-  venue: yup.string().trim().required("Địa điểm không được để trống"),
-});
+import { IActivity } from "../../../../shared/models/activity.model";
+import { VenueType } from "../../../../shared/models/enums/activity.enum";
+import { convertTimeFromClient } from "../../../../shared/utils/date-utils";
 
 interface ActivityTimeLocationProps {
   register: UseFormRegister<IActivity>;
@@ -97,8 +37,6 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
   useEffect(() => {
     setValue("venueType", venueType);
   }, []);
-
-  const compareTime = (startTime: string, endTime: string) => {};
 
   return (
     <div className="space-y-8">
@@ -273,7 +211,7 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
                   <button
                     key={key}
                     onClick={() => {
-                      setSelectedVenueType(key as keyof typeof VenueType);
+                      setValue("venueType", key as keyof typeof VenueType);
                     }}
                     className={`px-4 py-2 rounded-lg font-medium ${
                       venueType === (key as keyof typeof VenueType)
@@ -292,7 +230,7 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
           <input
             {...register("venue", {
               required: "Địa điểm không được để trống",
-              minLength: { value: 20, message: "Ít nhất 20 ký tự" },
+              minLength: { value: 10, message: "Ít nhất 10 ký tự" },
               maxLength: { value: 255, message: "Không quá 255 ký tự" },
             })}
             type="text"

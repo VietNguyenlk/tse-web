@@ -5,19 +5,19 @@ import ActivityAnalyticCard from "./ActivityAnalyticCard";
 const ActivitiesAnalytic: React.FC = () => {
   const cardContents = [
     {
-      title: "Total Activities",
+      title: "Tổng số hoạt động trong tháng",
       icon: <CalendarMonth />,
       content: 88,
       description: "+23% from last month",
     },
     {
-      title: "Average Attendance",
+      title: "tỷ lệ tham dự trung bình",
       icon: <Group />,
       content: "85%",
       description: "Based on last 5 seminars",
     },
     {
-      title: "Average Attendance",
+      title: "Tỷ lệ tham dự sự kiện",
       icon: <CheckCircle />,
       content: "85%",
       description: "Based on last 5 seminars",

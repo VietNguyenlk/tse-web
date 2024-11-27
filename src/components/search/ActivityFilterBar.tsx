@@ -35,7 +35,10 @@ const ActivityFilterBar: React.FC<ActivityFilterBarProps> = ({}) => {
       <div className="flex gap-4">
         <div className="flex gap-2 items-center">
           <span>Loại HĐ:&nbsp;</span>
-          <MultiSelect options={getActivityTypeOptions()} />
+          <MultiSelect
+            options={getActivityTypeOptions()}
+            onBlur={() => console.log("change")}
+          />
         </div>
         <div className="flex gap-2 items-center">
           <span>Sắp xếp theo:&nbsp;</span>

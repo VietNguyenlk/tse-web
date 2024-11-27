@@ -30,6 +30,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     name,
     activityType,
     activityStatus,
+    activityScope,
     startTime,
     endTime,
     venue,
@@ -79,12 +80,142 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     }
   };
 
+  const getActivityStatusIcon = (
+    status: keyof typeof ActivityStatus,
+  ): JSX.Element => {
+    switch (status) {
+      case "PLANED":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        );
+      case "OPENED":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+        );
+      case "CLOSED":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+      case "CANCELED":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+    }
+  };
+
+  const getActivityTypeIcon = (type: keyof typeof ActivityType): JSX.Element => {
+    switch (type) {
+      case "CONTEST":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+            />
+          </svg>
+        );
+      case "SEMINAR":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            />
+          </svg>
+        );
+      case "TRAINING":
+        return (
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            />
+          </svg>
+        );
+    }
+  };
+
   const getScopeIcon = (scope: keyof typeof ActivityScope): JSX.Element => {
     switch (scope) {
       case "INTERNAL":
         return (
           <svg
-            className="w-3.5 h-3.5"
+            className="w-5 h-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -100,7 +231,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       case "EXTERNAL":
         return (
           <svg
-            className="w-3.5 h-3.5"
+            className="w-5 h-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -117,25 +248,52 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <div className="flex justify-between items-start mb-4">
-        <div>
+        <div className="space-y-4">
+          <h3 className="text-2xl font-semibold text-gray-900">{name}</h3>
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-semibold text-gray-900">{name}</h3>
-            {/* should loop for label */}
             <Badge
               className={`${getActivityTypeStyles(
                 activityType,
-              )} px-1 py-1 rounded-lg`}
+              )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
             >
-              {activityType}
+              <i>{getActivityTypeIcon(activityType)} </i>
+              <span>
+                {
+                  { CONTEST: "Cuộc thi", SEMINAL: "Hội thảo", TRAINING: "Đào tạo" }[
+                    activityType
+                  ]
+                }
+              </span>
             </Badge>
             <Badge
               className={`${getActivityStatusStyles(
                 activityStatus,
-              )} px-1 py-1 rounded-lg`}
+              )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
             >
-              {activityStatus}
+              <i>{getActivityStatusIcon(activityStatus)} </i>
+              <span>
+                {
+                  {
+                    PLANED: "Lên kế hoạch",
+                    OPENED: "Mở",
+                    CLOSED: "Đóng",
+                    CANCELED: "Huỷ bỏ",
+                  }[activityStatus]
+                }
+              </span>
+            </Badge>
+
+            <Badge
+              className={`${getActivityScopeStyle(
+                activityScope,
+              )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
+            >
+              <i>{getScopeIcon(activityScope)} </i>
+              <span>
+                {{ INTERNAL: "Nội bộ", EXTERNAL: "Bên ngoài" }[activityScope]}
+              </span>
             </Badge>
           </div>
           <div className="flex items-center gap-6 text-gray-600">
@@ -170,7 +328,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       {/* Registration Progress */}
       <div className="mt-4">
         <div className="flex justify-between mb-1 space-y-1">
-          <span className="text-sm text-gray-600">Registration Progress</span>
+          <span className="text-sm text-gray-600">Số lượng đã đăng kí</span>
           <span className="text-sm font-medium text-gray-900">
             {registeredNumber}/{capacity}
           </span>
@@ -193,7 +351,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
           className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
           onClick={() => setModalOpen(true)}
         >
-          View Details &rarr;
+          Xem chi tiết &rarr;
         </button>
       </div>
       <ActivityDetailsModal

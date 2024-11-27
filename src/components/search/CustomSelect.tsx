@@ -101,7 +101,7 @@ const CustomSelect = ({
             className="border-none focus:ring-0 w-full bg-transparent p-0"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Type to search..."
+            placeholder="Nhập để tìm..."
             onClick={(e) => e.stopPropagation()}
             autoFocus
           />

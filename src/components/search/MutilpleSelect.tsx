@@ -13,6 +13,7 @@ interface MultiSelectProps {
   options?: MultiSelectOption[];
   onChange?: (selected: MultiSelectOption[]) => void;
   showSelectedCount?: boolean;
+  onBlur?: (selected: MultiSelectOption[]) => void; // add here
 }
 
 const getSizeClasses = (size: FieldSize) => {
@@ -29,6 +30,7 @@ const MultiSelect = ({
   options = [],
   onChange = () => {},
   size = "md",
+  onBlur = () => {}, // add here
 }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -47,12 +49,16 @@ const MultiSelect = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        // add here
+        if (selected.length > 0) {
+          onBlur(selected); // Trigger onBlur callback
+        }
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [selected, onBlur]);
 
   const isSelected = (option: MultiSelectOption) =>
     selected.some((item) => item.value === option.value);
@@ -96,7 +102,7 @@ const MultiSelect = ({
         }}
       >
         {selected.length === 0 && !search && (
-          <span className="text-base absolute left-3">All</span>
+          <span className="text-base absolute left-3">Tất cả</span>
         )}
 
         <div className="flex gap-1 items-center">
@@ -155,7 +161,6 @@ const MultiSelect = ({
           />
         </div>
 
-        {/* Toggle options */}
         <button
           onClick={(e) => {
             e.stopPropagation();

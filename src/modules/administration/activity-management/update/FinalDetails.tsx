@@ -1,213 +1,49 @@
 import { CalendarMonth, Group } from "@mui/icons-material";
-import { useEffect, useRef, useState } from "react";
-import * as yup from "yup";
+import { useEffect, useState } from "react";
 import { IActivity } from "../../../../shared/models/activity.model";
 import { ActivityStatus } from "../../../../shared/models/enums/activity.enum";
+
+import dayjs from "dayjs";
 import {
-  convertDateTimeFromClient,
-  convertDateTimeFromServer,
-} from "../../../../shared/utils/date-utils";
-
-interface FieldErrors {
-  hostName?: string;
-  capacity?: string;
-  timeToOpenRegistry?: string;
-  timeToCloseRegistry?: string;
-}
-
-const finalDetailsSchema = yup.object().shape({
-  hostName: yup
-    .string()
-    .required("Tên người chủ trì không được để trống")
-    .min(2, "Tên người chủ trì phải trên 2 ký tự")
-    .max(100, "Tên người chủ trì quá dài"),
-  capacity: yup
-    .number()
-    .required("Số lượng người tham gia không được để trống")
-    .min(3, "Tối thiểu là 3")
-    .max(1000, "Tối đa 1000"),
-  timeToOpenRegistry: yup
-    .string()
-    .required("Thời gian mở đăng ký không được để trống")
-    .test(
-      "is-future",
-      "Thời gian mở đăng ký phải sau thời gian hiện tại",
-      function (value) {
-        if (!value) return true;
-        const timeToCloseRegistry = this.parent.timeToCloseRegistry;
-        const selectedDay = new Date(value).getTime();
-        if (timeToCloseRegistry) {
-          const timeCloseRegistry = new Date(timeToCloseRegistry).getTime();
-          if (selectedDay >= timeCloseRegistry)
-            throw new yup.ValidationError(
-              "Thời gian mở đăng ký phải trước thời gian kết thúc đăng ký",
-              value,
-              "timeToOpenRegistry",
-            );
-        }
-        const now = new Date().getTime();
-        return selectedDay + 100000 >= now;
-      },
-    ),
-  timeToCloseRegistry: yup
-    .string()
-    .required("Thời gian kết thúc đăng ký không được để trống")
-    .test(
-      "is-future",
-      "Thời gian kết thúc đăng ký phải sau thời gian hiện tại",
-      function (value) {
-        if (!value) return true;
-        const selectedDay = new Date(value).getTime();
-        const now = new Date().getTime();
-        return selectedDay > now;
-      },
-    ),
-});
+  FieldErrors,
+  UseFormClearErrors,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormSetError,
+  UseFormSetValue,
+} from "react-hook-form";
 
 interface FinalDetailsProps {
-  activity: IActivity;
-  updateActivity: (newData: Partial<IActivity>) => void;
-  setValidStep: (valid: boolean) => void;
-  checkValid: boolean;
-  setCheckValid: (valid: boolean) => void;
+  register: UseFormRegister<IActivity>;
+  setValue: UseFormSetValue<IActivity>;
+  getValues: UseFormGetValues<IActivity>;
+  setError: UseFormSetError<IActivity>;
+  errors: FieldErrors<IActivity>;
+  clearErrors: UseFormClearErrors<IActivity>;
 }
 
 const FinalDetails: React.FC<FinalDetailsProps> = ({
-  activity,
-  updateActivity,
-  setValidStep,
-  checkValid,
-  setCheckValid,
+  clearErrors,
+  errors,
+  getValues,
+  register,
+  setValue,
+  setError,
 }) => {
-  const [hostName, setHostName] = useState<string>(activity.hostName ?? "");
-  const [capacity, setCapacity] = useState<number | null>(activity.capacity ?? 10);
   const [activityStatus, setActivityStatus] = useState<keyof typeof ActivityStatus>(
-    activity.activityStatus ?? "PLANED",
+    getValues("activityStatus") ?? "PLANED",
   );
-
-  const [timeOpenRegister, setTimeOpenRegister] = useState<string>(
-    convertDateTimeFromServer(activity.timeOpenRegister) ?? "",
-  );
-  const [timeCloseRegister, setTimeCloseRegister] = useState<string>(
-    convertDateTimeFromServer(activity.timeCloseRegister) ?? "",
-  );
-
-  const [errors, setErrors] = useState<FieldErrors>({});
-
-  const latestDateTimeRef = useRef<{
-    timeOpenRegister: string;
-    timeCloseRegister: string;
-  }>({
-    timeOpenRegister: "",
-    timeCloseRegister: "",
-  });
 
   useEffect(() => {
-    latestDateTimeRef.current = {
-      timeOpenRegister,
-      timeCloseRegister,
-    };
-  }, [timeOpenRegister, timeCloseRegister]);
+    setValue("activityStatus", activityStatus);
+  }, []);
 
-  useEffect(() => {
-    updateActivity({
-      hostName: hostName,
-      activityStatus: activityStatus,
-      capacity: capacity,
-      timeOpenRegister: convertDateTimeFromClient(
-        latestDateTimeRef.current.timeOpenRegister,
-      ),
-      timeCloseRegister: convertDateTimeFromClient(
-        latestDateTimeRef.current.timeCloseRegister,
-      ),
-    });
-  }, [capacity, activityStatus, timeOpenRegister, timeCloseRegister, hostName]);
-
-  useEffect(
-    () => {
-      if (checkValid) {
-        validateField("capacity", capacity);
-        validateField("hostName", hostName);
-        validateField(
-          "timeToOpenRegistry",
-          latestDateTimeRef.current.timeOpenRegister,
-        );
-        validateField(
-          "timeToCloseRegistry",
-          latestDateTimeRef.current.timeCloseRegister,
-        );
-        setCheckValid(false);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [checkValid],
-  );
-
-  const validateField = async (
-    fieldName: keyof FieldErrors,
-    value: string | number,
-  ) => {
+  const validateHostName = (value) => {
+    const regex = /^[\p{L}\p{M}'\-\s]+$/u;
     try {
-      const dataToValidate =
-        fieldName === "timeToOpenRegistry" || fieldName === "timeToCloseRegistry"
-          ? {
-              timeToOpenRegistry:
-                fieldName === "timeToOpenRegistry"
-                  ? value
-                  : latestDateTimeRef.current.timeOpenRegister,
-              timeToCloseRegistry:
-                fieldName === "timeToCloseRegistry"
-                  ? value
-                  : latestDateTimeRef.current.timeCloseRegister,
-            }
-          : { [fieldName]: value };
-
-      await finalDetailsSchema.validateAt(fieldName, dataToValidate);
-
-      // Clear error for this field while keeping other errors
-      const newErrors = { ...errors };
-      delete newErrors[fieldName];
-      setErrors(newErrors);
-      setValidStep(Object.keys(newErrors).length === 0);
-    } catch (err) {
-      if (err instanceof yup.ValidationError) {
-        setErrors((prev) => ({
-          ...prev,
-          [fieldName]: err.message,
-        }));
-        setValidStep(false);
-      }
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const newValue = e.target.value;
-    const name = e.target.name as keyof FieldErrors;
-    switch (name) {
-      case "capacity":
-        const sanitizedValue = e.target.value.replace(/[^0-9]/g, ""); // Remove all non-digit characters
-        const newCapacity = sanitizedValue === "" ? 0 : Number(sanitizedValue);
-        setCapacity(newCapacity);
-        validateField(name, newCapacity);
-        break;
-      case "hostName":
-        setHostName(newValue);
-        validateField(name, newValue);
-        break;
-      case "timeToOpenRegistry":
-        setTimeOpenRegister(newValue);
-        validateField(name, newValue);
-        // validateField("timeToCloseRegistry", timeCloseRegister);
-        break;
-      case "timeToCloseRegistry":
-        setTimeCloseRegister(newValue);
-        validateField(name, newValue);
-        // validateField("timeToOpenRegistry", timeOpenRegister);
-        break;
-      default:
-        break;
+      return regex.test(value) || "Tên người chủ trì không hợp lệ";
+    } catch {
+      return "Tên người chủ trì không hợp lệ";
     }
   };
 
@@ -223,18 +59,23 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
           <div className="space-y-2">
             <div>
               <h3 className="font-medium">
-                Người chủ trì <span className="text-red-600">*</span>
+                Người chủ trì{" "}
+                <span className="text-red-600">
+                  *{` ${errors.hostName?.message ?? ""}`}
+                </span>
               </h3>
-              <span className="text-red-600">{errors.hostName}</span>
             </div>
             <input
+              {...register("hostName", {
+                required: "Tên người chủ trì không được để trống",
+                minLength: { value: 3, message: "Trên 3 ký tự" },
+                maxLength: { value: 100, message: "Dưới 100 ký tự" },
+                validate: validateHostName,
+              })}
               type="text"
-              value={hostName}
-              name="hostName"
-              onChange={handleChange}
               placeholder="Tên người chủ trì hoạt động..."
               className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.hostName
+                errors.hostName?.message
                   ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                   : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
               }`}
@@ -243,19 +84,24 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <h3 className="font-medium">
-                Số lượng tối đa{" "}
-                <span className="text-red-600">{errors.capacity ?? "*"}</span>
+                Số lượng tối đa
+                <span className="text-red-600">
+                  *{` ${errors.capacity?.message ?? ""}`}
+                </span>
               </h3>
               <div className="flex-1 ">
                 <div className="relative">
                   <input
-                    type="text"
-                    name="capacity"
-                    value={capacity}
-                    onChange={handleChange}
+                    {...register("capacity", {
+                      required: "Số lượng người tối đa không được để trống",
+                      min: { value: 3, message: "Ít nhất 3 người" },
+                      max: { value: 1000, message: "Tối đa 1000 người" },
+                      valueAsNumber: true,
+                    })}
+                    type="number"
                     placeholder="Số lượng người tối đa"
                     className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.capacity
+                      errors.capacity?.message
                         ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                         : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                     }`}
@@ -266,13 +112,13 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
             </div>
             <div className="space-y-2">
               <h3 className="font-medium">
-                Trạng thái <span className="text-red-600">*</span>
+                Trạng thái{" "}
+                <span className="text-red-600">
+                  *{` ${errors.activityStatus?.message ?? ""}`}
+                </span>
               </h3>
               <select
-                value={activityStatus}
-                onChange={(e) =>
-                  setActivityStatus(e.target.value as keyof typeof ActivityStatus)
-                }
+                {...register("activityStatus")}
                 className="w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
               >
                 {Object.entries(ActivityStatus)
@@ -295,17 +141,59 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
 
             <div className="space-y-2">
               <h3 className="font-medium">
-                Thời gian mở đăng ký <span className="text-red-600">*</span>
+                Ngày mở đăng ký{" "}
+                <span className="text-red-600">
+                  *{` ${errors.timeOpenRegister?.message ?? ""}`}
+                </span>
               </h3>
               <div className="relative">
                 <input
-                  type="datetime-local"
-                  name="timeToOpenRegistry"
-                  // value={convertDateTimeToDisplay(timeOpenRegister)}
-                  value={timeOpenRegister ?? ""}
-                  onChange={handleChange}
+                  {...register("timeOpenRegister", {
+                    required: "Không để trống",
+                    validate: {
+                      isFromToDay: (value) => {
+                        const timeOpen = dayjs(value).startOf("day");
+                        const timeToday = dayjs().startOf("day");
+
+                        if (timeOpen.isBefore(timeToday)) {
+                          return "Nhỏ nhất là hôm nay";
+                        }
+                        return true;
+                      },
+                      beforeOccurDate: (value: string) => {
+                        const occurDate = getValues("occurDate");
+                        if (!occurDate) return true;
+                        const inputDate = dayjs(value);
+                        const occurDateObj = dayjs(occurDate);
+
+                        if (inputDate.isAfter(occurDateObj)) {
+                          return "Phải trước ngày tổ chức";
+                        }
+                        return true;
+                      },
+                      isBeforeTimeCloseRegister: (value) => {
+                        const timeClose = getValues("timeCloseRegister");
+                        if (!timeClose) return true;
+                        const timeOpen = dayjs(value).startOf("day");
+
+                        if (
+                          timeOpen.isAfter(dayjs(timeClose).startOf("day")) ||
+                          timeOpen.isSame(dayjs(timeClose).startOf("day"))
+                        ) {
+                          setError("timeCloseRegister", {
+                            message: "Phải sau ngày mở",
+                            type: "manual",
+                          });
+                          return "Phải trước ngày đóng";
+                        }
+                        clearErrors("timeCloseRegister");
+                        return true;
+                      },
+                    },
+                  })}
+                  type="date"
                   className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.timeToOpenRegistry
+                    errors.timeOpenRegister?.message
                       ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                       : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                   }
@@ -320,25 +208,67 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 />
                 <CalendarMonth
                   className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
-                    errors.timeToOpenRegistry ? "text-red-500" : " text-gray-400"
+                    errors.timeOpenRegister?.message
+                      ? "text-red-500"
+                      : " text-gray-400"
                   }`}
                 />
               </div>
-              <p className="text-red-600">{errors.timeToOpenRegistry}</p>
             </div>
 
             <div className="space-y-2">
               <h3 className="font-medium">
-                Thời gian kết thúc đăng ký <span className="text-red-600">*</span>
+                Ngày đóng đăng ký{" "}
+                <span className="text-red-600">
+                  *{` ${errors.timeCloseRegister?.message ?? ""}`}
+                </span>
               </h3>
               <div className="relative">
                 <input
-                  type="datetime-local"
-                  value={timeCloseRegister}
-                  name="timeToCloseRegistry"
-                  onChange={handleChange}
+                  {...register("timeCloseRegister", {
+                    required: "Không để trống",
+                    validate: {
+                      isAfterToday: (value) => {
+                        const timeClose = dayjs(value);
+                        const timeToDay = dayjs(new Date());
+                        if (timeClose.isBefore(timeToDay)) {
+                          return "Ít nhất sau hôm nay";
+                        }
+                        return true;
+                      },
+                      beforeOccurDate: (value: string) => {
+                        const occurDate = getValues("occurDate");
+                        if (!occurDate) return true;
+                        const inputDate = dayjs(value);
+                        const occurDateObj = dayjs(occurDate);
+                        if (inputDate.isAfter(occurDateObj)) {
+                          return "Phải trước ngày tổ chức";
+                        }
+                        return true;
+                      },
+                      isAfterTimeOpen: (value) => {
+                        const timeOpen = getValues("timeOpenRegister");
+                        if (!timeOpen) return true;
+                        const timeClose = dayjs(value).startOf("day");
+
+                        if (
+                          timeClose.isBefore(dayjs(timeOpen).startOf("day")) ||
+                          timeClose.isSame(dayjs(timeOpen).startOf("day"))
+                        ) {
+                          setError("timeOpenRegister", {
+                            message: "Phải trước ngày đóng",
+                            type: "manual",
+                          });
+                          return "Phải sau ngày mở";
+                        }
+                        clearErrors("timeOpenRegister");
+                        return true;
+                      },
+                    },
+                  })}
+                  type="date"
                   className={`w-full px-6 py-3 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.timeToCloseRegistry
+                    errors.timeCloseRegister?.message
                       ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                       : "border-gray-300 focus:ring-blue-500 force:border-blue-500"
                   }
@@ -353,11 +283,12 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 />
                 <CalendarMonth
                   className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${
-                    errors.timeToCloseRegistry ? "text-red-500" : " text-gray-400"
+                    errors.timeCloseRegister?.message
+                      ? "text-red-500"
+                      : " text-gray-400"
                   }`}
                 />
-              </div>{" "}
-              <p className="text-red-600">{errors.timeToCloseRegistry}</p>
+              </div>
             </div>
           </div>
         </div>

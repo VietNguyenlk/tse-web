@@ -17,6 +17,7 @@ import {
   EntityState,
   serializeAxiosError,
 } from "../../../shared/utils/reducers.utils";
+import { cleanEntity } from "../../../shared/utils/entity-utils";
 
 const apiUrl = "/activities";
 
@@ -75,6 +76,28 @@ export const createActivity = createAsyncThunk(
       copy,
     );
     return createdActivity;
+  },
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
+export const updateActivity = createAsyncThunk(
+  "activity/updateActivity",
+  async (activity: IActivity) => {
+    const copy = {
+      ...activity,
+      startTime: extractTimeFromDateTime(activity.startTime),
+      endTime: extractTimeFromDateTime(activity.endTime),
+      timeOpenRegister: convertDateFromServer(activity.timeOpenRegister),
+      timeCloseRegister: convertDateFromServer(activity.timeCloseRegister),
+      occurDate: convertDateFromServer(activity.occurDate),
+    };
+    const updatedActivity = await axiosInstance.put<ApiResponse<IActivity>>(
+      `${apiUrl}/${activity.activityId}`,
+      cleanEntity(copy),
+    );
+    return updatedActivity;
   },
   {
     serializeError: serializeAxiosError,
