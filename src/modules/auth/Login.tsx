@@ -11,6 +11,7 @@ import { login } from "./authentication.reducer";
 import { useNotifications } from "../../shared/hooks/notification.hook";
 import Notification from "../../components/notifications/Notification";
 import { resetLoginError } from "./authentication.reducer";
+import { userInfo } from "os";
 
 const loginSchema = yup.object().shape({
   userId: yup
@@ -34,6 +35,8 @@ export const Login: React.FC = () => {
   const { addNotification, removeNotification, notifications } = useNotifications();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useAppDispatch();
+  const [infor,setInfor] = useState<String>();
+
   const {
     errorMessage,
     sessionHasBeenFetched,
@@ -69,7 +72,13 @@ export const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginData) => {
     dispatch(login(data.userId, data.password, data.rememberMe));
+    // console.log(localStorage);
     const token = localStorage.getItem("authToken");
+    // const token = sessionStorage.getItem("authToken");
+    // const authToken = JSON.parse(localStorage.getItem('persist:root')).authToken;
+    // console.log(authToken);
+    // console.log("token",token);
+    setInfor(data.userId);
     if (!token) return;
     const decode = jwtDecode<JwtPayload>(token);
     const currentTime = Date.now() / 1000;
@@ -84,8 +93,7 @@ export const Login: React.FC = () => {
     if (roles.includes("admin")) {
       return <Navigate to="/admin" />;
     }
-    // truyền decode qua home
-    return <Navigate to="/home" />;
+      return <Navigate to="/home" state={{ userInfo: infor }} />;
   }
 
   return (
