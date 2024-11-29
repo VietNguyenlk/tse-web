@@ -79,25 +79,25 @@ export const adminHeaderItems: AdminHeaderItem[] = [
   {
     id: "members",
     title: "Thành viên",
-    des: "Setup members",
+    des: "Thiết lập thành viên",
     icon: <Person />,
   },
   {
     id: "roles",
     title: "Vai trò & Quyền",
-    des: "Roles & Privileges",
+    des: "Thiết lập vai trò và quyền",
     icon: <LockPerson />,
   },
   {
     id: "register-requests",
     title: "Duyệt đăng ký",
-    des: "Approve register requests",
+    des: "Các đơn đăng ký mới",
     icon: <PersonAdd />,
   },
   {
     id: "exit-requests",
-    title: "Yêu cầu rời nhóm",
-    des: "Exit requests",
+    title: "Yêu cầu rời CLB",
+    des: "Thành viên rời CLB",
     icon: <DirectionsWalk />,
   },
 ];

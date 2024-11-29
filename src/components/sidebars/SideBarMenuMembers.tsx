@@ -9,6 +9,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   QuestionMarkCircleIcon,
+  CodeBracketIcon,
 } from "@heroicons/react/24/outline";
 //import ProfileView from './ProfileView'; // Import ProfileView component
 // import { UserEntity } from '../types/entities/user.entity';
@@ -16,6 +17,8 @@ import HomeMembers from "../../components/HomeMembers";
 import { useAppDispatch } from "../../configs/store";
 import logout from "../../modules/auth/authentication.reducer";
 import ActivityMembers from "../../modules/home/activity/ActivityMembers";
+import { IconButton } from "@mui/material";
+import { Close, Menu } from "@mui/icons-material";
 // import {Home} from '../../modules/home/Home';
 import { IUser } from "../../shared/models/user.model";
 import ProfileView from "../../modules/home/profile/ProfileView";
@@ -105,7 +108,7 @@ const SideBarMenuMembers: React.FC<SideBarMenuMembersProps> = ({ user }) => {
             `}
         >
           {/* Toggle Button */}
-          <button
+          {/* <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="hidden lg:block absolute -right-3 top-8 bg-gray-800 rounded-full p-1 text-white hover:bg-gray-700"
           >
@@ -114,15 +117,24 @@ const SideBarMenuMembers: React.FC<SideBarMenuMembersProps> = ({ user }) => {
             ) : (
               <ChevronRightIcon className="h-5 w-5 transition-transform duration-300" />
             )}
-          </button>
+          </button> */}
 
           {/* Logo/Title */}
-          <div className="flex items-center justify-center p-6 border-b border-gray-700">
-            {isExpanded ? (
-              <h1 className="text-xl font-bold">TSE Club</h1>
-            ) : (
-              <h1 className="text-xl font-bold">TSE</h1>
+          <div className="h-16 flex items-center justify-between pr-4 pl-5 border-b border-gray-700">
+            {isExpanded && (
+              <span className="text-md font-bold flex items-center gap-2 transition-all duration-300 ease-in-out">
+                <CodeBracketIcon className="h-10 w-10" /> TSE Club
+              </span>
             )}
+            <IconButton
+              onClick={() => setIsExpanded(!isExpanded)}
+              size="medium"
+              edge="start"
+              color="inherit"
+              aria-label="toggle sidebar"
+            >
+              {isExpanded ? <Close /> : <CodeBracketIcon className="h-10 w-10" />}
+            </IconButton>
           </div>
 
           {/* Menu Items */}
