@@ -7,7 +7,8 @@
     ArrowLeftEndOnRectangleIcon,
     Bars3Icon,
     ChevronLeftIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
+    QuestionMarkCircleIcon
   } from '@heroicons/react/24/outline';
   //import ProfileView from './ProfileView'; // Import ProfileView component
   // import { UserEntity } from '../types/entities/user.entity';
@@ -18,6 +19,7 @@
   // import {Home} from '../../modules/home/Home';
   import { IUser } from '../../shared/models/user.model';
   import ProfileView from '../../modules/home/profile/ProfileView';
+  import QA from '../../modules/home/q&a/QA';
 
   interface SideBarMenuMembersProps {
     user: IUser | null;
@@ -38,6 +40,8 @@
       { id: 'home', icon: HomeIcon, label: 'Home', onClick: () => setActiveTab('home') },
       { id: 'profile', icon: UserIcon, label: 'Profile', onClick: () => setActiveTab('profile') },
       { id: 'activity', icon: ChartBarIcon, label: 'Activity', onClick: () => setActiveTab('activity') },
+      // Q&A
+      { id: 'q&a', icon: QuestionMarkCircleIcon, label: 'Q&A', onClick: () => setActiveTab('q&a') },
       { id: 'logout', icon: ArrowLeftEndOnRectangleIcon, label: 'Logout', onClick: handleLogout }
     ];
 
@@ -49,6 +53,9 @@
           return <HomeMembers />;
         case 'activity':
           return <ActivityMembers />;
+        case 'q&a':
+          return <QA />;
+
         default:
           return null;
       }
