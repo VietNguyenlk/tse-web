@@ -1,4 +1,4 @@
-import { KeyboardArrowDown } from "@mui/icons-material";
+import { Close, KeyboardArrowDown } from "@mui/icons-material";
 import React, { useState, useRef, useEffect } from "react";
 
 type FieldSize = "sm" | "md" | "lg";
@@ -12,6 +12,7 @@ interface SelectProps {
   size?: FieldSize;
   options?: SelectOption[];
   onChange?: (selected: SelectOption | null) => void;
+  onClear?: (selected: SelectOption | null) => void;
   placeholder?: string;
   value?: SelectOption | null;
 }
@@ -30,6 +31,7 @@ const getSizeClasses = (size: FieldSize) => {
 const CustomSelect = ({
   options = [],
   onChange = () => {},
+  onClear = () => {},
   size = "md",
   placeholder = "Select an option",
   value = null,
@@ -70,6 +72,7 @@ const CustomSelect = ({
     e.stopPropagation();
     setSelected(null);
     onChange(null);
+    onClear(selected);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -105,6 +108,12 @@ const CustomSelect = ({
             onClick={(e) => e.stopPropagation()}
             autoFocus
           />
+        )}
+
+        {selected && (
+          <button className="flex items-center" onClick={handleClear}>
+            <Close className="w-4 h-4 text-gray-400" />
+          </button>
         )}
 
         <div className="flex items-center gap-2">

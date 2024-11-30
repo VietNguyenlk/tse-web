@@ -67,6 +67,7 @@ export interface EntityState<T> {
   updating: boolean;
   updateSuccess: boolean;
   errorMessage: string | null;
+  successMessage: string | null;
   totalItems: number;
   totalPages: number;
 }

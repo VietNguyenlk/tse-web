@@ -21,6 +21,7 @@ const initState: EntityState<IRole> = {
   updating: false,
   updateSuccess: false,
   errorMessage: null,
+  successMessage: null,
   totalItems: 0,
   totalPages: 0,
 };

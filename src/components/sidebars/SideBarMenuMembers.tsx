@@ -13,16 +13,16 @@ import {
 } from "@heroicons/react/24/outline";
 //import ProfileView from './ProfileView'; // Import ProfileView component
 // import { UserEntity } from '../types/entities/user.entity';
-import HomeMembers from "../../components/HomeMembers";
+import HomeMembers from "../../modules/home/HomeMembers";
 import { useAppDispatch } from "../../configs/store";
-import logout from "../../modules/auth/authentication.reducer";
-import ActivityMembers from "../../modules/home/activity/ActivityMembers";
 import { IconButton } from "@mui/material";
 import { Close, Menu } from "@mui/icons-material";
 // import {Home} from '../../modules/home/Home';
 import { IUser } from "../../shared/models/user.model";
 import ProfileView from "../../modules/home/profile/ProfileView";
 import QA from "../../modules/home/q&a/QA";
+import { logout } from "../../modules/auth/authentication.reducer";
+import ActivityList from "../../modules/activity/Activity";
 
 interface SideBarMenuMembersProps {
   user: IUser | null;
@@ -35,7 +35,7 @@ const SideBarMenuMembers: React.FC<SideBarMenuMembersProps> = ({ user }) => {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    // dispatch(logout());
+    dispatch(logout());
     navigate("/");
   };
 
@@ -49,26 +49,26 @@ const SideBarMenuMembers: React.FC<SideBarMenuMembersProps> = ({ user }) => {
     {
       id: "profile",
       icon: UserIcon,
-      label: "Profile",
+      label: "Thông tin cá nhân",
       onClick: () => setActiveTab("profile"),
     },
     {
       id: "activity",
       icon: ChartBarIcon,
-      label: "Activity",
+      label: "Hoạt động",
       onClick: () => setActiveTab("activity"),
     },
     // Q&A
     {
       id: "q&a",
       icon: QuestionMarkCircleIcon,
-      label: "Q&A",
+      label: "Hỏi đáp",
       onClick: () => setActiveTab("q&a"),
     },
     {
       id: "logout",
       icon: ArrowLeftEndOnRectangleIcon,
-      label: "Logout",
+      label: "Đăng xuất",
       onClick: handleLogout,
     },
   ];
@@ -80,7 +80,7 @@ const SideBarMenuMembers: React.FC<SideBarMenuMembersProps> = ({ user }) => {
       case "home":
         return <HomeMembers />;
       case "activity":
-        return <ActivityMembers />;
+        return <ActivityList />;
       case "q&a":
         return <QA />;
 

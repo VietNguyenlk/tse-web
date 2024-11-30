@@ -1,52 +1,29 @@
-import {
-  AccessTime,
-  CalendarMonth,
-  DeleteOutline,
-  Edit,
-  EditNote,
-  LocationOn,
-  Person,
-} from "@mui/icons-material";
-import { Badge } from "@mui/material";
-import { useState } from "react";
-
-import ActivityDetailsModal from "../../modules/administration/activity-management/details/ActivityDetailsModal";
+import { Close } from "@mui/icons-material";
 import { IActivity } from "../../shared/models/activity.model";
 import {
-  convertDateFromServer,
+  convertDateForDisplay,
   convertTimeFromServer,
 } from "../../shared/utils/date-utils";
+import { MultiSelectOption } from "../../components/search/MutilpleSelect";
 import {
   ActivityScope,
   ActivityStatus,
   ActivityType,
 } from "../../shared/models/enums/activity.enum";
-import CustomConfirmDialog from "../dialogs/CustomConfirmDialog";
-import { useAppDispatch } from "../../configs/store";
-import { deleteActivity } from "../../modules/administration/activity-management/activity-management.reducer";
+import { SelectOption } from "../../components/search/CustomSelect";
+import { Badge } from "@mui/material";
 
-interface ActivityCardProps {
-  activity: Readonly<IActivity>;
+interface MemberActivityDetailModalProps {
+  activity: IActivity;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
-  const dispatch = useAppDispatch();
-  const {
-    name,
-    activityType,
-    activityStatus,
-    activityScope,
-    startTime,
-    endTime,
-    venue,
-    capacity,
-    registeredNumber,
-    hostName,
-    occurDate,
-  } = activity;
-  const [modalOpen, setModalOpen] = useState(false);
-  const [toggleDeleteConfirmDialog, setToggleDeleteConfirmDialog] = useState(false);
-
+const MemberActivityDetailModal: React.FC<MemberActivityDetailModalProps> = ({
+  activity,
+  isOpen,
+  onClose,
+}) => {
   const getActivityScopeStyle = (scope: keyof typeof ActivityScope): string => {
     switch (scope) {
       case "INTERNAL":
@@ -253,42 +230,47 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     }
   };
 
-  const handleConfirmDelete = () => {
-    dispatch(deleteActivity(activity.activityId));
-    setToggleDeleteConfirmDialog(false);
-  };
+  if (!isOpen) return null;
 
   return (
-    <div className="p-4">
-      <CustomConfirmDialog
-        isOpen={toggleDeleteConfirmDialog}
-        onCancel={() => setToggleDeleteConfirmDialog(false)}
-        onConfirm={handleConfirmDelete}
-      />
-      <div className="flex justify-between items-start mb-4">
-        <div className="space-y-4">
-          <h3 className="text-2xl font-semibold text-gray-900">{name}</h3>
-          <div className="flex items-center gap-3 mb-2">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-20 transition-opacity">
+      <div className="bg-white rounded-lg  w-full max-w-2xl max-h-[90vh] overflow-y-auto relative mt-20">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <Close />
+        </button>
+
+        {/* Modal Header */}
+        <div className="bg-blue-50 p-6 border-b space-y-2">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {activity.name || "Activity Details"}
+          </h2>
+          <div className="flex items-center gap-3">
             <Badge
               className={`${getActivityTypeStyles(
-                activityType,
+                activity.activityType,
               )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
             >
-              <i>{getActivityTypeIcon(activityType)} </i>
+              <i>{getActivityTypeIcon(activity.activityType)} </i>
               <span>
                 {
-                  { CONTEST: "Cuộc thi", SEMINAL: "Hội thảo", TRAINING: "Đào tạo" }[
-                    activityType
-                  ]
+                  {
+                    CONTEST: "Cuộc thi",
+                    SEMINAL: "Hội thảo",
+                    TRAINING: "Đào tạo",
+                  }[activity.activityType]
                 }
               </span>
             </Badge>
             <Badge
               className={`${getActivityStatusStyles(
-                activityStatus,
+                activity.activityStatus,
               )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
             >
-              <i>{getActivityStatusIcon(activityStatus)} </i>
+              <i>{getActivityStatusIcon(activity.activityStatus)} </i>
               <span>
                 {
                   {
@@ -296,97 +278,149 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
                     OPENED: "Mở",
                     CLOSED: "Đóng",
                     CANCELED: "Huỷ bỏ",
-                  }[activityStatus]
+                  }[activity.activityStatus]
                 }
               </span>
             </Badge>
 
             <Badge
               className={`${getActivityScopeStyle(
-                activityScope,
+                activity.activityScope,
               )} px-2 py-2 rounded-lg min-w-[100px] flex items-center gap-1`}
             >
-              <i>{getScopeIcon(activityScope)} </i>
+              <i>{getScopeIcon(activity.activityScope)} </i>
               <span>
-                {{ INTERNAL: "Nội bộ", EXTERNAL: "Bên ngoài" }[activityScope]}
+                {
+                  { INTERNAL: "Nội bộ", EXTERNAL: "Bên ngoài" }[
+                    activity.activityScope
+                  ]
+                }
               </span>
             </Badge>
           </div>
-          <div className="flex items-center gap-6 text-gray-600">
-            <div className="flex items-center gap-2">
-              <Person />
-              <span>{hostName}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CalendarMonth />
-              <span>{convertDateFromServer(occurDate)}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AccessTime />
-              <span>
-                {convertTimeFromServer(startTime, true)} -{" "}
-                {convertTimeFromServer(endTime, true)}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600 mt-3">
-            <LocationOn />
-            <span>{venue}</span>
-          </div>
         </div>
-        <div className="flex">
-          <div className="flex items-center gap-2">
-            <button
-              className="p-2 text-blue-600 hover:bg-gray-100 rounded "
-              onClick={() => setModalOpen(true)}
-            >
-              <EditNote sx={{ width: 36, height: 36 }} />
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              className="p-2 text-red-600 hover:bg-gray-100  rounded"
-              onClick={() => setToggleDeleteConfirmDialog(true)}
-            >
-              <DeleteOutline sx={{ width: 32, height: 32 }} />
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {/* Registration Progress */}
-      <div className="mt-4">
-        <div className="flex justify-between mb-1 space-y-1">
-          <span className="text-sm text-gray-600">Số lượng đã đăng kí</span>
-          <span className="text-sm font-medium text-gray-900">
-            {registeredNumber}/{capacity}
-          </span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-600 h-2 rounded-full"
-            style={{
-              width: `${
-                registeredNumber && capacity && (registeredNumber / capacity) * 100
-              }%`,
-            }}
-          />
-        </div>
-      </div>
+        {/* Modal Body */}
+        <div className="px-6 pb-6 space-y-4">
+          <div className="space-y-2 mt-4">
+            <h3 className="font-semibold text-gray-700 border-b pb-1">
+              Chi tiết hoạt động
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <p>
+                  <span className="font-medium">Ngày diễn ra:</span>{" "}
+                  {convertDateForDisplay(activity.occurDate)}
+                </p>
+                <p>
+                  <span className="font-medium">Thời gian bắt đầu:</span>{" "}
+                  {convertTimeFromServer(activity.startTime, true)}
+                </p>
+                <p>
+                  <span className="font-medium">Thời gian kết thúc:</span>{" "}
+                  {convertTimeFromServer(activity.endTime, true)}
+                </p>
+              </div>
+              <div>
+                <p>
+                  <span className="font-medium">Hình thức:</span>{" "}
+                  {
+                    {
+                      ONLINE: "Trực tuyến",
+                      OFFLINE: "Trực tiếp",
+                    }[activity.venueType]
+                  }
+                </p>
+                <p>
+                  <span className="font-medium">
+                    {activity.venueType === "ONLINE" ? "Link" : "Địa chỉ"}:
+                  </span>{" "}
+                  {activity.venue || "N/A"}
+                </p>
+                <p>
+                  <span className="font-medium">Trạng thái:</span>{" "}
+                  {
+                    {
+                      PLANED: "Lên kế hoạch",
+                      OPENED: "Mở",
+                      CLOSED: "Đóng",
+                      CANCELED: "Huỷ bỏ",
+                    }[activity.activityStatus]
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
 
-      {/* Actions */}
-      <div className="mt-4 flex justify-end">
-        <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800">
-          Xem danh sách đăng kí &rarr;
-        </button>
+          {/* Description */}
+          {activity.description && (
+            <div>
+              <h3 className="font-semibold text-base text-gray-700 mb-2">Mô tả</h3>
+              <p className="text-gray-600 text-base">{activity.description}</p>
+            </div>
+          )}
+
+          {/* Activity Details Grid */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Basic Information */}
+            <div className="space-y-2">
+              <h3 className="font-semibold  text-gray-700 border-b pb-1">
+                Thông tin cơ bản
+              </h3>
+
+              <p>
+                <span className="font-medium">Người chủ trì:</span>{" "}
+                {activity.hostName || "N/A"}
+              </p>
+              <p>
+                <span className="font-medium">Loại hoạt động:</span>{" "}
+                {
+                  {
+                    CONTEST: "Cuộc thi",
+                    SEMINAL: "Hội thảo",
+                    TRAINING: "Đào tạo",
+                  }[activity.activityType]
+                }
+              </p>
+              <p>
+                <span className="font-medium">Phạm vi:</span>{" "}
+                {
+                  { INTERNAL: "Nội bộ", EXTERNAL: "Bên ngoài" }[
+                    activity.activityScope
+                  ]
+                }
+              </p>
+            </div>
+
+            {/* Registration Details */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-gray-700 border-b pb-1">
+                Thời hạn đăng ký
+              </h3>
+              <p>
+                <span className="font-medium">Số lượng tham gia tối đa:</span>{" "}
+                {activity.capacity || "N/A"}
+              </p>
+              <p>
+                <span className="font-medium">Số lượng đã đăng ký:</span>{" "}
+                {activity.registeredNumber || 0}
+              </p>
+              <p>
+                <span className="font-medium">Ngày mở đăng ký:</span>{" "}
+                {convertDateForDisplay(activity.timeOpenRegister)}
+              </p>
+              <p>
+                <span className="font-medium">Ngày đóng đăng ký:</span>{" "}
+                {convertDateForDisplay(activity.timeCloseRegister)}
+              </p>
+            </div>
+          </div>
+
+          {/* Event Timing and Venue */}
+        </div>
       </div>
-      <ActivityDetailsModal
-        onClose={() => setModalOpen(false)}
-        isOpen={modalOpen}
-        activity={activity}
-      />
     </div>
   );
 };
 
-export default ActivityCard;
+export default MemberActivityDetailModal;

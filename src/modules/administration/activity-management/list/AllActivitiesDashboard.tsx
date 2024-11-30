@@ -19,23 +19,25 @@ const AllActivitiesDashboard: React.FC<AllActivitiesDashboardProps> = ({
   if (errorMessage) return <>Error: {errorMessage}</>;
 
   return (
-    <div className="relative">
-      {loading && <LoadingOverlay isLoading={loading} minTimeout={100} />}
-      {entities.length > 0 ? (
-        <div className="space-y-4">
-          {activities.map((activity) => (
-            <div
-              key={activity.activityId}
-              className="border bg-white rounded-lg shadow-md hover:shadow-lg  transition-shadow"
-            >
-              <ActivityCard activity={activity} />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <EmptyList />
-      )}
-    </div>
+    <>
+      <div className="relative">
+        {loading && <LoadingOverlay isLoading={loading} minTimeout={100} />}
+        {entities.length > 0 ? (
+          <div className="space-y-4">
+            {activities.map((activity) => (
+              <div
+                key={activity.activityId}
+                className="border bg-white rounded-lg shadow-md hover:shadow-lg  transition-shadow"
+              >
+                <ActivityCard activity={activity} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyList />
+        )}
+      </div>
+    </>
   );
 };
 

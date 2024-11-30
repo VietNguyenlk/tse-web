@@ -1,9 +1,9 @@
 import { CalendarMonth, Close, Edit, LockClock, Save } from "@mui/icons-material";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomConfirmDialog from "../../../../components/dialogs/CustomConfirmDialog";
-import { useAppDispatch } from "../../../../configs/store";
+import { useAppDispatch, useAppSelector } from "../../../../configs/store";
 import { IActivity } from "../../../../shared/models/activity.model";
 import {
   ActivityScope,
@@ -12,7 +12,12 @@ import {
   VenueType,
 } from "../../../../shared/models/enums/activity.enum";
 import { extractTimeFromDateTime } from "../../../../shared/utils/date-utils";
-import { updateActivity } from "../activity-management.reducer";
+import {
+  resetActivityManagementState,
+  updateActivity,
+} from "../activity-management.reducer";
+import { useNotifications } from "../../../../shared/hooks/notification.hook";
+import Notification from "../../../../components/notifications/Notification";
 
 interface ActivityDetailsModalProps {
   isOpen: boolean;
@@ -25,8 +30,13 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
   activity,
   onClose,
 }) => {
+  const notificationTimeOut = 1000;
   const dispatch = useAppDispatch();
+  const activityManagementState = useAppSelector(
+    (state) => state.activityManagement,
+  );
   const [toggleConfirmDialog, setToggleConfirmDialog] = useState<boolean>(false);
+  const { addNotification, notifications, removeNotification } = useNotifications();
   const {
     setError,
     clearErrors,
@@ -34,13 +44,36 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
     reset,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm<IActivity>({
     defaultValues: activity,
   });
 
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
   const [formData, setFormData] = useState<IActivity>({});
+
+  const handleUpdateSuccess = (successMessage: string | null) => {
+    addNotification("SUCCESS", "Cập nhật thành công", successMessage);
+    // dispatch(resetActivityManagementState());
+  };
+
+  const handleUpdateFailure = (errorMessage: string | null) => {
+    reset();
+    addNotification("ERROR", "Cập nhật thất bại", errorMessage);
+  };
+
+  useEffect(() => {
+    if (
+      activityManagementState.updateSuccess === false &&
+      activityManagementState.errorMessage
+    ) {
+      handleUpdateFailure(activityManagementState.errorMessage);
+    }
+
+    if (activityManagementState.updateSuccess) {
+      handleUpdateSuccess("Cập nhật thông tin hoạt động thành công");
+    }
+  }, [activityManagementState]);
 
   const handleClose = () => {
     setEnableEdit(false);
@@ -56,18 +89,6 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
   const submitHandler = (data: IActivity) => {
     setToggleConfirmDialog(true);
     setFormData(data);
-    // const processedData: Partial<IActivity> = {
-    //   ...data,
-    //   timeOpenRegister: data.timeOpenRegister
-    //     ? convertDateTimeFromClient(data.timeOpenRegister)
-    //     : null,
-    //   timeCloseRegister: data.timeCloseRegister
-    //     ? convertDateTimeFromClient(data.timeCloseRegister)
-    //     : null,
-    //   occurDate: data.occurDate ? convertDateTimeFromClient(data.occurDate) : null,
-    //   startTime: data.startTime ? convertTimeFromClient(data.startTime) : null,
-    //   endTime: data.endTime ? convertTimeFromClient(data.endTime) : null,
-    // };
   };
 
   if (!isOpen) return null;
@@ -75,6 +96,20 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto">
       <div className="fixed inset-0 bg-black/30 bg-opacity-50 transition-opacity" />
+
+      <div className="fixed top-0 right-0 z-50">
+        {notifications.map((notification, index) => (
+          <Notification
+            isShow={notification.show}
+            key={notification.id}
+            {...notification}
+            index={index}
+            onClose={() => removeNotification(notification.id)}
+            duration={notificationTimeOut}
+            autoClose={true}
+          />
+        ))}
+      </div>
 
       <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl mx-4 p-6 ">
         <CustomConfirmDialog
@@ -289,6 +324,7 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                       value: 3,
                       message: "Tối thiểu 1",
                     },
+                    valueAsNumber: true,
                   })}
                   readOnly={!enableEdit}
                   type="number"
@@ -336,46 +372,48 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                   <input
                     {...register("timeOpenRegister", {
                       required: "Không được trống",
-                      validate: {
-                        isFromToDay: (value) => {
-                          const timeOpen = dayjs(value).startOf("day");
-                          const timeToday = dayjs().startOf("day");
+                      validate: dirtyFields.timeOpenRegister
+                        ? {
+                            isFromToDay: (value) => {
+                              const timeOpen = dayjs(value).startOf("day");
+                              const timeToday = dayjs().startOf("day");
 
-                          if (timeOpen.isBefore(timeToday)) {
-                            return "Nhỏ nhất là hôm nay";
-                          }
-                          return true;
-                        },
-                        beforeOccurDate: (value: string) => {
-                          const occurDate = getValues("occurDate");
-                          if (!occurDate) return true;
-                          const inputDate = dayjs(value);
-                          const occurDateObj = dayjs(occurDate);
+                              if (timeOpen.isBefore(timeToday)) {
+                                return "Nhỏ nhất là hôm nay";
+                              }
+                              return true;
+                            },
+                            beforeOccurDate: (value: string) => {
+                              const occurDate = getValues("occurDate");
+                              if (!occurDate) return true;
+                              const inputDate = dayjs(value);
+                              const occurDateObj = dayjs(occurDate);
 
-                          if (inputDate.isAfter(occurDateObj)) {
-                            return "Phải trước ngày tổ chức";
-                          }
-                          return true;
-                        },
-                        isBeforeTimeCloseRegister: (value) => {
-                          const timeClose = getValues("timeCloseRegister");
-                          if (!timeClose) return true;
-                          const timeOpen = dayjs(value).startOf("day");
+                              if (inputDate.isAfter(occurDateObj)) {
+                                return "Phải trước ngày tổ chức";
+                              }
+                              return true;
+                            },
+                            isBeforeTimeCloseRegister: (value) => {
+                              const timeClose = getValues("timeCloseRegister");
+                              if (!timeClose) return true;
+                              const timeOpen = dayjs(value).startOf("day");
 
-                          if (
-                            timeOpen.isAfter(dayjs(timeClose).startOf("day")) ||
-                            timeOpen.isSame(dayjs(timeClose).startOf("day"))
-                          ) {
-                            setError("timeCloseRegister", {
-                              message: "Phải sau ngày mở",
-                              type: "manual",
-                            });
-                            return "Phải trước ngày đóng";
+                              if (
+                                timeOpen.isAfter(dayjs(timeClose).startOf("day")) ||
+                                timeOpen.isSame(dayjs(timeClose).startOf("day"))
+                              ) {
+                                setError("timeCloseRegister", {
+                                  message: "Phải sau ngày mở",
+                                  type: "manual",
+                                });
+                                return "Phải trước ngày đóng";
+                              }
+                              clearErrors("timeCloseRegister");
+                              return true;
+                            },
                           }
-                          clearErrors("timeCloseRegister");
-                          return true;
-                        },
-                      },
+                        : undefined,
                     })}
                     readOnly={!enableEdit}
                     type="date"
@@ -422,44 +460,46 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                   <input
                     {...register("timeCloseRegister", {
                       required: "Không được trống",
-                      validate: {
-                        isAfterToday: (value) => {
-                          const timeClose = dayjs(value);
-                          const timeToDay = dayjs(new Date());
-                          if (timeClose.isBefore(timeToDay)) {
-                            return "Ít nhất sau hôm nay";
-                          }
-                          return true;
-                        },
-                        beforeOccurDate: (value: string) => {
-                          const occurDate = getValues("occurDate");
-                          if (!occurDate) return true;
-                          const inputDate = dayjs(value);
-                          const occurDateObj = dayjs(occurDate);
-                          if (inputDate.isAfter(occurDateObj)) {
-                            return "Phải trước ngày tổ chức";
-                          }
-                          return true;
-                        },
-                        isAfterTimeOpen: (value) => {
-                          const timeOpen = getValues("timeOpenRegister");
-                          if (!timeOpen) return true;
-                          const timeClose = dayjs(value).startOf("day");
+                      validate: dirtyFields.timeCloseRegister
+                        ? {
+                            isAfterToday: (value) => {
+                              const timeClose = dayjs(value);
+                              const timeToDay = dayjs(new Date());
+                              if (timeClose.isBefore(timeToDay)) {
+                                return "Ít nhất sau hôm nay";
+                              }
+                              return true;
+                            },
+                            beforeOccurDate: (value: string) => {
+                              const occurDate = getValues("occurDate");
+                              if (!occurDate) return true;
+                              const inputDate = dayjs(value);
+                              const occurDateObj = dayjs(occurDate);
+                              if (inputDate.isAfter(occurDateObj)) {
+                                return "Phải trước ngày tổ chức";
+                              }
+                              return true;
+                            },
+                            isAfterTimeOpen: (value) => {
+                              const timeOpen = getValues("timeOpenRegister");
+                              if (!timeOpen) return true;
+                              const timeClose = dayjs(value).startOf("day");
 
-                          if (
-                            timeClose.isBefore(dayjs(timeOpen).startOf("day")) ||
-                            timeClose.isSame(dayjs(timeOpen).startOf("day"))
-                          ) {
-                            setError("timeOpenRegister", {
-                              message: "Phải trước ngày đóng",
-                              type: "manual",
-                            });
-                            return "Phải sau ngày mở";
+                              if (
+                                timeClose.isBefore(dayjs(timeOpen).startOf("day")) ||
+                                timeClose.isSame(dayjs(timeOpen).startOf("day"))
+                              ) {
+                                setError("timeOpenRegister", {
+                                  message: "Phải trước ngày đóng",
+                                  type: "manual",
+                                });
+                                return "Phải sau ngày mở";
+                              }
+                              clearErrors("timeOpenRegister");
+                              return true;
+                            },
                           }
-                          clearErrors("timeOpenRegister");
-                          return true;
-                        },
-                      },
+                        : undefined,
                     })}
                     readOnly={!enableEdit}
                     type="date"
@@ -505,20 +545,22 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                   <input
                     {...register("occurDate", {
                       required: "Không được trống",
-                      validate: {
-                        checkTime: (value: string) => {
-                          const today = new Date();
-                          const inputDate = new Date(value);
-                          today.setHours(0, 0, 0, 0);
-                          inputDate.setHours(0, 0, 0, 0);
-                          const isAfter = inputDate.getTime() > today.getTime();
-                          if (!isAfter) {
-                            return "Phải lớn hơn ngày hiên tại";
-                          }
+                      validate: dirtyFields.occurDate
+                        ? {
+                            checkTime: (value: string) => {
+                              const today = new Date();
+                              const inputDate = new Date(value);
+                              today.setHours(0, 0, 0, 0);
+                              inputDate.setHours(0, 0, 0, 0);
+                              const isAfter = inputDate.getTime() > today.getTime();
+                              if (!isAfter) {
+                                return "Phải lớn hơn ngày hiên tại";
+                              }
 
-                          return true;
-                        },
-                      },
+                              return true;
+                            },
+                          }
+                        : undefined,
                     })}
                     readOnly={!enableEdit}
                     type="date"

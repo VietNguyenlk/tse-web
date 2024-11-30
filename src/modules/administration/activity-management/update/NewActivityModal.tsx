@@ -79,11 +79,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) 
   };
 
   const submitHandler = (data: IActivity) => {
-    console.log({ data });
     dispatch(createActivity(data));
-    setTimeout(() => {
-      handleClose();
-    }, timeOuts);
   };
 
   if (!isOpen) return null;

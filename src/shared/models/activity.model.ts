@@ -24,28 +24,27 @@ export interface IActivity extends IBaseModel {
   activityType?: keyof typeof ActivityType | null;
   activityStatus?: keyof typeof ActivityStatus | null;
   activityScope?: keyof typeof ActivityScope | null;
-  isDeleted?: boolean;
 }
 
 export const activityFields: Record<keyof IActivity, string | null> = {
   activityId: null,
-  name: "Tên hoạt động",
+  name: null,
   description: null,
   capacity: null,
-  hostName: "Người chủ trì",
+  hostName: null,
   registeredNumber: null,
-  timeOpenRegister: "Thời gian mở đăng ký",
-  timeCloseRegister: "Thời gian đóng đăng ký",
+  timeOpenRegister: null,
+  timeCloseRegister: "Ngày đóng đăng ký",
   occurDate: "Ngày tổ chức",
   startTime: null,
   endTime: null,
-  venueType: "Loại địa điểm",
+  venueType: null,
   venue: null,
-  activityType: "Loại hoạt động",
-  activityStatus: "Trạng thái",
-  activityScope: "Phạm vi",
+  activityType: null,
+  activityStatus: null,
+  activityScope: null,
   isDeleted: null,
-  createdAt: "Thời gian tạo",
+  createdAt: null,
   deletedAt: null,
   updatedAt: "Cập nhật lần cuối",
 };

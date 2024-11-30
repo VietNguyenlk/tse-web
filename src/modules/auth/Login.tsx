@@ -35,7 +35,7 @@ export const Login: React.FC = () => {
   const { addNotification, removeNotification, notifications } = useNotifications();
   const navigate: NavigateFunction = useNavigate();
   const dispatch = useAppDispatch();
-  const [infor,setInfor] = useState<String>();
+  const [infor, setInfor] = useState<String>();
 
   const {
     errorMessage,
@@ -93,17 +93,17 @@ export const Login: React.FC = () => {
     if (roles.includes("admin")) {
       return <Navigate to="/admin" />;
     }
-      return <Navigate to="/home" state={{ userInfo: infor }} />;
+    return <Navigate to="/home" state={{ userInfo: infor }} />;
   }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-500">
       <div className="bg-white shadow-lg rounded-lg px-10 py-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-3">
-        Chào mừng đến với TSE
+          Chào mừng đến với TSE
         </h1>
         <h2 className="text-sm text-center text-gray-800 mb-4 font-bold">
-        "Chào mừng trở lại, vui lòng đăng nhập."
+          "Chào mừng trở lại, vui lòng đăng nhập."
         </h2>
         <p className="text-red-500 text-xl mt-1">{errorLogin}</p>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -158,7 +158,7 @@ export const Login: React.FC = () => {
                 htmlFor="cboxRememberMe"
                 className="text-sm hover:cursor-pointer"
               >
-                Ghi nhớ mật khẩu?
+                Ghi nhớ đăng nhập?
               </label>
             </div>
             <div>

@@ -14,6 +14,7 @@ import register from "../modules/account/register/register.reducer";
 import storage from "redux-persist/lib/storage";
 import { PersistConfig, Persistor, persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
+import activity from "../modules/activity/activity.reducer";
 
 const rootReducer = combineReducers({
   userManagement,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   activityManagement,
   authentication,
   register,
+  activity,
 });
 
 type RootReducer = ReturnType<typeof rootReducer>;

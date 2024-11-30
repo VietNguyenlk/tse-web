@@ -12,6 +12,7 @@ interface MultiSelectProps {
   size?: FieldSize;
   options?: MultiSelectOption[];
   onChange?: (selected: MultiSelectOption[]) => void;
+  onRemove?: (selected: MultiSelectOption[]) => void;
   showSelectedCount?: boolean;
   onBlur?: (selected: MultiSelectOption[]) => void; // add here
 }
@@ -29,12 +30,14 @@ const getSizeClasses = (size: FieldSize) => {
 const MultiSelect = ({
   options = [],
   onChange = () => {},
+  onRemove = () => {},
   size = "md",
-  onBlur = () => {}, // add here
+  onBlur = () => {},
 }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<MultiSelectOption[]>([]);
+  const [hasBlurred, setHasBlurred] = useState(false); // add
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,8 +53,9 @@ const MultiSelect = ({
       ) {
         setIsOpen(false);
         // add here
-        if (selected.length > 0) {
+        if (!hasBlurred && selected.length > 0) {
           onBlur(selected); // Trigger onBlur callback
+          setHasBlurred(true);
         }
       }
     };
@@ -80,6 +84,7 @@ const MultiSelect = ({
     );
     setSelected(newSelected);
     onChange(newSelected);
+    onRemove(newSelected);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -91,8 +96,16 @@ const MultiSelect = ({
     }
   };
 
+  const handleClickInside = () => {
+    setHasBlurred(false);
+  };
+
   return (
-    <div className={`relative ${getSizeClasses(size)} `} ref={containerRef}>
+    <div
+      className={`relative ${getSizeClasses(size)} `}
+      ref={containerRef}
+      onClick={handleClickInside}
+    >
       <div
         className="min-h-10 w-full border rounded-lg bg-white px-2  cursor-text flex items-center gap-1"
         onClick={() => {
