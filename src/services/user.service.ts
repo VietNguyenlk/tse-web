@@ -68,6 +68,19 @@ class UserService {
       throw this.handleError(error);
     }
   }
+  ///api/v1/users/deny-register, POST userIDs là mảng String
+  public async denyRegisterRequest(userIds: string[]): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/deny-register`,
+        { userIds },
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
 
   private handleError(error: any) {
     if (error.response) {

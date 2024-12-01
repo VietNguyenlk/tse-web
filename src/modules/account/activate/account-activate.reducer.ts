@@ -41,7 +41,16 @@ export const activateUsers = createAsyncThunk(
     serializeError: serializeAxiosError,
   },
 );
-
+//{/api/v1/users/deny-register, POST
+// export const denyRegistration = createAsyncThunk(
+//   "activate/denyRegistration",
+//   async (userIds: string[]) => {
+//     return await axiosInstance.post<ApiResponse<{}>>(`/users/deny-register`, { userIds });
+//   },
+//   {
+//     serializeError: serializeAxiosError,
+//   },
+// );
 export const getRegistrationRequests = createAsyncThunk(
   "user/fetchRegistrationRequests",
   async (paginationParams: PaginationRequestParams) => {

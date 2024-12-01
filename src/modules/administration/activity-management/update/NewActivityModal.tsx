@@ -120,7 +120,7 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) 
                       }
                     }}
                     type="button"
-                    className={`text-gray-600 hover:text-gray-800 hover:border-gray-800 border rounded-xl border border-gray-600 rounded-xl px-2 py-2 font-medium ${
+                    className={`text-gray-600 hover:text-gray-800 hover:border-gray-800  border border-gray-600 rounded-xl px-2 py-2 font-medium ${
                       currentStep === 1 ? "invisible" : ""
                     }`}
                   >
@@ -136,18 +136,18 @@ const NewActivityModal: React.FC<NewActivityModalProps> = ({ isOpen, onClose }) 
                         }
                       }
                     }}
-                    className={`text-blue-600 hover:text-blue-800 hover:border-blue-800 font-medium border border-blue-600 rounded-xl px-2 py-2 font-medium ${
+                    className={`text-blue-600 hover:text-blue-800 hover:border-blue-800 border border-blue-600 rounded-xl px-2 py-2 font-medium ${
                       currentStep === MAX_STEPS ? "invisible" : ""
                     }`}
                   >
                     Tiếp tục &rarr;
                   </button>
                   {currentStep === MAX_STEPS && (
-                    <div className="space-x-3">
+                    <div className="space-x-3"> 
                       <button
                         type="button"
                         onClick={handleClose}
-                        className={`text-white bg-red-600 hover:border-red-600 border rounded-xl border border-white  rounded-xl px-4 py-2 font-medium `}
+                        className={`text-white bg-red-600 hover:border-red-600  border border-white  rounded-xl px-4 py-2 font-medium `}
                       >
                         Huỷ
                       </button>

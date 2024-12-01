@@ -9,6 +9,7 @@ import Notification from "../../../components/notifications/Notification";
 import LoadingIndicator from "../../../components/loading/LoadingIndicator";
 import EmptyList from "../../../components/loading/EmptyList";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
+import {userService} from "../../../services/user.service";
 
 interface RegistrationProps {
   headers: string[];
@@ -73,7 +74,17 @@ const RegistrationTable: React.FC<RegistrationProps> = ({
     activateSelector.changeActivationErrorMessage,
     activateSelector.changeActivationSuccessMessage,
   ]);
-
+  // deni register userIds: string[]
+  // viết hàm denyRegisterRequest để gọi api từ userService
+  const denyRegisterRequest = async (userIds: string[]) => {
+    try {
+      await userService.denyRegisterRequest(userIds);
+      addNotification("SUCCESS", "Thành công", "Từ chối yêu cầu đăng ký thành công");
+      setReload();
+    } catch (error) {
+      addNotification("ERROR", "Có lỗi xảy ra", error.message);
+    }
+  };
   return (
     <>
       <div className="fixed top-0 right-0 z-50">
@@ -245,7 +256,7 @@ const RegistrationTable: React.FC<RegistrationProps> = ({
                       <button
                         className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
                         onClick={() => {
-                          console.log("Reject user: ", user.userId);
+                          denyRegisterRequest([user.userId]);
                         }}
                       >
                         <Close /> Từ chối
