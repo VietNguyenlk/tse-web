@@ -1,8 +1,9 @@
 import React from 'react';
-import { UserIcon, AcademicCapIcon, CalendarIcon, PhoneIcon, EnvelopeIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import {UserIcon, ArrowLeftEndOnRectangleIcon, AcademicCapIcon, CalendarIcon, PhoneIcon, EnvelopeIcon, IdentificationIcon } from '@heroicons/react/24/outline';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi'; // Import locale tiếng Việt
 import {IUser} from "../../../shared/models/user.model";
+import { userService } from '../../../services/user.service';
 // Cấu hình locale cho dayjs
 dayjs.locale('vi');
 
@@ -76,6 +77,19 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
     }
   };
 
+  // yêu cầu rời clb
+  const exitClub = async () => {
+    try {
+      // Gọi API từ service
+      await userService.requestLeft(user.userId);
+      // Hiển thị thông báo thành công
+      alert('Chuyển yêu cầu rời CLB thành công');
+    } catch (error) {
+      // Hiển thị thông báo lỗi
+      alert('Đã xảy ra lỗi');
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg">
@@ -129,9 +143,11 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
 
           {/* Edit Button */}
           <div className="mt-8 flex justify-center">
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2">
-              <UserIcon className="w-4 h-4" />
-              <span>Cập nhật thông tin</span>
+            <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2"
+            onClick={exitClub}>
+            
+              <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
+              <span>Rời TSE club</span>
             </button>
           </div>
         </div>

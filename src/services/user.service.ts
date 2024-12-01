@@ -72,7 +72,7 @@ class UserService {
   public async denyRegisterRequest(userIds: string[]): Promise<any> {
     try {
       const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
-        `/users/deny-register`,
+        `/users/left-request/reject`,
         { userIds },
       );
       return response.data.data;
@@ -80,7 +80,40 @@ class UserService {
       throw this.handleError(error);
     }
   }
-
+  // {/api/v1/users/getleft-requesting, GET}
+  public async getLeftRequesting(): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(
+        `/users/getleft-requesting`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+//{/api/v1/users/left-request/approve, POST}
+  public async approveLeftRequest(userIds: string[]): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/left-request/approve`,
+        { userIds },
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  ///api/v1/users/:userId/request-left, POST}
+  public async requestLeft(userId: string): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/${userId}/request-left`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
 
   private handleError(error: any) {
     if (error.response) {
