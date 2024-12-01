@@ -5,10 +5,11 @@ export enum ActivityType {
 }
 
 export enum ActivityStatus {
-  PLANED,
-  OPENED,
+  IN_COMING,
+  OPEN_NOW,
   CLOSED,
   CANCELED,
+  FINISHED,
 }
 
 export enum ActivityScope {

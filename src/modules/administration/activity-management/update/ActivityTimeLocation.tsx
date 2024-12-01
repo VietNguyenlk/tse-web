@@ -209,9 +209,11 @@ const ActivityTimeLocation: React.FC<ActivityTimeLocationProps> = ({
               .map(([key, value]) => {
                 return (
                   <button
+                    type="button"
                     key={key}
                     onClick={() => {
                       setValue("venueType", key as keyof typeof VenueType);
+                      setSelectedVenueType(key as keyof typeof VenueType);
                     }}
                     className={`px-4 py-2 rounded-lg font-medium ${
                       venueType === (key as keyof typeof VenueType)

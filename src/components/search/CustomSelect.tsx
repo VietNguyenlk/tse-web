@@ -92,9 +92,9 @@ const CustomSelect = ({
         {!isOpen ? (
           <div className="flex-1 truncate">
             {selected ? (
-              <span className="text-gray-900">{selected.label}</span>
+              <span className="text-black">{selected.label}</span>
             ) : (
-              <span className="text-gray-400">{placeholder}</span>
+              <span className="text-black">{placeholder}</span>
             )}
           </div>
         ) : (

@@ -2,7 +2,6 @@ import {
   AccessTime,
   AppRegistration,
   CalendarMonth,
-  Check,
   CheckCircle,
   Close,
   HowToReg,
@@ -14,6 +13,7 @@ import {
 import { Badge } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Notification from "../../components/notifications/Notification";
+import PaginationBar from "../../components/pagination/PaginationBar";
 import CustomSelect, { SelectOption } from "../../components/search/CustomSelect";
 import MultiSelect, {
   MultiSelectOption,
@@ -44,11 +44,13 @@ const ActivityList: React.FC = () => {
   const notificationTimeOut = 2000;
   const dispatch = useAppDispatch();
   const activityState = useAppSelector((state) => state.activity);
+  const [filteredActivities, setFilteredActivities] = useState<IActivity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<IActivity>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [searchText, setSearchText] = useState("");
+  const [currentActivityType, setCurrentActivityType] = useState("");
   const [searchActivityModel, setSearchActivityModel] = useState<ISearchActivity>({
     searchText: "",
     activityTypes: [],
@@ -60,6 +62,35 @@ const ActivityList: React.FC = () => {
     size: pageSize,
   };
 
+  const doFilterActivities = () => {
+    if (currentActivityType && currentActivityType.length > 0) {
+      if (currentActivityType === "REGISTERED") {
+        setFilteredActivities(
+          activityState.entities.filter((a) =>
+            activityState.registeredActivities.some(
+              (ra) => ra.activityId === a.activityId,
+            ),
+          ),
+        );
+      } else {
+        setFilteredActivities(
+          activityState.entities.filter(
+            (a) =>
+              !activityState.registeredActivities.some(
+                (ra) => ra.activityId === a.activityId,
+              ),
+          ),
+        );
+      }
+    } else {
+      setFilteredActivities(activityState.entities);
+    }
+  };
+
+  useEffect(() => {
+    doFilterActivities();
+  }, [activityState.entities, currentActivityType]);
+
   useEffect(() => {
     dispatch(
       searchActivities({
@@ -68,10 +99,10 @@ const ActivityList: React.FC = () => {
       }),
     );
     dispatch(getRegisteredActivities());
+    setFilteredActivities(activityState.entities);
   }, [searchActivityModel, pageSize, currentPage]);
 
   useEffect(() => {
-    console.log(activityState);
     if (activityState.errorMessage) {
       addNotification("ERROR", "Có lỗi xảy ra", activityState.errorMessage);
       dispatch(resetState());
@@ -86,6 +117,19 @@ const ActivityList: React.FC = () => {
       );
     }
   }, [activityState.errorMessage, activityState.successMessage]);
+
+  const getCurrentActivitiesType = (): SelectOption[] => {
+    return [
+      {
+        label: "Đã đăng kí",
+        value: "REGISTERED",
+      },
+      {
+        label: "Chưa đăng kí",
+        value: "NOT_REGISTERED",
+      },
+    ];
+  };
 
   const getActivityTypeOptions = (): MultiSelectOption[] => {
     return Object.entries(ActivityType)
@@ -134,9 +178,9 @@ const ActivityList: React.FC = () => {
 
   const getActivityStatusStyles = (status: keyof typeof ActivityStatus): string => {
     switch (status) {
-      case "PLANED":
+      case "IN_COMING":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "OPENED":
+      case "OPEN_NOW":
         return "bg-green-100 text-green-800 border-green-200";
       case "CLOSED":
         return "bg-red-100 text-red-800 border-red-200";
@@ -164,7 +208,7 @@ const ActivityList: React.FC = () => {
     status: keyof typeof ActivityStatus,
   ): JSX.Element => {
     switch (status) {
-      case "PLANED":
+      case "IN_COMING":
         return (
           <svg
             className="w-5 h-5"
@@ -180,7 +224,7 @@ const ActivityList: React.FC = () => {
             />
           </svg>
         );
-      case "OPENED":
+      case "OPEN_NOW":
         return (
           <svg
             className="w-5 h-5"
@@ -338,20 +382,7 @@ const ActivityList: React.FC = () => {
 
   return (
     <>
-      <div className="fixed top-0 right-0 z-50">
-        {notifications.map((notification, index) => (
-          <Notification
-            isShow={notification.show}
-            key={notification.id}
-            {...notification}
-            index={index}
-            onClose={() => removeNotification(notification.id)}
-            duration={notificationTimeOut}
-            autoClose={true}
-          />
-        ))}
-      </div>
-      <div className="min-h-screen bg-gray-100 flex justify-center p-4">
+      <div className="bg-gray-100 p-4">
         <div className="bg-white p-8 rounded-xl shadow-md w-full ">
           <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
             Danh Sách Hoạt Động CLB Lập Trình TSE
@@ -360,6 +391,20 @@ const ActivityList: React.FC = () => {
           <div className="flex justify-between items-center my-2">
             <div className="bg-white rounded-lg">
               <div className="flex gap-4">
+                <div className="flex gap-2 items-center">
+                  <span>Hoạt động:&nbsp;</span>
+                  <CustomSelect
+                    placeholder="Tất cả"
+                    options={getCurrentActivitiesType()}
+                    onClear={() => {
+                      setFilteredActivities(activityState.entities);
+                      setCurrentActivityType("");
+                    }}
+                    onChange={(selected: SelectOption) => {
+                      if (selected) setCurrentActivityType(selected.value);
+                    }}
+                  />
+                </div>
                 <div className="flex gap-2 items-center">
                   <span>Loại HĐ:&nbsp;</span>
                   <MultiSelect
@@ -439,7 +484,7 @@ const ActivityList: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            {activityState.entities.map((activity) => (
+            {filteredActivities.map((activity) => (
               <div
                 key={activity.activityId}
                 className="rounded-lg border overflow-hidden p-4 space-y-4 hover:shadow-lg"
@@ -478,10 +523,11 @@ const ActivityList: React.FC = () => {
                     <span>
                       {
                         {
-                          PLANED: "Lên kế hoạch",
-                          OPENED: "Mở",
-                          CLOSED: "Đóng",
+                          IN_COMING: "Sắp diễn ra",
+                          OPEN_NOW: "Đang mở",
+                          CLOSED: "Đã đóng",
                           CANCELED: "Huỷ bỏ",
+                          FINISHED: "Đã kết thúc",
                         }[activity.activityStatus]
                       }
                     </span>
@@ -555,31 +601,57 @@ const ActivityList: React.FC = () => {
                     <VisibilityOutlined />
                     <span>Xem chi tiết</span>
                   </button>
-                  <button
-                    disabled={activityState.registeredActivities.some(
-                      (a) => a.activityId === activity.activityId,
-                    )}
-                    className="bg-green-500 space-x-1 p-2 rounded-lg text-white hover:bg-green-600"
-                    onClick={() => handleRegisterActivity(activity.activityId)}
-                  >
-                    {activityState.registeredActivities.some(
-                      (a) => a.activityId === activity.activityId,
-                    ) ? (
-                      <>
-                        <HowToReg />
-                        <span>Đã đăng kí</span>
-                      </>
-                    ) : (
-                      <>
-                        <AppRegistration /> <span>Đăng kí tham gia</span>
-                      </>
-                    )}
-                  </button>
+                  {activity.activityStatus === "OPEN_NOW" && (
+                    <button
+                      disabled={activityState.registeredActivities.some(
+                        (a) => a.activityId === activity.activityId,
+                      )}
+                      className="bg-green-500 space-x-1 p-2 rounded-lg text-white hover:bg-green-600"
+                      onClick={() => handleRegisterActivity(activity.activityId)}
+                    >
+                      {activityState.registeredActivities.some(
+                        (a) => a.activityId === activity.activityId,
+                      ) ? (
+                        <>
+                          <HowToReg />
+                          <span>Đã đăng kí</span>
+                        </>
+                      ) : (
+                        <>
+                          <AppRegistration /> <span>Đăng kí tham gia</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+          {activityState.entities.length > 0 && currentActivityType === "" && (
+            <PaginationBar
+              totalPages={activityState.totalPages}
+              currentPage={currentPage}
+              onPageSizeChange={setPageSize}
+              onPageChange={setCurrentPage}
+              totalItems={activityState.totalItems}
+              itemsPerPage={pageSize}
+            />
+          )}
         </div>
+      </div>
+
+      <div className="fixed top-0 right-0 z-50">
+        {notifications.map((notification, index) => (
+          <Notification
+            isShow={notification.show}
+            key={notification.id}
+            {...notification}
+            index={index}
+            onClose={() => removeNotification(notification.id)}
+            duration={notificationTimeOut}
+            autoClose={true}
+          />
+        ))}
       </div>
       <MemberActivityDetailModal
         activity={selectedActivity}

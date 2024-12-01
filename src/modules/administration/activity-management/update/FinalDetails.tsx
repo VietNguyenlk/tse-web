@@ -31,7 +31,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
   setError,
 }) => {
   const [activityStatus, setActivityStatus] = useState<keyof typeof ActivityStatus>(
-    getValues("activityStatus") ?? "PLANED",
+    getValues("activityStatus") ?? "IN_COMING",
   );
 
   useEffect(() => {
@@ -124,14 +124,15 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 {Object.entries(ActivityStatus)
                   .filter(
                     ([key]) =>
-                      isNaN(Number(key)) && (key === "PLANED" || key === "OPENED"),
+                      isNaN(Number(key)) &&
+                      (key === "IN_COMING" || key === "OPEN_NOW"),
                   )
                   .map(([key, value]) => (
                     <option key={key} value={key}>
                       {
                         {
-                          PLANED: "Lên kế hoạch",
-                          OPENED: "Mở",
+                          IN_COMING: "Sắp diễn ra",
+                          OPEN_NOW: "Đang mở",
                         }[key]
                       }
                     </option>

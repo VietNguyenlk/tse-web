@@ -60,9 +60,9 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
 
   const getActivityStatusStyles = (status: keyof typeof ActivityStatus): string => {
     switch (status) {
-      case "PLANED":
+      case "IN_COMING":
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "OPENED":
+      case "OPEN_NOW":
         return "bg-green-100 text-green-800 border-green-200";
       case "CLOSED":
         return "bg-red-100 text-red-800 border-red-200";
@@ -90,7 +90,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     status: keyof typeof ActivityStatus,
   ): JSX.Element => {
     switch (status) {
-      case "PLANED":
+      case "IN_COMING":
         return (
           <svg
             className="w-5 h-5"
@@ -106,7 +106,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
             />
           </svg>
         );
-      case "OPENED":
+      case "OPEN_NOW":
         return (
           <svg
             className="w-5 h-5"
@@ -277,7 +277,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
               <i>{getActivityTypeIcon(activityType)} </i>
               <span>
                 {
-                  { CONTEST: "Cuộc thi", SEMINAL: "Hội thảo", TRAINING: "Đào tạo" }[
+                  { CONTEST: "Cuộc thi", SEMINAR: "Hội thảo", TRAINING: "Đào tạo" }[
                     activityType
                   ]
                 }
@@ -292,10 +292,11 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
               <span>
                 {
                   {
-                    PLANED: "Lên kế hoạch",
-                    OPENED: "Mở",
-                    CLOSED: "Đóng",
+                    IN_COMING: "Sắp diễn ra",
+                    OPEN_NOW: "Đang mở",
+                    CLOSED: "Đã đóng",
                     CANCELED: "Huỷ bỏ",
+                    FINISHED: "Đã kết thúc",
                   }[activityStatus]
                 }
               </span>
