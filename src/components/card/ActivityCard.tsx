@@ -8,7 +8,7 @@ import {
   Person,
 } from "@mui/icons-material";
 import { Badge } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import ActivityDetailsModal from "../../modules/administration/activity-management/details/ActivityDetailsModal";
 import { IActivity } from "../../shared/models/activity.model";
@@ -24,7 +24,8 @@ import {
 import CustomConfirmDialog from "../dialogs/CustomConfirmDialog";
 import { useAppDispatch } from "../../configs/store";
 import { deleteActivity } from "../../modules/administration/activity-management/activity-management.reducer";
-
+import { userService } from "../../services/user.service";
+import ParticipantsModal from "./ParticipantsModal";
 interface ActivityCardProps {
   activity: Readonly<IActivity>;
 }
@@ -32,6 +33,7 @@ interface ActivityCardProps {
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
   const dispatch = useAppDispatch();
   const {
+    activityId,
     name,
     activityType,
     activityStatus,
@@ -43,9 +45,11 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     registeredNumber,
     hostName,
     occurDate,
+
   } = activity;
   const [modalOpen, setModalOpen] = useState(false);
   const [toggleDeleteConfirmDialog, setToggleDeleteConfirmDialog] = useState(false);
+  const [isParticipantsModalOpen, setIsParticipantsModalOpen] = useState(false);
 
   const getActivityScopeStyle = (scope: keyof typeof ActivityScope): string => {
     switch (scope) {
@@ -162,6 +166,18 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
         );
     }
   };
+  // get danh sách người tham gia hoạt động
+ 
+    // const getParticipants = async (activityId: Number) => {
+    //   try {
+    //     const response = await userService.getParticipants(activityId);
+    //     console.log(response);
+    //     return response;
+    //   } catch (error) {
+    //     throw error;
+    //   }
+    // }
+
 
   const getActivityTypeIcon = (type: keyof typeof ActivityType): JSX.Element => {
     switch (type) {
@@ -358,7 +374,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       {/* Registration Progress */}
       <div className="mt-4">
         <div className="flex justify-between mb-1 space-y-1">
-          <span className="text-sm text-gray-600">Số lượng đã đăng kí</span>
+          <span className="text-sm text-gray-600">Số lượng đã đăng kí {activityId}</span>
           <span className="text-sm font-medium text-gray-900">
             {registeredNumber}/{capacity}
           </span>
@@ -377,10 +393,19 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
 
       {/* Actions */}
       <div className="mt-4 flex justify-end">
-        <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800">
+        <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800" 
+        // onClick={() => getParticipants(activityId)}
+        onClick={() => setIsParticipantsModalOpen(true)}
+        >
           Xem danh sách đăng kí &rarr;
         </button>
       </div>
+          {/* Thêm modal danh sách người tham gia */}
+        <ParticipantsModal 
+        activity={activity}
+        isOpen={isParticipantsModalOpen}
+        onClose={() => setIsParticipantsModalOpen(false)}
+      />
       <ActivityDetailsModal
         onClose={() => setModalOpen(false)}
         isOpen={modalOpen}

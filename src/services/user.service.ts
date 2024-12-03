@@ -114,7 +114,18 @@ class UserService {
       throw this.handleError(error);
     }
   }
-
+//api/v1/activities/:activityId/participants
+// get danh sach nguoi tham gia hoat dong
+  public async getParticipants(activityId: Number): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(
+        `/activities/${activityId}/participants`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
   private handleError(error: any) {
     if (error.response) {
       return {
