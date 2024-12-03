@@ -10,6 +10,7 @@ import LoadingIndicator from "../../../components/loading/LoadingIndicator";
 import EmptyList from "../../../components/loading/EmptyList";
 import LoadingOverlay from "../../../components/loading/LoadingOverlay";
 import {userService} from "../../../services/user.service";
+import UserInfoModal from "./RegisterInfoModal";
 
 interface RegistrationProps {
   headers: string[];
@@ -199,7 +200,8 @@ const RegistrationTable: React.FC<RegistrationProps> = ({
                           <button
                             className="relative px-4 py-4 text-black hover:text-white flex items-center space-x-2"
                             onClick={() => {
-                              console.log("View user: ", user.userId);
+                              setSelectedUser(user);
+                              setIsModalOpen(true);
                             }}
                           >
                             <ArrowForward />
@@ -270,6 +272,11 @@ const RegistrationTable: React.FC<RegistrationProps> = ({
         </table>
         <LoadingOverlay isLoading={activateSelector.loading} minTimeout={100} />
       </div>
+      <UserInfoModal
+        user={selectedUser!}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
       {/* <UserActionModal
         selectedUser={selectedUser}
         setSelectedUser={() => setSelectedUser(null)}

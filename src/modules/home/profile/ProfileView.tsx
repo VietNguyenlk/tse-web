@@ -1,33 +1,35 @@
-import React from 'react';
-import {UserIcon, ArrowLeftEndOnRectangleIcon, AcademicCapIcon, CalendarIcon, PhoneIcon, EnvelopeIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
+import {
+  UserIcon,
+  ArrowLeftEndOnRectangleIcon,
+  AcademicCapIcon,
+  CalendarIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  IdentificationIcon,
+  PencilSquareIcon
+} from '@heroicons/react/24/outline';
 import dayjs from 'dayjs';
-import 'dayjs/locale/vi'; // Import locale tiếng Việt
-import {IUser} from "../../../shared/models/user.model";
+import 'dayjs/locale/vi'; 
+import { IUser } from "../../../shared/models/user.model";
 import { userService } from '../../../services/user.service';
-// Cấu hình locale cho dayjs
+
 dayjs.locale('vi');
 
-// interface UserProfile {
-//   userId: string;
-//   email: string;
-//   firstName: string;
-//   lastName: string;
-//   status: string | null;
-//   className: string | null;
-//   cumulativeScore: number;
-//   faculty: string | null;
-//   phoneNumber: string | null;
-//   registerDate: dayjs.Dayjs;
-//   userType: string | null;
-// }
-
 const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState<IUser>({
+    ...user,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    phoneNumber: user.phoneNumber || '',
+    className: user.className || '',
+  });
+
   const formatDate = (date: dayjs.Dayjs) => {
-    // Kiểm tra nếu date là dayjs object
     if (dayjs.isDayjs(date)) {
       return date.format('DD MMMM YYYY, HH:mm');
     }
-    // Nếu không phải, convert sang dayjs
     return dayjs(date).format('DD MMMM YYYY, HH:mm');
   };
 
@@ -35,32 +37,61 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
     {
       icon: <IdentificationIcon className="w-5 h-5 text-blue-500" />,
       label: 'MSSV',
-      value: user.userId
+      value: updatedUser.userId
     },
     {
       icon: <UserIcon className="w-5 h-5 text-blue-500" />,
       label: 'Họ và tên',
-      value: `${user.firstName} ${user.lastName}`
+      value: isEditMode
+        ? (
+          <input
+            type="text"
+            value={updatedUser.firstName}
+            onChange={(e) => setUpdatedUser({ ...updatedUser, firstName: e.target.value })}
+            className="border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1"
+          />
+        ) : `${updatedUser.firstName} ${updatedUser.lastName}`
     },
     {
       icon: <EnvelopeIcon className="w-5 h-5 text-blue-500" />,
       label: 'Email',
-      value: user.email
+      value: updatedUser.email
     },
     {
       icon: <AcademicCapIcon className="w-5 h-5 text-blue-500" />,
       label: 'Khoa',
-      value: user.faculty || 'Chưa cập nhật'
+      value: updatedUser.faculty || 'Chưa cập nhật'
     },
     {
       icon: <PhoneIcon className="w-5 h-5 text-blue-500" />,
       label: 'Số điện thoại',
-      value: user.phoneNumber || 'Chưa cập nhật'
+      value: isEditMode
+        ? (
+          <input
+            type="text"
+            value={updatedUser.phoneNumber}
+            onChange={(e) => setUpdatedUser({ ...updatedUser, phoneNumber: e.target.value })}
+            className="border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1"
+          />
+        ) : updatedUser.phoneNumber || 'Chưa cập nhật'
     },
     {
       icon: <CalendarIcon className="w-5 h-5 text-blue-500" />,
       label: 'Ngày đăng ký',
       value: formatDate(user.registerDate)
+    },
+    {
+      icon: <AcademicCapIcon className="w-5 h-5 text-blue-500" />,
+      label: 'Lớp',
+      value: isEditMode
+        ? (
+          <input
+            type="text"
+            value={updatedUser.className}
+            onChange={(e) => setUpdatedUser({ ...updatedUser, className: e.target.value })}
+            className="border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1"
+          />
+        ) : updatedUser.className || 'Chưa cập nhật'
     }
   ];
 
@@ -89,6 +120,22 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
       alert('Đã xảy ra lỗi');
     }
   }
+
+  const handleUpdateProfile = async () => {
+    try {
+      await userService.updateUser(updatedUser);
+      setIsEditMode(false);
+      alert('Cập nhật thông tin thành công');
+    } catch (error) {
+      alert('Đã xảy ra lỗi khi cập nhật thông tin');
+    }
+  };
+
+  const cancelEdit = () => {
+    // Khi hủy, phục hồi dữ liệu cũ và tắt chế độ chỉnh sửa
+    setUpdatedUser({ ...user });
+    setIsEditMode(false);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -131,10 +178,6 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 rounded-lg bg-gray-50">
-                <p className="text-sm text-gray-500">Lớp</p>
-                <p className="text-gray-900 font-medium">{user.className || 'Chưa cập nhật'}</p>
-              </div>
-              <div className="p-3 rounded-lg bg-gray-50">
                 <p className="text-sm text-gray-500">Điểm tích lũy</p>
                 <p className="text-gray-900 font-medium">{user.cumulativeScore}</p>
               </div>
@@ -142,14 +185,34 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
           </div>
 
           {/* Edit Button */}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex justify-between">
             <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2"
-            onClick={exitClub}>
-            
+              onClick={exitClub}>
               <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
               <span>Rời TSE club</span>
             </button>
+            {!isEditMode && (
+              <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2"
+                onClick={() => setIsEditMode(true)}>
+                <PencilSquareIcon className="w-4 h-4" />
+                <span>Cập nhật thông tin</span>
+              </button>
+            )}
           </div>
+
+          {/* When editing */}
+          {isEditMode && (
+            <div className="mt-4 flex justify-end space-x-4">
+              <button className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-200"
+                onClick={cancelEdit}>
+                Hủy
+              </button>
+              <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                onClick={handleUpdateProfile}>
+                Lưu thay đổi
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
