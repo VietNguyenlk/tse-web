@@ -72,7 +72,7 @@ class UserService {
   public async denyRegisterRequest(userIds: string[]): Promise<any> {
     try {
       const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
-        `/users/left-request/reject`,
+        `/users/deny-register`,
         { userIds },
       );
       return response.data.data;
@@ -108,6 +108,19 @@ class UserService {
     try {
       const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
         `/users/${userId}/request-left`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  // từ chối yêu cầu rời clb 
+  ///api/v1/users/left-request/reject
+  public async denyLeftRequest(userIds: string[]): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/left-request/reject`,
+        { userIds },
       );
       return response.data.data;
     } catch (error) {

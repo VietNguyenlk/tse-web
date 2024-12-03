@@ -53,7 +53,7 @@ const ExitRequestsBoard: React.FC = () => {
   const handleReject = async (id: string) => {
     try {
       console.log(id);
-      await userService.denyRegisterRequest([id]);
+      await userService.denyLeftRequest([id]);
       setData(data.map(item => 
         item.id === id 
           ? {...item, status: 'Rejected'} 
