@@ -20,7 +20,7 @@ import { Close, Menu } from "@mui/icons-material";
 // import {Home} from '../../modules/home/Home';
 import { IUser } from "../../shared/models/user.model";
 import ProfileView from "../../modules/home/profile/ProfileView";
-import QA from "../../modules/home/q&a/QA";
+import QA from "../../modules/q&a/QA";
 import { logout } from "../../modules/auth/authentication.reducer";
 import ActivityList from "../../modules/activity/Activity";
 

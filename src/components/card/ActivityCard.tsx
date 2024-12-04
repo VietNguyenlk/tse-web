@@ -45,7 +45,6 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     registeredNumber,
     hostName,
     occurDate,
-
   } = activity;
   const [modalOpen, setModalOpen] = useState(false);
   const [toggleDeleteConfirmDialog, setToggleDeleteConfirmDialog] = useState(false);
@@ -167,17 +166,16 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
     }
   };
   // get danh sách người tham gia hoạt động
- 
-    // const getParticipants = async (activityId: Number) => {
-    //   try {
-    //     const response = await userService.getParticipants(activityId);
-    //     console.log(response);
-    //     return response;
-    //   } catch (error) {
-    //     throw error;
-    //   }
-    // }
 
+  // const getParticipants = async (activityId: Number) => {
+  //   try {
+  //     const response = await userService.getParticipants(activityId);
+  //     console.log(response);
+  //     return response;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   const getActivityTypeIcon = (type: keyof typeof ActivityType): JSX.Element => {
     switch (type) {
@@ -374,7 +372,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       {/* Registration Progress */}
       <div className="mt-4">
         <div className="flex justify-between mb-1 space-y-1">
-          <span className="text-sm text-gray-600">Số lượng đã đăng kí </span>
+          <span className="text-sm text-gray-600">Số lượng đã đăng kí</span>
           <span className="text-sm font-medium text-gray-900">
             {registeredNumber}/{capacity}
           </span>
@@ -393,15 +391,16 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
 
       {/* Actions */}
       <div className="mt-4 flex justify-end">
-        <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800" 
-        // onClick={() => getParticipants(activityId)}
-        onClick={() => setIsParticipantsModalOpen(true)}
+        <button
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
+          // onClick={() => getParticipants(activityId)}
+          onClick={() => setIsParticipantsModalOpen(true)}
         >
           Xem danh sách đăng kí &rarr;
         </button>
       </div>
-          {/* Thêm modal danh sách người tham gia */}
-        <ParticipantsModal 
+      {/* Thêm modal danh sách người tham gia */}
+      <ParticipantsModal
         activity={activity}
         isOpen={isParticipantsModalOpen}
         onClose={() => setIsParticipantsModalOpen(false)}
