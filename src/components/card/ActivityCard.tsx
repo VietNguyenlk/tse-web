@@ -374,7 +374,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
       {/* Registration Progress */}
       <div className="mt-4">
         <div className="flex justify-between mb-1 space-y-1">
-          <span className="text-sm text-gray-600">Số lượng đã đăng kí {activityId}</span>
+          <span className="text-sm text-gray-600">Số lượng đã đăng kí </span>
           <span className="text-sm font-medium text-gray-900">
             {registeredNumber}/{capacity}
           </span>

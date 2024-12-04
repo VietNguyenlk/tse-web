@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/vi'; 
 import { IUser } from "../../../shared/models/user.model";
 import { userService } from '../../../services/user.service';
+import ChangePasswordModal from './ChangePasswordModal';
 
 dayjs.locale('vi');
 
@@ -25,6 +26,27 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
     phoneNumber: user.phoneNumber || '',
     className: user.className || '',
   });
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const handlePasswordChange = async (oldPassword: string, newPassword: string, confirmPassword: string) => {
+    // mật khẩu phải từ 6 kí tự
+    if (newPassword.length < 6) {
+      alert('Mật khẩu mới phải từ 6 kí tự trở lên');
+      return;
+    }
+    
+   if (newPassword !== confirmPassword) {
+      alert('Mật khẩu mới và xác nhận mật khẩu không khớp');
+      return;
+    }
+
+    try {
+      await userService.updatePassword(user.userId, oldPassword, newPassword); // Gọi API để đổi mật khẩu
+      alert('Thay đổi mật khẩu thành công');
+      setIsPasswordModalOpen(false);
+    } catch (error) {
+      alert('Đã xảy ra lỗi khi thay đổi mật khẩu');
+    }
+  };
 
   const formatDate = (date: dayjs.Dayjs) => {
     if (dayjs.isDayjs(date)) {
@@ -127,7 +149,7 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
       setIsEditMode(false);
       alert('Cập nhật thông tin thành công');
     } catch (error) {
-      alert('Đã xảy ra lỗi khi cập nhật thông tin');
+      alert(error.message);
     }
   };
 
@@ -191,6 +213,13 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
               <ArrowLeftEndOnRectangleIcon className="w-4 h-4" />
               <span>Rời TSE club</span>
             </button>
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+              onClick={() => setIsPasswordModalOpen(true)}
+            >
+              Thay đổi mật khẩu
+            </button>
+
             {!isEditMode && (
               <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2"
                 onClick={() => setIsEditMode(true)}>
@@ -213,8 +242,15 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
               </button>
             </div>
           )}
+
         </div>
       </div>
+       {/* Hiển thị modal đổi mật khẩu */}
+       <ChangePasswordModal
+      isOpen={isPasswordModalOpen}
+      onClose={() => setIsPasswordModalOpen(false)}
+      onSubmit={handlePasswordChange}
+    />
     </div>
   );
 };

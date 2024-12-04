@@ -152,6 +152,57 @@ class UserService {
       throw this.handleError(error);
     }
   }
+  //{/api/v1/users/updatePassword, POST}
+  // update password truyền vào     userId: string,
+    // oldPassword: string,
+    // newPassword: string,
+  public async updatePassword(userId: string, oldPassword: string, newPassword: string): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/updatePassword`,
+        {userId, oldPassword, newPassword},
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  //thống kê số lượng người tham gia vào clb trong tháng
+  // {/api/v1/activities/registered-users-in-month/:month, GET}
+  public async getRegisteredUsersInMonth(month: number): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(
+        `/activities/registered-users-in-month/${month}`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  // thống kế số lượng hoạt động trong tháng
+  //{/api/v1/activities/activities-in-month/:month, GET}
+  public async getActivitiesInMonth(month: number): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(
+        `/activities/activities-in-month/${month}`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  // top người tham gia hoạt động nhiều nhất trong tháng
+  //{/api/v1/activities/top-users-in-month/:month, GET}
+  public async getTopUsersInMonth(month: number): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.get(
+        `/activities/top-users-in-month/${month}`,
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
 
 
   private handleError(error: any) {
