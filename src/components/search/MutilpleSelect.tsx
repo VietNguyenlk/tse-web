@@ -10,6 +10,8 @@ export interface MultiSelectOption {
 
 interface MultiSelectProps {
   size?: FieldSize;
+  placeholder?: string;
+  maxSizeSelected?: number;
   options?: MultiSelectOption[];
   onChange?: (selected: MultiSelectOption[]) => void;
   onRemove?: (selected: MultiSelectOption[]) => void;
@@ -33,6 +35,8 @@ const MultiSelect = ({
   onRemove = () => {},
   size = "md",
   onBlur = () => {},
+  placeholder = "Tất cả",
+  maxSizeSelected = 1,
 }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -91,6 +95,7 @@ const MultiSelect = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     if (e.key === "Backspace" && search === "" && selected.length > 0) {
       handleRemove(selected[selected.length - 1]);
     }
@@ -107,7 +112,7 @@ const MultiSelect = ({
       onClick={handleClickInside}
     >
       <div
-        className="min-h-10 w-full border rounded-lg bg-white px-2  cursor-text flex items-center gap-1"
+        className="min-h-10 border w-full rounded-lg bg-white px-2 cursor-text flex items-center gap-1 "
         onClick={() => {
           if (inputRef.current) {
             inputRef.current.focus();
@@ -115,15 +120,15 @@ const MultiSelect = ({
         }}
       >
         {selected.length === 0 && !search && (
-          <span className="text-base absolute left-3">Tất cả</span>
+          <span className="text-base absolute left-3">{placeholder}</span>
         )}
 
         <div className="flex gap-1 items-center">
           {/* List selected and input*/}
 
-          {!selected || selected.length === 0 ? null : (
+          {selected.slice(0, maxSizeSelected).map((option, index) => (
             <div
-              key={`${selected[0].value}-0`}
+              key={`${option.value}-${index}`}
               className="bg-blue-100 text-blue-800 rounded px-1.5 py-0.5 text-sm flex items-center gap-1 group"
             >
               <span
@@ -131,25 +136,23 @@ const MultiSelect = ({
                   size === "sm" ? "max-w-10" : ""
                 } text-base overflow-hidden whitespace-nowrap text-ellipsis`}
               >
-                {selected[0].label}
+                {option.label}
               </span>
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove(selected[0]);
+                  handleRemove(option);
                 }}
                 className="hover:bg-blue-200 rounded-full p-0.5 opacity-60 group-hover:opacity-100"
               >
                 <Close className="w-3 h-3" />
               </button>
             </div>
-          )}
-          {selected.length > 1 && (
+          ))}
+          {selected.length > maxSizeSelected && (
             <div className="bg-blue-100 text-blue-800 rounded px-1.5 py-0.5 text-base flex items-center gap-1 group">
-              +{selected.length - 1}
+              +{selected.length - maxSizeSelected}
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
                   handleRemove(selected[selected.length - 1]);
                 }}
                 className="hover:bg-blue-200 rounded-full p-0.5 opacity-60 group-hover:opacity-100"
@@ -176,7 +179,6 @@ const MultiSelect = ({
 
         <button
           onClick={(e) => {
-            e.stopPropagation();
             setIsOpen(!isOpen);
           }}
           className="self-center ml-auto"

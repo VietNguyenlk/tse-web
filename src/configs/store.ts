@@ -15,6 +15,7 @@ import storage from "redux-persist/lib/storage";
 import { PersistConfig, Persistor, persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 import activity from "../modules/activity/activity.reducer";
+import question from "../modules/administration/forum-management/questions/question.reducer";
 
 const rootReducer = combineReducers({
   userManagement,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   authentication,
   register,
   activity,
+  question,
 });
 
 type RootReducer = ReturnType<typeof rootReducer>;

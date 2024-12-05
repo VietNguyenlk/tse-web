@@ -45,7 +45,9 @@ export const activityFields: Record<keyof IActivity, string | null> = {
   activityScope: null,
   isDeleted: null,
   createdAt: null,
+  createdBy: null,
   deletedAt: null,
+  updatedBy: null,
   updatedAt: "Cập nhật lần cuối",
 };
 
