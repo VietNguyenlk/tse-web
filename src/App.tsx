@@ -12,6 +12,7 @@ import {Home} from "./modules/home/Home";
 import NotFoundPage from "./NotFoundPage";
 import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
 import RegisterPage from "./modules/account/register/RegisterPage";
+import ForgotPasswordForm from "./modules/account/forgotpass/ForgotPasswordForm";
 
 const App: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const App: React.FC = () => {
         </Route>
         <Route path="home" element={<Home />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordForm />} />
       </Routes>
     </BrowserRouter>
   );

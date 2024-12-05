@@ -204,6 +204,19 @@ class UserService {
     }
   }
 
+ ///api/v1/users/forgot-password, POST}
+// truyền email vào 
+  public async forgotPassword(email: string): Promise<any> {
+    try {
+      const response: AxiosResponse<ApiResponse<any>> = await axiosInstance.post(
+        `/users/forgot-password`,
+        { email },
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
 
   private handleError(error: any) {
     if (error.response) {

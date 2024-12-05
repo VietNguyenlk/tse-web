@@ -163,7 +163,7 @@ export const Login: React.FC = () => {
             </div>
             <div>
               <Link
-                to=""
+                to="/forgot-password"
                 className="text-sm underline italic text-purple-600 hover:text-purple-900 "
               >
                 Quên mật khẩu?
