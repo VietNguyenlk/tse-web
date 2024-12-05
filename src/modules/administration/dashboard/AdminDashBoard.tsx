@@ -14,6 +14,9 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [infor, setInfor] = useState([]); // State cho thông tin người dùng
+  const [previousMonthActivities, setPreviousMonthActivities] = useState([]);
+const [previousMonthRegisteredUsers, setPreviousMonthRegisteredUsers] = useState(0);
+
 
     useEffect(() => {
       const fetchTopUsers = async () => {
@@ -116,6 +119,51 @@ const transformedTopUsers = topUsers.map(user => ({
       console.error('Error fetching user details:', error);
     }
   };
+
+  // so sánh tỷ lệ tham gia
+useEffect(() => {
+  const fetchPreviousMonthData = async () => {
+    try {
+      const previousMonth = selectedMonth === 1 ? 12 : selectedMonth - 1;
+      const previousMonthYear = selectedMonth === 1 ? new Date().getFullYear() - 1 : new Date().getFullYear();
+
+      // Lấy số lượng người đăng ký tháng trước
+      const previousRegisteredData = await userService.getRegisteredUsersInMonth(previousMonth);
+      setPreviousMonthRegisteredUsers(previousRegisteredData.length);
+
+      // Lấy danh sách hoạt động tháng trước
+      const previousMonthActivityData = await userService.getActivitiesInMonth(previousMonth);
+      setPreviousMonthActivities(previousMonthActivityData);
+    } catch (error) {
+      console.error('Error fetching previous month data:', error);
+    }
+  };
+
+  fetchPreviousMonthData();
+}, [selectedMonth]);
+// Số hoạt động
+const currentMonthActivityCount = activities.length;
+const previousMonthActivityCount = previousMonthActivities.length;
+
+// Tránh chia cho 0 và xử lý trường hợp cả hai tháng đều bằng 0
+const activityCountChange = previousMonthActivityCount === 0
+  ? (currentMonthActivityCount > 0 ? '100' : '0')
+  : ((currentMonthActivityCount - previousMonthActivityCount) / previousMonthActivityCount * 100).toFixed(2);
+
+// Số thành viên mới
+const memberCountChange = previousMonthRegisteredUsers === 0
+  ? (registeredUsers > 0 ? '100' : '0')
+  : ((registeredUsers - previousMonthRegisteredUsers) / previousMonthRegisteredUsers * 100).toFixed(2);
+
+// Tỷ lệ tham gia
+const previousMonthParticipationRate = previousMonthActivities.reduce((acc, activity) => acc + activity.registeredNumber, 0) / 
+  previousMonthActivities.reduce((acc, activity) => acc + (activity.capacity || 0), 0) * 100 || 0;
+
+const participationRateChange = previousMonthParticipationRate === 0
+  ? (participationRate > 0 ? '100' : '0')
+  : ((participationRate - previousMonthParticipationRate) / previousMonthParticipationRate * 100).toFixed(2);
+
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setInfor(null);
@@ -192,11 +240,11 @@ const transformedTopUsers = topUsers.map(user => ({
           </ResponsiveContainer>
         </div>
 
-        {/* Thống kê tỷ lệ tham gia */}
+        {/* Thống kê tỷ lệ tham gia
         <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Tỷ Lệ Tham Gia Hoạt Động</h2>
           <p className="text-lg">Tỷ lệ tham gia trong tháng {selectedMonth}: {participationRate.toFixed(2)}%</p>
-        </div>
+        </div> */}
 
         {/* Thống kê hoạt động được đăng ký tham gia nhiều nhất */}
         {mostRegisteredActivity.registeredNumber > 0 && (
@@ -207,11 +255,54 @@ const transformedTopUsers = topUsers.map(user => ({
             <p className="text-lg">Số lượng tham gia: {mostRegisteredActivity.registeredNumber}</p>
           </div>
         )}
-         {/* Thống kê số lượng người tham gia */}
+         {/* Thống kê số lượng người tham gia
          <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Số Lượng Người Mới Tham Gia Trong Tháng</h2>
           <p className="text-lg">Tổng số lượng người tham gia CLB trong tháng {selectedMonth}: {registeredUsers}</p>
+        </div> */}
+
+        {/* So sánh với tháng trước */}
+        {/* So sánh số hoạt động */}
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-4">So Sánh Số Lượng Hoạt Động</h2>
+        <div className="flex justify-between">
+          <div>
+            <p className="text-lg">Số hoạt động tháng {selectedMonth}: {currentMonthActivityCount}</p>
+            <p className="text-lg">Số hoạt động tháng trước: {previousMonthActivityCount}</p>
+          </div>
+          <div className={`text-lg font-bold ${parseFloat(activityCountChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {parseFloat(activityCountChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(activityCountChange))}%
+          </div>
         </div>
+      </div>
+
+              {/* So sánh số thành viên mới */}
+              <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">So Sánh Số Thành Viên Mới</h2>
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-lg">Số thành viên mới tháng {selectedMonth}: {registeredUsers}</p>
+                    <p className="text-lg">Số thành viên mới tháng trước: {previousMonthRegisteredUsers}</p>
+                  </div>
+                  <div className={`text-lg font-bold ${parseFloat(memberCountChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {parseFloat(memberCountChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(memberCountChange))}%
+                  </div>
+                </div>
+              </div>
+
+              {/* So sánh tỷ lệ tham gia */}
+              <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">So Sánh Tỷ Lệ Tham Gia Hoạt Động</h2>
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-lg">Tỷ lệ tham gia tháng {selectedMonth}: {participationRate.toFixed(2)}%</p>
+                    <p className="text-lg">Tỷ lệ tham gia tháng trước: {previousMonthParticipationRate.toFixed(2)}%</p>
+                  </div>
+                  <div className={`text-lg font-bold ${parseFloat(participationRateChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {parseFloat(participationRateChange) >= 0 ? '▲' : '▼'} {Math.abs(parseFloat(participationRateChange))}%
+                  </div>
+                </div>
+              </div>
 
 
         {/* Biểu đồ tỷ lệ tham gia của từng loại hoạt động */}
