@@ -8,7 +8,7 @@ import EmptyList from "../../../../components/loading/EmptyList";
 import { useAppDispatch, useAppSelector } from "../../../../configs/store";
 import LoadingOverlay from "../../../../components/loading/LoadingOverlay";
 import { useEffect, useState } from "react";
-import { IQuestionSearchModel } from "../../../../shared/models/search/question-search.model";
+import { IQuestionSearchModel } from "../../../../shared/models/requests/question-search.model";
 import { PaginationRequestParams } from "../../../../configs/api";
 import { searchQuestions } from "./question.reducer";
 import CustomSelect from "../../../../components/search/CustomSelect";

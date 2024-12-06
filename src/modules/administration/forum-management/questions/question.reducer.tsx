@@ -12,8 +12,9 @@ import {
   PaginatedResponse,
   PaginationRequestParams,
 } from "../../../../configs/api";
-import { IQuestionSearchModel } from "../../../../shared/models/search/question-search.model";
+import { IQuestionSearchModel } from "../../../../shared/models/requests/question-search.model";
 import { IActivity } from "../../../../shared/models/activity.model";
+import { IQuestionUpdateRequest } from "../../../../shared/models/requests/question-update-request.model";
 
 const apiPath = "/forum/questions";
 
@@ -44,6 +45,16 @@ export const searchQuestions = createAsyncThunk(
         params: model.pagingParams,
       },
     );
+  },
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
+export const createQuestion = createAsyncThunk(
+  "questions/createQuestion",
+  async (createRequest: IQuestionUpdateRequest) => {
+    return await axiosInstance.post<ApiResponse<IQuestion>>(apiPath, createRequest);
   },
   {
     serializeError: serializeAxiosError,
