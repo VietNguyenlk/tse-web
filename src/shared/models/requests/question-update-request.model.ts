@@ -1,10 +1,11 @@
 import { IQnATag } from "../qna-tag.model";
 
-export interface IQuestionUpdateRequest {
+export interface IQuestionUpdateModel {
+  isUpdate?: boolean;
   id?: number;
-  title: string;
-  body: string;
-  userId: string;
+  title?: string;
+  body?: string;
+  userId?: string;
   categoryIds?: number[];
   tagIds?: number[];
 }

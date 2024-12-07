@@ -10,7 +10,7 @@ export interface IQuestion extends IBaseModel {
   body?: string;
   user?: Partial<IUser>;
   categories?: Partial<IQnACategory>[];
-  answers?: Partial<IAnswer>[];
+  answer?: Partial<IAnswer>;
   questionTags?: Partial<IQuestionTag>[];
 }
 

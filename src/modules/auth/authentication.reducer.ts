@@ -12,6 +12,7 @@ export const initState = {
   loading: false,
   isAuthenticated: false,
   loginSuccess: false,
+  userLogin: null,
   loginError: false, // Error returned from server side,
   errorMessage: null as unknown as string, // Errors returned from server side
   sessionHasBeenFetched: false,
@@ -96,6 +97,7 @@ export const AuthSlice = createSlice({
       .addCase(authenticate.fulfilled, (state, action) => {
         const decodeToken = jwtDecode<JwtPayload>(action.payload.data.data.token);
         const roles = decodeToken?.roles || [];
+        const userLogin = decodeToken?.sub;
         return {
           ...state,
           loading: false,
@@ -105,6 +107,7 @@ export const AuthSlice = createSlice({
           sessionHasBeenFetched: true,
           errorMessage: null,
           roles: roles,
+          userLogin: userLogin,
         };
       })
       .addCase(authenticate.rejected, (state, action) => ({

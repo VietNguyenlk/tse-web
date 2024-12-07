@@ -14,7 +14,7 @@ import {
 } from "../../../../configs/api";
 import { IQuestionSearchModel } from "../../../../shared/models/requests/question-search.model";
 import { IActivity } from "../../../../shared/models/activity.model";
-import { IQuestionUpdateRequest } from "../../../../shared/models/requests/question-update-request.model";
+import { IQuestionUpdateModel } from "../../../../shared/models/requests/question-update-request.model";
 
 const apiPath = "/forum/questions";
 
@@ -53,7 +53,8 @@ export const searchQuestions = createAsyncThunk(
 
 export const createQuestion = createAsyncThunk(
   "questions/createQuestion",
-  async (createRequest: IQuestionUpdateRequest) => {
+  async (createRequest: IQuestionUpdateModel) => {
+    // console.log({ createRequest });
     return await axiosInstance.post<ApiResponse<IQuestion>>(apiPath, createRequest);
   },
   {
