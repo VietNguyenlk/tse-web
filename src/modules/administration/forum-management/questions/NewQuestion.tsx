@@ -1,10 +1,10 @@
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { MultiSelectOption } from "../../../../components/search/MutilpleSelect";
 import { useState } from "react";
 import { Close, ControlPoint, NearMe, Send } from "@mui/icons-material";
 import { IQuestion } from "../../../../shared/models/question.model";
 import { useAppDispatch, useAppSelector } from "../../../../configs/store";
-import { createQuestion } from "./question.reducer";
+import { createQuestion, searchQuestions } from "./question.reducer";
 import { IQuestionUpdateModel } from "../../../../shared/models/requests/question-update-request.model";
 
 const NewQuestion: React.FC = () => {
@@ -44,6 +44,8 @@ const NewQuestion: React.FC = () => {
       userId: authState.userLogin as string,
     };
     dispatch(createQuestion(addRequest));
+    reset();
+    setToggleAddQuestion(false);
   };
 
   return (
@@ -110,9 +112,9 @@ const NewQuestion: React.FC = () => {
           {/* <TagInput /> */}
         </div>
 
-        <div className="flex justify-start gap-2 pb-4">
+        <div className="flex justify-end gap-2">
           {toggleAddQuestion ? (
-            <div className="flex justify-start gap-2 pt-4">
+            <div className="flex justify-end gap-2 pt-4">
               <button
                 type="button"
                 onClick={() => {

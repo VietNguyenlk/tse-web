@@ -8,7 +8,7 @@ import AdminForumManagement from "./modules/administration/forum-management/Admi
 import AdminGroupManagement from "./modules/administration/group-management/AdminGroupManagement";
 import { Login } from "./modules/auth/Login";
 import ProtectedRoute from "./modules/auth/ProtectedRoute";
-import {Home} from "./modules/home/Home";
+import { Home } from "./modules/home/Home";
 import NotFoundPage from "./NotFoundPage";
 import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
 import RegisterPage from "./modules/account/register/RegisterPage";

@@ -43,11 +43,6 @@ export const adminSideBarItems: SideBarItem[] = [
     title: "Thành viên",
     icon: <Person />,
     link: "/admin/members",
-    // submenu: [
-    //   { id: "all-members", title: "All Members" },
-    //   { id: "roles", title: "Roles" },
-    //   { id: "profile", title: "Profile" },
-    // ],
   },
   {
     id: "activities",
@@ -55,18 +50,7 @@ export const adminSideBarItems: SideBarItem[] = [
     icon: <Hub />,
     link: "/admin/activities",
   },
-  {
-    id: "groups",
-    title: "Nhóm",
-    icon: <Groups />,
-    link: "/admin/groups",
-  },
-  {
-    id: "budget",
-    title: "Ngân sách",
-    icon: <CurrencyExchange />,
-    link: "/admin/budget",
-  },
+
   {
     id: "forum",
     title: "Q&A",

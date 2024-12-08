@@ -1,14 +1,21 @@
 import {
   HideSource,
+  LockOpenOutlined,
   LockOutlined,
   MoreVert,
   PushPin,
   ThumbDownOutlined,
   ThumbUpOutlined,
+  VisibilityOffOutlined,
+  VisibilityOutlined,
 } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import { useAppSelector } from "../../../../configs/store";
 import { IQuestion } from "../../../../shared/models/question.model";
+import { QuestionStatus } from "../../../../shared/models/enums/question.enum";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { formatCustomRelativeTime } from "../../../../shared/utils/date-utils";
 
 interface QuestionCardProps {
   question?: IQuestion;
@@ -38,12 +45,15 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4 mt-2 hover:shadow-lg relative">
       {authState.roles.includes("admin") && (
         <div className="absolute top-2 right-2 flex gap-2">
-          <PushPin className="mt-0.5" />
-          <LockOutlined className="mt-0.5" />
+          {question.isPin && <PushPin className="mt-0.5" />}
+          {question.status === QuestionStatus.LOCKED && (
+            <LockOutlined className="mt-0.5" />
+          )}
 
           <button
             ref={buttonRef}
@@ -71,15 +81,33 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           <ul className="divide-y divide-gray-100">
             <li className="px-4 py-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer text-darkblue">
               <PushPin />
-              Ghim
+              {!question.isPin ? "Ghim" : "Bỏ ghim"}
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer text-darkblue">
-              <LockOutlined />
-              Khoá
+              {question.status === QuestionStatus.LOCKED ? (
+                <>
+                  <LockOpenOutlined />
+                  Mở Khoá
+                </>
+              ) : (
+                <>
+                  <LockOutlined />
+                  Khoá
+                </>
+              )}
             </li>
             <li className="px-4 py-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer text-red-600">
-              <HideSource />
-              Ẩn
+              {question.isDeleted ? (
+                <>
+                  <VisibilityOutlined />
+                  Hiện
+                </>
+              ) : (
+                <>
+                  <VisibilityOffOutlined />
+                  Ẩn
+                </>
+              )}
             </li>
           </ul>
         </div>
@@ -140,6 +168,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
             </div>
           </div>
         ) : null}
+      </div>
+
+      <div className="text-xs italic text-gray-500 pt-4">
+        <span>{formatCustomRelativeTime(question.createdAt)}</span>
       </div>
     </div>
   );

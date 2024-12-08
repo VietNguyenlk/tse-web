@@ -21,6 +21,7 @@ const apiPath = "/forum/questions";
 const initialState = {
   loading: false,
   questions: [] as ReadonlyArray<IQuestion>,
+  pinQuestions: [] as ReadonlyArray<IQuestion>,
   question: defaultValue,
   totalItems: 0,
   totalPages: 0,
@@ -30,6 +31,7 @@ const initialState = {
   serverError: null,
   successMessage: null,
 };
+export type QuestionState = Readonly<typeof initialState>;
 
 // Async actions
 export const searchQuestions = createAsyncThunk(
@@ -45,6 +47,16 @@ export const searchQuestions = createAsyncThunk(
         params: model.pagingParams,
       },
     );
+  },
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
+export const getPinQuestions = createAsyncThunk(
+  "questions/getPinQuestions",
+  async () => {
+    return await axiosInstance.get<ApiResponse<IQuestion[]>>(`${apiPath}/pin`);
   },
   {
     serializeError: serializeAxiosError,
@@ -71,26 +83,43 @@ export const QuestionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
+      .addCase(createQuestion.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updateSuccess = true;
+        state.successMessage = "Tạo câu hỏi thành công";
+        state.questions.unshift(action.payload.data.data);
+        state.totalItems += 1;
+      })
+      .addCase(getPinQuestions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pinQuestions = action.payload.data.data;
+      })
       .addCase(searchQuestions.fulfilled, (state, action) => {
-        console.log({ action });
         state.loading = false;
         state.questions = action.payload.data.data.items;
         state.totalItems = action.payload.data.data.totalItems;
         state.totalPages = action.payload.data.data.totalPages;
       })
-      .addMatcher(isPending(searchQuestions), (state) => ({
-        ...initialState,
-        loading: true,
-      }))
-      .addMatcher(isRejected(searchQuestions), (state, action) => ({
-        ...initialState,
-        errorMessage: action.error.message,
-        serverError: true,
-        loading: false,
-      }));
+      .addMatcher(
+        isPending(getPinQuestions, searchQuestions, createQuestion),
+        (state) => ({
+          ...initialState,
+          loading: true,
+        }),
+      )
+      .addMatcher(
+        isRejected(getPinQuestions, searchQuestions, createQuestion),
+        (state, action) => ({
+          ...initialState,
+          errorMessage: action.error.message,
+          serverError: true,
+          loading: false,
+        }),
+      );
   },
 });
 
-export type QuestionState = Readonly<typeof initialState>;
-
 export default QuestionSlice.reducer;
+
+export const { resetQuestionState } = QuestionSlice.actions;

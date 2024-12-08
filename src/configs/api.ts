@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-const BASE_URL = process.env.API_BASE_URL || "http://localhost:3008/api/v1";
+const BASE_URL = process.env.API_BASE_URL || "http://localhost:8080/api/v1";
 
 export enum SortDirection {
   ASC = "asc",

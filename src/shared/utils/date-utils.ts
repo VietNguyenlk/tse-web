@@ -53,3 +53,30 @@ export const convertTimeFromClient = (time?: dayjs.ConfigType): dayjs.Dayjs | nu
 
 export const displayDefaultDateTime = () =>
   dayjs().startOf("day").format(DATE_TIME_FORMAT);
+
+export const formatCustomRelativeTime = (createAt: dayjs.ConfigType): string => {
+  const now = dayjs();
+  const date = dayjs.isDayjs(createAt) ? createAt : dayjs(createAt);
+  const diffInSecond = now.diff(date, "second");
+
+  if (diffInSecond < 60) {
+    return `${diffInSecond} giây trước`;
+  } else if (diffInSecond < 3600) {
+    const minutes = Math.floor(diffInSecond / 60);
+    return `${minutes} phút trước`;
+  } else if (diffInSecond < 86400) {
+    const hours = Math.floor(diffInSecond / 3600);
+    return `${hours} giờ trước`;
+  } else if (diffInSecond < 2592000) {
+    // Roughly 30 days
+    const days = Math.floor(diffInSecond / 86400);
+    return `${days} ngày trước`;
+  } else if (diffInSecond < 31536000) {
+    // Roughly 12 months
+    const months = Math.floor(diffInSecond / 2592000);
+    return `${months} tháng trước`;
+  } else {
+    const years = Math.floor(diffInSecond / 31536000);
+    return `${years} năm trước`;
+  }
+};
