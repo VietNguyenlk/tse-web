@@ -66,8 +66,19 @@ export const getPinQuestions = createAsyncThunk(
 export const createQuestion = createAsyncThunk(
   "questions/createQuestion",
   async (createRequest: IQuestionUpdateModel) => {
-    // console.log({ createRequest });
     return await axiosInstance.post<ApiResponse<IQuestion>>(apiPath, createRequest);
+  },
+  {
+    serializeError: serializeAxiosError,
+  },
+);
+
+export const getQuestionById = createAsyncThunk(
+  "questions/getQuestionById",
+  async (questionId: string) => {
+    return await axiosInstance.get<ApiResponse<IQuestion>>(
+      `${apiPath}/details/${questionId}`,
+    );
   },
   {
     serializeError: serializeAxiosError,
@@ -83,7 +94,10 @@ export const QuestionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
+      .addCase(getQuestionById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.question = action.payload.data.data;
+      })
       .addCase(createQuestion.fulfilled, (state, action) => {
         state.loading = false;
         state.updateSuccess = true;
@@ -102,14 +116,18 @@ export const QuestionSlice = createSlice({
         state.totalPages = action.payload.data.data.totalPages;
       })
       .addMatcher(
-        isPending(getPinQuestions, searchQuestions, createQuestion),
-        (state) => ({
-          ...initialState,
-          loading: true,
-        }),
+        isPending(getPinQuestions, searchQuestions, createQuestion, getQuestionById),
+        (state) => {
+          state.loading = true;
+        },
       )
       .addMatcher(
-        isRejected(getPinQuestions, searchQuestions, createQuestion),
+        isRejected(
+          getPinQuestions,
+          searchQuestions,
+          createQuestion,
+          getQuestionById,
+        ),
         (state, action) => ({
           ...initialState,
           errorMessage: action.error.message,

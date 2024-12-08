@@ -58,7 +58,7 @@ const AdminForumManagement: React.FC = () => {
   ]);
 
   return (
-    <div className="container mx-auto bg-gray-100 min-h-screen">
+    <div className="container  bg-gray-100 min-h-screen">
       <div className="bg-white shadow-md rounded-lg p-4 mb-2">
         {/* Add form */}
         <NewQuestion />

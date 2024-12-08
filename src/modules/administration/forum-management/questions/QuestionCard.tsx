@@ -1,5 +1,4 @@
 import {
-  HideSource,
   LockOpenOutlined,
   LockOutlined,
   MoreVert,
@@ -10,11 +9,10 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../configs/store";
-import { IQuestion } from "../../../../shared/models/question.model";
 import { QuestionStatus } from "../../../../shared/models/enums/question.enum";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import { IQuestion } from "../../../../shared/models/question.model";
 import { formatCustomRelativeTime } from "../../../../shared/utils/date-utils";
 
 interface QuestionCardProps {
@@ -23,6 +21,7 @@ interface QuestionCardProps {
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   const authState = useAppSelector((state) => state.authentication);
+  const navigate = useNavigate();
   const [toggleShowActionMenu, setToggleShowActionMenu] = useState(false);
 
   const menuRef = useRef(null);
@@ -114,9 +113,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
       )}
 
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-2xl font-semibold hover:text-blue-700 hover:cursor-pointer">
+        <Link
+          to={`${question.id}`}
+          className="text-2xl font-semibold hover:text-blue-700 hover:cursor-pointer"
+        >
           {question.title}
-        </h3>
+        </Link>
         {/* <div className="flex items-center space-x-2">
      {question.tags.map(tag => (
        <span key={tag} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">

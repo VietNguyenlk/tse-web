@@ -13,6 +13,7 @@ import NotFoundPage from "./NotFoundPage";
 import AdminUserManagement from "./modules/administration/user-management/AdminUserManagement";
 import RegisterPage from "./modules/account/register/RegisterPage";
 import ForgotPasswordForm from "./modules/account/forgotpass/ForgotPasswordForm";
+import QuestionDetails from "./modules/administration/forum-management/questions/QuestionDetails";
 
 const App: React.FC = () => {
   return (
@@ -34,7 +35,8 @@ const App: React.FC = () => {
           <Route path="activities" element={<AdminActivityManagement />} />
           <Route path="groups" element={<AdminGroupManagement />} />
           <Route path="budget" element={<AdminBudgetManagement />} />
-          <Route path="forum" element={<AdminForumManagement />} />
+          <Route path="forum" element={<AdminForumManagement />}></Route>
+          <Route path="forum/:questionId" element={<QuestionDetails />} />
         </Route>
         <Route path="home" element={<Home />} />
         <Route path="*" element={<NotFoundPage />} />

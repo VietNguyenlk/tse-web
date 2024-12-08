@@ -1,5 +1,5 @@
-import { IAnswer } from "./answer.model";
 import { IBaseModel } from "./base.model";
+import { IComment } from "./comment.model";
 import { QuestionStatus, QuestionTrend, QuestionType } from "./enums/question.enum";
 import { IQnACategory } from "./qna-category.model";
 import { IQuestionTag } from "./question-tag.model";
@@ -15,7 +15,8 @@ export interface IQuestion extends IBaseModel {
   trend?: QuestionTrend;
   user?: Partial<IUser>;
   categories?: Partial<IQnACategory>[];
-  answer?: Partial<IAnswer>;
+  answer?: Partial<IComment>;
+  comments?: Partial<IComment>[];
   questionTags?: Partial<IQuestionTag>[];
 }
 

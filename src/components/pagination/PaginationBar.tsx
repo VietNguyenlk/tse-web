@@ -14,6 +14,7 @@ interface PaginationProps {
   onPageSizeChange: (pageSize: number) => void;
   totalItems?: number;
   itemsPerPage?: number;
+  isMargin?: boolean;
 }
 
 const PaginationBar: React.FC<PaginationProps> = ({
@@ -23,6 +24,7 @@ const PaginationBar: React.FC<PaginationProps> = ({
   onPageSizeChange,
   totalItems = 0,
   itemsPerPage = 10,
+  isMargin = true,
 }: PaginationProps) => {
   const getPageNumbers = () => {
     const pages = [];
@@ -66,7 +68,11 @@ const PaginationBar: React.FC<PaginationProps> = ({
   // const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex relative justify-center items-center space-y-4 mt-8 mb-2">
+    <div
+      className={`flex relative justify-center items-center space-y-4 ${
+        isMargin ? "mt-8 mb-2" : ""
+      }`}
+    >
       <div className="absolute left-0 top-1/2 -translate-y-1/2 ">
         <span>Số lượng mỗi trang:&nbsp;</span>
         <select

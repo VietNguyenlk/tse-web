@@ -16,6 +16,7 @@ import { PersistConfig, Persistor, persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 import activity from "../modules/activity/activity.reducer";
 import question from "../modules/administration/forum-management/questions/question.reducer";
+import comment from "../modules/administration/forum-management/comments/comment.reducer";
 
 const rootReducer = combineReducers({
   userManagement,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   register,
   activity,
   question,
+  comment,
 });
 
 type RootReducer = ReturnType<typeof rootReducer>;
