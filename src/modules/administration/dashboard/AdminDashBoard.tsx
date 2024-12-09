@@ -13,6 +13,8 @@ import {
 } from "recharts";
 import { userService } from "../../../services/user.service";
 import Modal from "./Modal";
+import * as XLSX from 'xlsx';
+
 
 const AdminDashboard = () => {
   const [activities, setActivities] = useState([]);
@@ -25,6 +27,143 @@ const AdminDashboard = () => {
   const [previousMonthActivities, setPreviousMonthActivities] = useState([]);
   const [previousMonthRegisteredUsers, setPreviousMonthRegisteredUsers] =
     useState(0);
+
+    const [exportOption, setExportOption] = useState('all');
+
+  // Export function
+  const handleExport = () => {
+    switch(exportOption) {
+      case 'activities':
+        exportActivities();
+        break;
+      case 'participation':
+        exportParticipationRates();
+        break;
+      case 'all':
+      default:
+        exportAllData();
+        break;
+    }
+  };
+
+  // Export all data
+  const exportAllData = () => {
+    // Combine multiple sheets
+    const workbook = XLSX.utils.book_new();
+
+    // Activities Sheet
+    const activitiesSheet = XLSX.utils.json_to_sheet(
+      activities.map(activity => ({
+        'Tên Hoạt Động': activity.name,
+        'Loại Hoạt Động': activity.activityType,
+        'Ngày Diễn Ra': new Date(activity.occurDate).toLocaleDateString(),
+        'Người Tổ Chức': activity.hostName,
+        'Trạng Thái': activity.activityStatus,
+        'Số Người Đăng Ký': activity.registeredNumber,
+        'Sức Chứa': activity.capacity
+      }))
+    );
+    XLSX.utils.book_append_sheet(workbook, activitiesSheet, 'Hoạt Động');
+
+    // Participation Rates Sheet
+    const participationRatesSheet = XLSX.utils.json_to_sheet([
+      {
+        'Loại Hoạt Động': 'Hội thảo',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.seminar.toFixed(2)
+      },
+      {
+        'Loại Hoạt Động': 'Đào tạo',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.training.toFixed(2)
+      },
+      {
+        'Loại Hoạt Động': 'Cuộc thi',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.contest.toFixed(2)
+      },
+      {
+        'Tổng Tỷ Lệ Tham Gia (%)': participationRate.toFixed(2)
+      }
+    ]);
+    XLSX.utils.book_append_sheet(workbook, participationRatesSheet, 'Tỷ Lệ Tham Gia');
+
+    // Top Users Sheet
+    const topUsersSheet = XLSX.utils.json_to_sheet(
+      topUsers.map(user => ({
+        'Mã Người Dùng': user.userId,
+        'Số Lượng Hoạt Động': user.activityCount
+      }))
+    );
+    XLSX.utils.book_append_sheet(workbook, topUsersSheet, 'Người Dùng Tích Cực');
+
+    // Monthly Comparison Sheet
+    const monthlyComparisonSheet = XLSX.utils.json_to_sheet([
+      {
+        'Chỉ Số': 'Số Hoạt Động',
+        'Tháng Hiện Tại': currentMonthActivityCount,
+        'Tháng Trước': previousMonthActivityCount,
+        'Thay Đổi (%)': activityCountChange
+      },
+      {
+        'Chỉ Số': 'Số Thành Viên Mới',
+        'Tháng Hiện Tại': registeredUsers,
+        'Tháng Trước': previousMonthRegisteredUsers,
+        'Thay Đổi (%)': memberCountChange
+      },
+      {
+        'Chỉ Số': 'Tỷ Lệ Tham Gia',
+        'Tháng Hiện Tại': `${participationRate.toFixed(2)}%`,
+        'Tháng Trước': `${previousMonthParticipationRate.toFixed(2)}%`,
+        'Thay Đổi (%)': participationRateChange
+      }
+    ]);
+    XLSX.utils.book_append_sheet(workbook, monthlyComparisonSheet, 'So Sánh Tháng');
+
+    // Export the workbook
+    XLSX.writeFile(workbook, `ClubActivities_Month${selectedMonth}.xlsx`);
+  };
+
+  // Export only activities
+  const exportActivities = () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.json_to_sheet(
+      activities.map(activity => ({
+        'Tên Hoạt Động': activity.name,
+        'Loại Hoạt Động': activity.activityType,
+        'Ngày Diễn Ra': new Date(activity.occurDate).toLocaleDateString(),
+        'Người Tổ Chức': activity.hostName,
+        'Trạng Thái': activity.activityStatus,
+        'Số Người Đăng Ký': activity.registeredNumber,
+        'Sức Chứa': activity.capacity
+      }))
+    );
+    XLSX.utils.book_append_sheet(workbook, sheet, 'Hoạt Động');
+    XLSX.writeFile(workbook, `ClubActivities_Month${selectedMonth}.xlsx`);
+  };
+
+  // Export participation rates
+  const exportParticipationRates = () => {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.json_to_sheet([
+      {
+        'Loại Hoạt Động': 'Hội thảo',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.seminar.toFixed(2)
+      },
+      {
+        'Loại Hoạt Động': 'Đào tạo',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.training.toFixed(2)
+      },
+      {
+        'Loại Hoạt Động': 'Cuộc thi',
+        'Tỷ Lệ Tham Gia (%)': participationRatesByType.contest.toFixed(2)
+      },
+      {
+        'Tổng Tỷ Lệ Tham Gia (%)': participationRate.toFixed(2)
+      }
+    ]);
+    XLSX.utils.book_append_sheet(workbook, sheet, 'Tỷ Lệ Tham Gia');
+    XLSX.writeFile(workbook, `ParticipationRates_Month${selectedMonth}.xlsx`);
+  };
+
+
 
   useEffect(() => {
     const fetchTopUsers = async () => {
@@ -275,6 +414,28 @@ const AdminDashboard = () => {
             ))}
           </select>
         </div>
+         {/* Export Section */}
+         <div className="mb-6 flex items-center">
+          <label htmlFor="export-option" className="mr-2 font-medium">
+            Xuất dữ liệu:
+          </label>
+          <select
+            id="export-option"
+            value={exportOption}
+            onChange={(e) => setExportOption(e.target.value)}
+            className="px-4 py-2 rounded-md border border-gray-300 mr-4 focus:outline-none focus:ring focus:ring-blue-500"
+          >
+            <option value="all">Xuất tất cả</option>
+            <option value="activities">Xuất hoạt động</option>
+            <option value="participation">Xuất tỷ lệ tham gia</option>
+          </select>
+          <button
+            onClick={handleExport}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Xuất Excel
+          </button>
+        </div>
 
         {/* Tổng quan về các loại hoạt động */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -343,7 +504,7 @@ const AdminDashboard = () => {
             </h2>
             <p className="text-lg">Tên hoạt động: {mostRegisteredActivity.name}</p>
             <p className="text-lg">
-              Loại hoạt động: {mostRegisteredActivity.activityType}
+              Loại hoạt động: {mostRegisteredActivity.activityType==="TRAINING"? "Đào tạo": mostRegisteredActivity.activityType==="SEMINAR"? "Hội thảo": "Cuộc thi"}
             </p>
             <p className="text-lg">
               Số lượng tham gia: {mostRegisteredActivity.registeredNumber}
@@ -513,13 +674,36 @@ const AdminDashboard = () => {
                   .map((activity) => (
                     <tr key={activity.activityId}>
                       <td className="p-2 border font-medium">{activity.name}</td>
-                      <td className="p-2 border">{activity.activityType}</td>
+                      {/* loại thi convert sang tiếng việt */}
+                      <td className="p-2 border">
+                        {activity.activityType === "SEMINAR"
+                          ? "Hội thảo"
+                          : activity.activityType === "TRAINING"
+                          ? "Đào tạo"
+                          : "Cuộc thi"}
+                      </td>
                       <td className="p-2 border">
                         {new Date(activity.occurDate).toLocaleDateString()}
                       </td>
                       <td className="p-2 border">{activity.hostName}</td>
+                      {/* convert status sang tiếng việt */}
+                      {/* IN_COMING,
+                      OPEN_NOW,
+                      CLOSED,
+                      CANCELED,
+                      FINISHED, */}
                       <td className="p-2 border text-right">
-                        {activity.activityStatus}
+                        {activity.activityStatus === "IN_COMING"
+                          ? "Sắp diễn ra"
+                          : activity.activityStatus === "OPEN_NOW"
+                          ? "Đang diễn ra"
+                          : activity.activityStatus === "CLOSED"
+                          ? "Đã đóng"
+                          : activity.activityStatus === "CANCELED"
+                          ? "Đã hủy"
+                          : activity.activityStatus === "FINISHED"
+                          ? "Đã kết thúc"
+                          : ""}
                       </td>
                     </tr>
                   ))}

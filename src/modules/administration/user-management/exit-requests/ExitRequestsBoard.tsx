@@ -92,7 +92,7 @@ const ExitRequestsBoard: React.FC = () => {
         <div className="text-center py-4 text-gray-500">Loading...</div>
       ) : data.length === 0 ? (
         <div className="text-center py-4 text-gray-500">
-          No exit requests found
+          Ở đây thật trống trải
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -142,7 +142,7 @@ const ExitRequestsBoard: React.FC = () => {
                             transition-colors text-xm
                           "
                         >
-                          Approve
+                          Đồng ý
                         </button>
                         <button 
                           onClick={() => handleReject(user.userId)}
@@ -153,7 +153,7 @@ const ExitRequestsBoard: React.FC = () => {
                             transition-colors text-xs
                           "
                         >
-                          Reject
+                          từ chối
                         </button>
                       </div>
                     )}

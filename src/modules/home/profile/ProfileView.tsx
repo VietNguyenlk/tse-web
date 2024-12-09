@@ -139,7 +139,7 @@ const ProfileView: React.FC<{ user: IUser }> = ({ user }) => {
       alert('Chuyển yêu cầu rời CLB thành công');
     } catch (error) {
       // Hiển thị thông báo lỗi
-      alert('Đã xảy ra lỗi');
+      alert('Bạn đã gửi yêu cầu rời CLB, vui lòng chờ phản hồi');
     }
   }
 

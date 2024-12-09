@@ -38,7 +38,10 @@ const App: React.FC = () => {
           <Route path="forum" element={<AdminForumManagement />}></Route>
           <Route path="forum/:questionId" element={<QuestionDetails />} />
         </Route>
+        {/* New route for QuestionDetails accessible to all users */}
+        <Route path="questions/:questionId" element={<QuestionDetails />} />
         <Route path="home" element={<Home />} />
+        
         <Route path="*" element={<NotFoundPage />} />
         <Route path="forgot-password" element={<ForgotPasswordForm />} />
       </Routes>
