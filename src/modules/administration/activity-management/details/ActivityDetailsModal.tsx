@@ -251,8 +251,8 @@ const ActivityDetailsModal: React.FC<ActivityDetailsModalProps> = ({
                         <option key={key} value={key as keyof typeof ActivityStatus}>
                           {
                             {
-                              PLANED: "Lên kế hoạch",
-                              OPENED: "Mở",
+                              IN_COMING: "Lên kế hoạch",
+                              OPEN_NOW: "Mở",
                               CANCELED: "Huỷ bỏ",
                               CLOSED: "Đóng",
                             }[key as keyof typeof ActivityStatus]
